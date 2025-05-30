@@ -10,6 +10,8 @@ public class WaveManager : MonoBehaviour
     public int enemiesPerWave = 5;
     public float timeBetweenSpawns = 0.5f;
 
+    public CardChoiceUI cardChoiceUI;
+
     private int currentWave = 0;
     private int enemiesAlive = 0;
     private bool isSpawning = false;
@@ -26,14 +28,9 @@ public class WaveManager : MonoBehaviour
             currentWave++;
             Time.timeScale = 0f;
 
-            //var ui = FindAnyObjectByType<CardChoiceUI>();
-            //if (ui != null)
-            //{
-            //    if (currentWave % 3 == 0)
-            //        ui.ShowCardChoices(OnAbilityChosen);
-            //    else
-            //        ui.ShowCardChoices(OnBuffChosen);
-            //}
+            CardType type = (currentWave % 3 == 0) ? CardType.Ability : CardType.Buff;
+            var randomCards = CardManager.Instance.GetRandomCards(3, type);
+            cardChoiceUI.ShowCards(randomCards, OnCardChosen);
         }
     }
 
@@ -59,13 +56,15 @@ public class WaveManager : MonoBehaviour
         enemiesAlive--;
     }
 
-    void OnBuffChosen()
+    void OnCardChosen(CardData chosen)
     {
-        ResumeGame();
-    }
+        Debug.Log("Chosen card: " + chosen.cardName);
 
-    void OnAbilityChosen()
-    {
+        if (chosen.cardEffectPrefab != null)
+        {
+            Instantiate(chosen.cardEffectPrefab);
+        }
+
         ResumeGame();
     }
 
