@@ -20,6 +20,7 @@ public class EnemySpawner : MonoBehaviour
 
     void SpawnEnemy()
     {
+        Debug.Log("SPAWN");
         Vector2 spawnPosition = (Vector2)transform.position + Random.insideUnitCircle.normalized * spawnRadius;
         Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
     }

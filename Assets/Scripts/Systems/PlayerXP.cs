@@ -33,15 +33,15 @@ public class PlayerXP : MonoBehaviour
             Debug.Log("LEVEL UP! Level: " + level);
 
             // Prøv at finde kort-UI'et og vis det
-            var cardUI = Object.FindFirstObjectByType<CardChoiceUI>();
-            if (cardUI != null)
-            {
-                cardUI.ShowCardChoices();
-            }
-            else
-            {
-                Debug.LogWarning("CardChoiceUI not found in scene!");
-            }
+            //var cardUI = Object.FindFirstObjectByType<CardChoiceUI>();
+            //if (cardUI != null)
+            //{
+            //    cardUI.ShowCardChoices();
+            //}
+            //else
+            //{
+            //    Debug.LogWarning("CardChoiceUI not found in scene!");
+            //}
         }
     }
 }

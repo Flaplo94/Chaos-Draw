@@ -13,8 +13,9 @@ GameObject:
   - component: {fileID: 251748052483166877}
   - component: {fileID: 6706808530034103868}
   - component: {fileID: 1849891846209710151}
-  m_Layer: 0
-  m_Name: Enemy
+  - component: {fileID: 76683931486816045}
+  m_Layer: 6
+  m_Name: Enemy1Hit_prefab
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -80,7 +81,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
-  m_Color: {r: 1, g: 0.13123205, b: 0, a: 1}
+  m_Color: {r: 0.23219788, g: 1, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -166,3 +167,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 2
+--- !u!114 &76683931486816045
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7502241114002446682}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d32584ad1a20fe24b9522d8dbef73d33, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 1
