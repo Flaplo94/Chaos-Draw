@@ -72,6 +72,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6706808530034103868, guid: af535699c9caddd418ddb82d17593458, type: 3}
+      propertyPath: m_Radius
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6706808530034103868, guid: af535699c9caddd418ddb82d17593458, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7502241114002446682, guid: af535699c9caddd418ddb82d17593458, type: 3}
       propertyPath: m_Name
       value: Enemy2Hit_Prefab
