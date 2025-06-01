@@ -10,7 +10,6 @@ public class CardHandUI : MonoBehaviour
     public Sprite[] abilityCardSprites; // All possible card images
 
     private Sprite[] currentCards = new Sprite[4];
-    private int pendingDrawIndex = -1;
     private int discardCount = 0;
 
     [Header("Discard")]
