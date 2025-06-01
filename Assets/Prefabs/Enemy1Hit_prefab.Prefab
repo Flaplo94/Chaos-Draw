@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 6706808530034103868}
   - component: {fileID: 1849891846209710151}
   - component: {fileID: 76683931486816045}
+  - component: {fileID: 3847598445779354868}
   m_Layer: 6
   m_Name: Enemy1Hit_prefab
   m_TagString: Enemy
@@ -166,7 +167,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e69a65c1c69b43a49ab42864c6954d94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 2
+  speed: 3
 --- !u!114 &76683931486816045
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -179,4 +180,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d32584ad1a20fe24b9522d8dbef73d33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 1
+  health: 1
+--- !u!114 &3847598445779354868
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7502241114002446682}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9a8f6746b681ce41a827ba53fcf88b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damageAmount: 1
