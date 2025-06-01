@@ -1,87 +1,72 @@
-﻿using System.Collections;
+﻿using UnityEngine;
 using System.Collections.Generic;
-using UnityEngine;
 
 public class WaveManager : MonoBehaviour
 {
-    public GameObject enemyType1; // 1-hit fjende
-    public GameObject enemyType2; // 2-hit fjende
-    public Transform[] spawnPoints;
-    public int enemiesPerWave = 5;
-    public float timeBetweenSpawns = 0.5f;
+    public static WaveManager Instance;
 
-    public CardChoiceUI cardChoiceUI;
-
-    private int currentWave = 0;
+    public int currentWave = 0;
+    public bool waveActive = false;
+    private bool waitingForCardChoice = false;
     private int enemiesAlive = 0;
-    private bool isSpawning = false;
 
-    void Start()
+    private void Awake()
     {
-        StartCoroutine(SpawnWave());
+        if (Instance == null)
+            Instance = this;
+        else
+            Destroy(gameObject);
     }
 
-    void Update()
+    private void Update()
     {
-        if (!isSpawning && enemiesAlive == 0)
+        if (!waveActive && !waitingForCardChoice)
         {
-            currentWave++;
-            Time.timeScale = 0f;
-
-            CardType type = (currentWave % 3 == 0) ? CardType.Ability : CardType.Buff;
-            var randomCards = CardManager.Instance.GetRandomCards(3, type);
-            cardChoiceUI.ShowCards(randomCards, OnCardChosen);
+            ShowCardChoice();
         }
     }
 
-    IEnumerator SpawnWave()
+    public void RegisterEnemies(int count)
     {
-        isSpawning = true;
-
-        for (int i = 0; i < enemiesPerWave; i++)
-        {
-            GameObject prefabToSpawn = (Random.value > 0.5f) ? enemyType1 : enemyType2;
-            Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
-
-            Instantiate(prefabToSpawn, spawnPoint.position, Quaternion.identity);
-            enemiesAlive++;
-
-            // 🚀 Aktiver skyde-systemet første gang en enemy spawn’es
-            if (i == 0)
-            {
-                var shooter = FindObjectOfType<PlayerShoot>();
-                if (shooter != null)
-                {
-                    shooter.EnableShooting();
-                }
-            }
-
-            yield return new WaitForSeconds(timeBetweenSpawns);
-        }
-
-        isSpawning = false;
+        enemiesAlive = count;
+        waveActive = true;
     }
 
     public void EnemyDied()
     {
         enemiesAlive--;
-    }
 
-    void OnCardChosen(CardData chosen)
-    {
-        Debug.Log("Chosen card: " + chosen.cardName);
-
-        if (chosen.cardEffectPrefab != null)
+        if (enemiesAlive <= 0)
         {
-            Instantiate(chosen.cardEffectPrefab);
+            waveActive = false;
         }
-
-        ResumeGame();
     }
 
-    void ResumeGame()
+    private void ShowCardChoice()
     {
-        Time.timeScale = 1f;
-        StartCoroutine(SpawnWave());
+        CardType type = currentWave % 3 == 0 ? CardType.Ability : CardType.Buff;
+        List<CardData> cards = CardManager.Instance.GetRandomCards(3, type);
+
+        var choiceUI = FindFirstObjectByType<CardChoiceUI>();
+        waitingForCardChoice = true;
+
+        choiceUI.ShowCards(cards, (selectedCard) =>
+        {
+            Debug.Log("Player selected: " + selectedCard.cardName);
+
+            if (selectedCard.cardType == CardType.Buff)
+                BuffSystem.Instance.AddBuff(selectedCard);
+            else
+                AbilitySystem.Instance.AddAbility(selectedCard);
+
+            waitingForCardChoice = false;
+            StartNextWave();
+        });
+    }
+
+    private void StartNextWave()
+    {
+        currentWave++;
+        EnemySpawner.Instance.SpawnWave(currentWave);
     }
 }

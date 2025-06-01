@@ -227,8 +227,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efbe37223816cdc42a34468535d72c51, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cardChoiceUI: {fileID: 0}
-  canvasGroup: {fileID: 0}
+  cardChoiceUI: {fileID: 126808453}
+  canvasGroup: {fileID: 126808452}
   cardButtons:
   - button: {fileID: 454773049}
     icon: {fileID: 1626299793}
@@ -2502,7 +2502,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f80ac1676ab004c41955dc6a183e543c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  allCards: []
+  allCards:
+  - {fileID: 11400000, guid: 61d00ac8ea27e994db15991b6806c553, type: 2}
+  - {fileID: 11400000, guid: 8d24941e696fa2543b3ee41512f77317, type: 2}
+  - {fileID: 11400000, guid: 61ebf17d3e054cc4bb916d208852582b, type: 2}
+  - {fileID: 11400000, guid: bee999c185f481044a1bc67410b43b35, type: 2}
+  - {fileID: 11400000, guid: 97722ffd90e635b4b99b715cabd63b7b, type: 2}
+  - {fileID: 11400000, guid: fafc9f0d6d42a214681e7384fea97c83, type: 2}
+  - {fileID: 11400000, guid: 458acdac13ea8ea48a0041bc81493a6b, type: 2}
+  - {fileID: 11400000, guid: 5921973d8c1ad74489e47bba0e47185a, type: 2}
+  - {fileID: 11400000, guid: 3f205b7f7adccf14cae0945b0661e672, type: 2}
+  - {fileID: 11400000, guid: a7dffb9b8e1e7ac4a8cbe449f20a63b1, type: 2}
+  - {fileID: 11400000, guid: 384484f80e3e9024ca0fd680e7808026, type: 2}
+  - {fileID: 11400000, guid: ea0311fcfefaf8e4ca5eea46834da6f8, type: 2}
+  - {fileID: 11400000, guid: 9c3fa2dc6fee48243b135b2e639e63d5, type: 2}
+  - {fileID: 11400000, guid: 889f2aadbe0e1634a9896a167c68c5a6, type: 2}
+  - {fileID: 11400000, guid: 2fd655564364162428cffbb2cc28d9e8, type: 2}
+  - {fileID: 11400000, guid: cf75fef715bfa8e4b8b8c8737294e9f0, type: 2}
 --- !u!4 &1898041681
 Transform:
   m_ObjectHideFlags: 0

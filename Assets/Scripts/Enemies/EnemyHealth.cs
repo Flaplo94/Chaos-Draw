@@ -2,30 +2,21 @@ using UnityEngine;
 
 public class EnemyHealth : MonoBehaviour
 {
-    public int maxHealth = 1;
-    private int currentHealth;
+    public int health = 1;
 
-    void Start()
+    public void TakeDamage(int dmg)
     {
-        currentHealth = maxHealth;
-    }
+        health -= dmg;
 
-    public void TakeDamage(int damage)
-    {
-        currentHealth -= damage;
-
-        if (currentHealth <= 0)
+        if (health <= 0)
         {
             Die();
         }
     }
 
-    void Die()
+    private void Die()
     {
-        // Fortæl WaveManager at en fjende er død
-        FindAnyObjectByType<WaveManager>().EnemyDied();
-
-        // Fjern fjenden fra spillet
+        WaveManager.Instance.EnemyDied();
         Destroy(gameObject);
     }
 }

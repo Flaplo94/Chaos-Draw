@@ -5,7 +5,6 @@ using System.Linq;
 public class CardManager : MonoBehaviour
 {
     public static CardManager Instance;
-
     public List<CardData> allCards;
 
     private void Awake()
@@ -21,16 +20,22 @@ public class CardManager : MonoBehaviour
         List<CardData> pool = allCards.Where(card => card.cardType == type).ToList();
         List<CardData> result = new List<CardData>();
 
+        if (pool.Count == 0)
+        {
+            Debug.LogWarning("No cards available of type: " + type);
+            return result;
+        }
+
         for (int i = 0; i < count; i++)
         {
             CardRarity selectedRarity = RollRarity();
-
-            // Prøv at finde kort i den valgte rarity
             var candidates = pool.Where(c => c.rarity == selectedRarity).ToList();
 
-            // Hvis ingen findes, falder vi tilbage til alle kort af korrekt type
             if (candidates.Count == 0)
                 candidates = pool;
+
+            if (candidates.Count == 0)
+                break;
 
             var selected = candidates[Random.Range(0, candidates.Count)];
             result.Add(selected);
@@ -43,10 +48,10 @@ public class CardManager : MonoBehaviour
     {
         float roll = Random.value;
 
-        if (roll < 0.50f) return CardRarity.Common;      // 50%
-        if (roll < 0.75f) return CardRarity.Uncommon;    // 25%
-        if (roll < 0.90f) return CardRarity.Rare;        // 15%
-        if (roll < 0.97f) return CardRarity.Epic;        // 7%
-        return CardRarity.Legendary;                     // 3%
+        if (roll < 0.50f) return CardRarity.Common;
+        if (roll < 0.75f) return CardRarity.Uncommon;
+        if (roll < 0.90f) return CardRarity.Rare;
+        if (roll < 0.97f) return CardRarity.Epic;
+        return CardRarity.Legendary;
     }
 }

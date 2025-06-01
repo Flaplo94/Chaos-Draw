@@ -6,53 +6,52 @@ using System.Collections.Generic;
 
 public class CardChoiceUI : MonoBehaviour
 {
-    public CardChoiceUI cardChoiceUI;
-
-    [Serializable]
-    public class CardButtonUI
+    [System.Serializable]
+    public class CardButtonSlot
     {
         public Button button;
         public Image icon;
-        public TMP_Text nameText;
-        public TMP_Text descriptionText;
+        public TextMeshProUGUI nameText;
+        public TextMeshProUGUI descriptionText;
     }
 
     public CanvasGroup canvasGroup;
-    public List<CardButtonUI> cardButtons;
+    public List<CardButtonSlot> cardButtons = new List<CardButtonSlot>();
     private Action<CardData> onCardSelected;
 
     public void ShowCards(List<CardData> cards, Action<CardData> onSelected)
     {
         canvasGroup.alpha = 1;
-        canvasGroup.blocksRaycasts = true;
         canvasGroup.interactable = true;
+        canvasGroup.blocksRaycasts = true;
 
         onCardSelected = onSelected;
 
         for (int i = 0; i < cardButtons.Count; i++)
         {
-            var ui = cardButtons[i];
-            var data = cards[i];
+            var card = cards[i];
+            var slot = cardButtons[i];
 
-            ui.icon.sprite = data.icon;
-            ui.nameText.text = data.cardName;
-            ui.descriptionText.text = data.description;
+            slot.nameText.text = card.cardName;
+            slot.descriptionText.text = card.description;
+            slot.icon.sprite = card.cardSprite;
 
-            ui.button.onClick.RemoveAllListeners();
-            ui.button.onClick.AddListener(() => SelectCard(data));
+            int index = i;
+            slot.button.onClick.RemoveAllListeners();
+            slot.button.onClick.AddListener(() => SelectCard(cards[index]));
         }
     }
 
-    private void SelectCard(CardData chosenCard)
-    {
-        Hide();
-        onCardSelected?.Invoke(chosenCard);
-    }
-
-    private void Hide()
+    public void Hide()
     {
         canvasGroup.alpha = 0;
-        canvasGroup.blocksRaycasts = false;
         canvasGroup.interactable = false;
+        canvasGroup.blocksRaycasts = false;
+    }
+
+    private void SelectCard(CardData selectedCard)
+    {
+        onCardSelected?.Invoke(selectedCard);
+        Hide();
     }
 }

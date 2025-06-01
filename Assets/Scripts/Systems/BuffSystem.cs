@@ -5,26 +5,35 @@ public class BuffSystem : MonoBehaviour
 {
     public static BuffSystem Instance;
 
-    private Dictionary<string, int> activeBuffs = new Dictionary<string, int>();
+    private List<CardData> activeBuffs = new List<CardData>();
 
     private void Awake()
     {
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
-    }
-
-    public void ApplyBuff(string buffID)
-    {
-        if (activeBuffs.ContainsKey(buffID))
-            activeBuffs[buffID]++;
+        if (Instance == null)
+            Instance = this;
         else
-            activeBuffs.Add(buffID, 1);
-
-        Debug.Log("Buff applied: " + buffID + " (level " + activeBuffs[buffID] + ")");
+            Destroy(gameObject);
     }
 
-    public int GetBuffLevel(string buffID)
+    public void AddBuff(CardData buffCard)
     {
-        return activeBuffs.ContainsKey(buffID) ? activeBuffs[buffID] : 0;
+        activeBuffs.Add(buffCard);
+        Debug.Log("Buff added: " + buffCard.cardName);
+    }
+
+    public int GetBuffLevel(string buffName)
+    {
+        int count = 0;
+        foreach (var buff in activeBuffs)
+        {
+            if (buff.cardName == buffName)
+                count++;
+        }
+        return count;
+    }
+
+    public List<CardData> GetAllBuffs()
+    {
+        return activeBuffs;
     }
 }
