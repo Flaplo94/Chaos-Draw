@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -45,6 +45,17 @@ public class WaveManager : MonoBehaviour
 
             Instantiate(prefabToSpawn, spawnPoint.position, Quaternion.identity);
             enemiesAlive++;
+
+            // 🚀 Aktiver skyde-systemet første gang en enemy spawn’es
+            if (i == 0)
+            {
+                var shooter = FindObjectOfType<PlayerShoot>();
+                if (shooter != null)
+                {
+                    shooter.EnableShooting();
+                }
+            }
+
             yield return new WaitForSeconds(timeBetweenSpawns);
         }
 
