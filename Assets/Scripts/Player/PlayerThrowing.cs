@@ -16,8 +16,7 @@ public class PlayerShooting : MonoBehaviour
         if (fireCooldown < 0f)
             fireCooldown = 0f;
 
-        Debug.Log("Cooldown: " + fireCooldown);
-        Debug.Log("Time Scale: " + Time.timeScale);
+        
         if (Input.GetMouseButton(0) && fireCooldown <= 0f)
         {
             Shoot();
