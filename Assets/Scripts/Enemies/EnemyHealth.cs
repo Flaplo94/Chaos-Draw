@@ -9,15 +9,22 @@ public class EnemyHealth : MonoBehaviour
     public void TakeDamage(int amount)
     {
         health -= amount;
+
         if (health <= 0)
         {
             Die();
         }
     }
 
-    void Die()
+    private void Die()
     {
         OnDeath?.Invoke();
+
+        if (WaveManager.Instance != null)
+        {
+            WaveManager.Instance.EnemyDied();
+        }
+
         Destroy(gameObject);
     }
 }
