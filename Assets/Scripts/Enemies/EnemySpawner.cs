@@ -1,17 +1,14 @@
 using UnityEngine;
-using System.Collections.Generic;
 
 public class EnemySpawner : MonoBehaviour
 {
     public static EnemySpawner Instance;
 
     public Transform[] spawnPoints;
-    public GameObject enemy1HitPrefab;
-    public GameObject enemy2HitPrefab;
+    public GameObject enemyPrefab1Hit;
+    public GameObject enemyPrefab2Hit;
 
-    private float timer;
-
-    void Update()
+    private void Awake()
     {
         if (Instance == null)
             Instance = this;
@@ -24,34 +21,12 @@ public class EnemySpawner : MonoBehaviour
         int totalEnemies = oneHitCount + twoHitCount;
         WaveManager.Instance.RegisterEnemies(totalEnemies);
 
-        List<GameObject> spawnQueue = new List<GameObject>();
-
-        for (int i = 0; i < oneHitCount; i++)
-            spawnQueue.Add(enemy1HitPrefab);
-
-        for (int i = 0; i < twoHitCount; i++)
-            spawnQueue.Add(enemy2HitPrefab);
-
-        // Shuffle spawnQueue
-        for (int i = 0; i < spawnQueue.Count; i++)
-        {
-            int randIndex = Random.Range(i, spawnQueue.Count);
-            GameObject temp = spawnQueue[i];
-            spawnQueue[i] = spawnQueue[randIndex];
-            spawnQueue[randIndex] = temp;
-        }
-
-        foreach (GameObject prefab in spawnQueue)
+        for (int i = 0; i < totalEnemies; i++)
         {
             Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
+            GameObject prefab = (i < oneHitCount) ? enemyPrefab1Hit : enemyPrefab2Hit;
+
             Instantiate(prefab, spawnPoint.position, Quaternion.identity);
         }
-    }
-
-    void SpawnEnemy()
-    {
-        Debug.Log("SPAWN");
-        Vector2 spawnPosition = (Vector2)transform.position + Random.insideUnitCircle.normalized * spawnRadius;
-        Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
     }
 }
