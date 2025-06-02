@@ -14,7 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardName: HP Regeneration
   description: Regenerate 1 HP every 10 seconds.
-  icon: {fileID: 0}
+  cardSprite: {fileID: -840889492307172954, guid: 702098da154058e4fbea945434ac3e1e, type: 3}
   cardType: 0
-  rarity: 2
-  cardEffectPrefab: {fileID: 0}
+  rarity: 0

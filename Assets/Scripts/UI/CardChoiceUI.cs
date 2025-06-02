@@ -19,6 +19,11 @@ public class CardChoiceUI : MonoBehaviour
     public List<CardButtonSlot> cardButtons = new List<CardButtonSlot>();
     private Action<CardData> onCardSelected;
 
+    private void Awake()
+    {
+        Hide(); // Sørger for UI er skjult fra start
+    }
+
     public void ShowCards(List<CardData> cards, Action<CardData> onSelected)
     {
         canvasGroup.alpha = 1;
@@ -34,7 +39,9 @@ public class CardChoiceUI : MonoBehaviour
 
             slot.nameText.text = card.cardName;
             slot.descriptionText.text = card.description;
+
             slot.icon.sprite = card.cardSprite;
+            slot.icon.enabled = card.cardSprite != null; // Undgå hvid firkant
 
             int index = i;
             slot.button.onClick.RemoveAllListeners();

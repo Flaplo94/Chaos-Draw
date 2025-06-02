@@ -14,7 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardName: Dash
   description: Dash in your movement direction instantly.
-  icon: {fileID: -2381029641354267749, guid: 70a254eb20c4e53499fd31bbd43ebea6, type: 3}
+  cardSprite: {fileID: -8930454964999994582, guid: 4ca200f71c34b2245bf0891730e40809, type: 3}
   cardType: 1
   rarity: 0
-  cardEffectPrefab: {fileID: 8258036713140304075, guid: e8f66dd30298c4b4582d990512d175e9, type: 3}

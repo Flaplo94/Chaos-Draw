@@ -1,11 +1,13 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class EnemySpawner : MonoBehaviour
 {
     public static EnemySpawner Instance;
 
     public Transform[] spawnPoints;
-    public GameObject enemyPrefab;
+    public GameObject enemy1HitPrefab;
+    public GameObject enemy2HitPrefab;
 
     private void Awake()
     {
@@ -15,15 +17,32 @@ public class EnemySpawner : MonoBehaviour
             Destroy(gameObject);
     }
 
-    public void SpawnWave(int waveNumber)
+    public void SpawnWave(int waveNumber, int oneHitCount, int twoHitCount)
     {
-        int enemyCount = 3 + waveNumber;
-        WaveManager.Instance.RegisterEnemies(enemyCount);
+        int totalEnemies = oneHitCount + twoHitCount;
+        WaveManager.Instance.RegisterEnemies(totalEnemies);
 
-        for (int i = 0; i < enemyCount; i++)
+        List<GameObject> spawnQueue = new List<GameObject>();
+
+        for (int i = 0; i < oneHitCount; i++)
+            spawnQueue.Add(enemy1HitPrefab);
+
+        for (int i = 0; i < twoHitCount; i++)
+            spawnQueue.Add(enemy2HitPrefab);
+
+        // Shuffle spawnQueue
+        for (int i = 0; i < spawnQueue.Count; i++)
+        {
+            int randIndex = Random.Range(i, spawnQueue.Count);
+            GameObject temp = spawnQueue[i];
+            spawnQueue[i] = spawnQueue[randIndex];
+            spawnQueue[randIndex] = temp;
+        }
+
+        foreach (GameObject prefab in spawnQueue)
         {
             Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
-            Instantiate(enemyPrefab, spawnPoint.position, Quaternion.identity);
+            Instantiate(prefab, spawnPoint.position, Quaternion.identity);
         }
     }
 }

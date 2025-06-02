@@ -14,7 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardName: Shield
   description: ' Become invincible for 2 seconds.'
-  icon: {fileID: -2381029641354267749, guid: 70a254eb20c4e53499fd31bbd43ebea6, type: 3}
+  cardSprite: {fileID: 3635874443297119484, guid: ccc7249dccebf5940ace2bf539296237, type: 3}
   cardType: 1
-  rarity: 1
-  cardEffectPrefab: {fileID: 8258036713140304075, guid: e8f66dd30298c4b4582d990512d175e9, type: 3}
+  rarity: 0

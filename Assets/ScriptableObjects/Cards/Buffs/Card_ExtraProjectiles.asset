@@ -14,7 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardName: +2 Projectiles
   description: Spray the battlefield with bullets.
-  icon: {fileID: 0}
+  cardSprite: {fileID: -4884249117276559418, guid: 65e82092d077d954a8c7dfae0309ec37, type: 3}
   cardType: 0
-  rarity: 3
-  cardEffectPrefab: {fileID: 0}
+  rarity: 0

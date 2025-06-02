@@ -14,7 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardName: Black Hole
   description: Create a vortex that sucks in enemies.
-  icon: {fileID: -2381029641354267749, guid: 70a254eb20c4e53499fd31bbd43ebea6, type: 3}
+  cardSprite: {fileID: 4920258742124906367, guid: 3c8af4d759ab38f4aa868a19e2ae22de, type: 3}
   cardType: 1
-  rarity: 4
-  cardEffectPrefab: {fileID: 8258036713140304075, guid: e8f66dd30298c4b4582d990512d175e9, type: 3}
+  rarity: 0

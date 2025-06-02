@@ -14,7 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardName: Living Magnet
   description: 'Pull nearby enemies in and stun them. '
-  icon: {fileID: -2381029641354267749, guid: 70a254eb20c4e53499fd31bbd43ebea6, type: 3}
+  cardSprite: {fileID: -8222185313631721063, guid: 0b9f48e782e0e664496d63a99c67cadf, type: 3}
   cardType: 1
-  rarity: 2
-  cardEffectPrefab: {fileID: 8258036713140304075, guid: e8f66dd30298c4b4582d990512d175e9, type: 3}
+  rarity: 0

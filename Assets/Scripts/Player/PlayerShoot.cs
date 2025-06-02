@@ -12,6 +12,11 @@ public class PlayerShoot : MonoBehaviour
     private float shootCooldown;
     private bool shootingEnabled = false;
 
+    void Start()
+    {
+        EnableShooting(); // Skyder med det samme fra f�rste wave
+    }
+
     void Update()
     {
         if (!shootingEnabled) return;
@@ -54,7 +59,7 @@ public class PlayerShoot : MonoBehaviour
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg + angleOffset;
             Quaternion rotation = Quaternion.Euler(0, 0, angle);
 
-            Vector3 spawnPosition = shootPoint.position + (Vector3)(direction * 0.5f); // sikre det spawn'er udenfor Player
+            Vector3 spawnPosition = shootPoint.position + (Vector3)(direction * 0.5f);
 
             GameObject proj = Instantiate(projectilePrefab, spawnPosition, rotation);
             Rigidbody2D rb = proj.GetComponent<Rigidbody2D>();

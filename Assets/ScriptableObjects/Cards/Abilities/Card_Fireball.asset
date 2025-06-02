@@ -14,7 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardName: Fireball
   description: Unleash a fiery explosion forward.
-  icon: {fileID: -2381029641354267749, guid: 70a254eb20c4e53499fd31bbd43ebea6, type: 3}
+  cardSprite: {fileID: -2375350466918777354, guid: fc7feab300c26f746bf08783fa85e1ce, type: 3}
   cardType: 1
   rarity: 0
-  cardEffectPrefab: {fileID: 8258036713140304075, guid: e8f66dd30298c4b4582d990512d175e9, type: 3}

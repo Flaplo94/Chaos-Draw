@@ -14,7 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardName: Chain Lightning
   description: Zap enemies with bouncing lightning.
-  icon: {fileID: -2381029641354267749, guid: 70a254eb20c4e53499fd31bbd43ebea6, type: 3}
+  cardSprite: {fileID: 8369304094877553587, guid: 18215827437eb0342850d939cd1bf94a, type: 3}
   cardType: 1
-  rarity: 3
-  cardEffectPrefab: {fileID: 8258036713140304075, guid: e8f66dd30298c4b4582d990512d175e9, type: 3}
+  rarity: 0
