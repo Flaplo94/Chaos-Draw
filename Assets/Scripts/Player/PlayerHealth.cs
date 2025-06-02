@@ -1,56 +1,49 @@
 using UnityEngine;
-using UnityEngine.Events;
+
 
 public class PlayerHealth : MonoBehaviour
 {
-    public int maxHealth = 3;
+    public int maxHealth = 5;
     private int currentHealth;
 
-    public GameOverUI gameOverUI;
+    public float damageCooldown = 1f;
+    private float lastDamageTime = -Mathf.Infinity;
 
-
-    public float invincibilityDuration = 1f;
-    private bool isInvincible = false;
-
-    public UnityEvent onDeath;
-    public UnityEvent<int, int> onHealthChanged;
-
-    private void Start()
+    void Start()
     {
         currentHealth = maxHealth;
-        onHealthChanged.Invoke(currentHealth, maxHealth);
+        UpdateUI();
     }
 
     public void TakeDamage(int amount)
     {
-        if (isInvincible) return;
+        if (Time.time - lastDamageTime < damageCooldown)
+            return; // Still in cooldown
 
+        lastDamageTime = Time.time;
         currentHealth -= amount;
-        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
-        onHealthChanged.Invoke(currentHealth, maxHealth);
+        UpdateUI();
 
         if (currentHealth <= 0)
         {
             Die();
         }
-        else
+        
+    }
+
+    void Die()
+    {
+        Debug.Log("Player died!");
+        GameOverManager gameOver = FindFirstObjectByType<GameOverManager>();
+        if (gameOver != null)
         {
-            StartCoroutine(InvincibilityCoroutine());
+            gameOver.TriggerGameOver();
         }
+
+        Destroy(gameObject);
     }
-
-    private System.Collections.IEnumerator InvincibilityCoroutine()
+    void UpdateUI()
     {
-        isInvincible = true;
-        yield return new WaitForSeconds(invincibilityDuration);
-        isInvincible = false;
-    }
-
-    private void Die()
-    {
-        Debug.Log("Player has died.");
-        onDeath.Invoke();
-        gameOverUI.ShowGameOver();
-
+        UIHealthBar.Instance.SetValue(currentHealth / (float)maxHealth);
     }
 }

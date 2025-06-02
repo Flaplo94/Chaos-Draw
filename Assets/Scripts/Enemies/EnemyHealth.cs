@@ -3,11 +3,12 @@ using System;
 
 public class EnemyHealth : MonoBehaviour
 {
-    public int health = 1;
+    public int health = 3;
+    public Action OnDeath;
 
-    public void TakeDamage(int dmg)
+    public void TakeDamage(int amount)
     {
-        health -= dmg;
+        health -= amount;
 
         if (health <= 0)
         {
@@ -17,7 +18,8 @@ public class EnemyHealth : MonoBehaviour
 
     private void Die()
     {
-        WaveManager.Instance.EnemyDied();
+        OnDeath?.Invoke();
+
         Destroy(gameObject);
     }
 }
