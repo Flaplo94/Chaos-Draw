@@ -9,7 +9,9 @@ public class EnemySpawner : MonoBehaviour
     public GameObject enemy1HitPrefab;
     public GameObject enemy2HitPrefab;
 
-    private void Awake()
+    private float timer;
+
+    void Update()
     {
         if (Instance == null)
             Instance = this;
@@ -44,5 +46,12 @@ public class EnemySpawner : MonoBehaviour
             Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
             Instantiate(prefab, spawnPoint.position, Quaternion.identity);
         }
+    }
+
+    void SpawnEnemy()
+    {
+        Debug.Log("SPAWN");
+        Vector2 spawnPosition = (Vector2)transform.position + Random.insideUnitCircle.normalized * spawnRadius;
+        Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
     }
 }
