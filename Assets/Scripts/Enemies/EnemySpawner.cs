@@ -2,28 +2,26 @@ using UnityEngine;
 
 public class EnemySpawner : MonoBehaviour
 {
-    public static EnemySpawner Instance;
-
-    public Transform[] spawnPoints;
     public GameObject enemyPrefab;
+    public float spawnInterval = 2f;
+    public float spawnRadius = 5f;
 
-    private void Awake()
+    private float timer;
+
+    void Update()
     {
-        if (Instance == null)
-            Instance = this;
-        else
-            Destroy(gameObject);
+        timer += Time.deltaTime;
+        if (timer >= spawnInterval)
+        {
+            timer = 0f;
+            SpawnEnemy();
+        }
     }
 
-    public void SpawnWave(int waveNumber)
+    void SpawnEnemy()
     {
-        int enemyCount = 3 + waveNumber;
-        WaveManager.Instance.RegisterEnemies(enemyCount);
-
-        for (int i = 0; i < enemyCount; i++)
-        {
-            Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
-            Instantiate(enemyPrefab, spawnPoint.position, Quaternion.identity);
-        }
+        Debug.Log("SPAWN");
+        Vector2 spawnPosition = (Vector2)transform.position + Random.insideUnitCircle.normalized * spawnRadius;
+        Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
     }
 }

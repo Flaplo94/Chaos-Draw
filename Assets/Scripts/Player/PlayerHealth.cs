@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.Events;
+
 
 public class PlayerHealth : MonoBehaviour
 {
@@ -28,10 +28,7 @@ public class PlayerHealth : MonoBehaviour
         {
             Die();
         }
-        else
-        {
-            StartCoroutine(InvincibilityCoroutine());
-        }
+        
     }
 
     void Die()
@@ -39,9 +36,9 @@ public class PlayerHealth : MonoBehaviour
         Debug.Log("Player died!");
         GameOverManager gameOver = FindFirstObjectByType<GameOverManager>();
         if (gameOver != null)
-    {
+        {
             gameOver.TriggerGameOver();
-    }
+        }
 
         Destroy(gameObject);
     }

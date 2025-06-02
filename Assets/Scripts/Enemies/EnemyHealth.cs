@@ -20,11 +20,6 @@ public class EnemyHealth : MonoBehaviour
     {
         OnDeath?.Invoke();
 
-        if (WaveManager.Instance != null)
-        {
-            WaveManager.Instance.EnemyDied();
-        }
-
         Destroy(gameObject);
     }
 }
