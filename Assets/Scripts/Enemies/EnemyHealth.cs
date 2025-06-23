@@ -3,17 +3,32 @@ using System;
 
 public class EnemyHealth : MonoBehaviour
 {
-    public int health = 3;
+    [SerializeField] private int maxHealth = 3;
+    private int currentHealth;
+
     public Action OnDeath;
+
+    void Awake()
+    {
+        currentHealth = maxHealth;
+    }
 
     public void TakeDamage(int amount)
     {
-        health -= amount;
-        if (health <= 0)
+        currentHealth -= amount;
+        if (currentHealth <= 0)
         {
             Die();
         }
     }
+
+    public void Heal(int amount)
+    {
+        currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
+    }
+
+    public int GetHealth() => currentHealth;
+    public int GetMaxHealth() => maxHealth;
 
     void Die()
     {

@@ -61,6 +61,7 @@ public class WaveManager : MonoBehaviour
             BossHealth bossHealth = currentBoss.GetComponent<BossHealth>();
             bossHealth.AssignHealthBar(bossSlider);
 
+            Camera.main.GetComponent<CameraFollow>().FocusTemporarily(bossSpawnPoint.position, 2.5f);
             yield break; // skip regular enemies this wave
         }
 

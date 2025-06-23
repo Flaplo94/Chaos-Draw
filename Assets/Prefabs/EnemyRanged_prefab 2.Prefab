@@ -15,8 +15,9 @@ GameObject:
   - component: {fileID: 1849891846209710151}
   - component: {fileID: 76683931486816045}
   - component: {fileID: 3847598445779354868}
+  - component: {fileID: -1219894028685336276}
   m_Layer: 6
-  m_Name: Enemy1Hit_prefab
+  m_Name: EnemyRanged_prefab 2
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -82,7 +83,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
-  m_Color: {r: 0, g: 1, b: 0.91381526, a: 1}
+  m_Color: {r: 1, g: 0, b: 0.9761739, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -196,3 +197,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damageAmount: 1
+--- !u!114 &-1219894028685336276
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7502241114002446682}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef1dde78f6c7e75438fa010ab1563173, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shootRange: 6
+  fireRate: 0.5
+  projectilePrefab: {fileID: 4804991577932546782, guid: a80c0583ff03da14cb03aedef180dbe0, type: 3}
+  projectileSpeed: 4

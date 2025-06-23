@@ -14,11 +14,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 76683931486816045, guid: af535699c9caddd418ddb82d17593458, type: 3}
       propertyPath: maxHealth
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 1849891846209710151, guid: af535699c9caddd418ddb82d17593458, type: 3}
       propertyPath: speed
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1849891846209710151, guid: af535699c9caddd418ddb82d17593458, type: 3}
+      propertyPath: separationRadius
+      value: 0.7
       objectReference: {fileID: 0}
     - target: {fileID: 2777700163195333270, guid: af535699c9caddd418ddb82d17593458, type: 3}
       propertyPath: m_Color.b

@@ -305,6 +305,8 @@ MonoBehaviour:
   enemyPrefabs:
   - {fileID: 7502241114002446682, guid: af535699c9caddd418ddb82d17593458, type: 3}
   - {fileID: 5679082729230498780, guid: c25de75b8a76d504aa0ed013b1634e16, type: 3}
+  - {fileID: 7502241114002446682, guid: 368b5472c3ca5ac4eada3c3ad6cce4fc, type: 3}
+  - {fileID: 7502241114002446682, guid: 142aa5be84e910d4d9bf9b2a7d7e2612, type: 3}
   bossPrefab: {fileID: 5679082729230498780, guid: 3e9e53c37f7e83c4aa21d73127584b19, type: 3}
   bossSpawnPoint: {fileID: 1487545839}
   bossHealthBarUI: {fileID: 1325004279}
@@ -782,8 +784,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 838276999}
-  offset: {x: 0, y: 1, z: -10}
   smoothSpeed: 5
+  cameraZ: -10
 --- !u!1 &619394800
 GameObject:
   m_ObjectHideFlags: 0
