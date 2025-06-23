@@ -299,14 +299,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1719b42c79a126948b1cd2eba60701d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerTransform: {fileID: 838276999}
+  minSpawnDistance: 3
+  spawnRadius: 10
   enemyPrefabs:
   - {fileID: 7502241114002446682, guid: af535699c9caddd418ddb82d17593458, type: 3}
   - {fileID: 5679082729230498780, guid: c25de75b8a76d504aa0ed013b1634e16, type: 3}
-  spawnPoints:
-  - {fileID: 352323540}
-  - {fileID: 2080686242}
-  - {fileID: 1987434296}
-  - {fileID: 1406598073}
   bossPrefab: {fileID: 5679082729230498780, guid: 3e9e53c37f7e83c4aa21d73127584b19, type: 3}
   bossSpawnPoint: {fileID: 1487545839}
   bossHealthBarUI: {fileID: 1325004279}
@@ -645,6 +643,7 @@ GameObject:
   - component: {fileID: 519420031}
   - component: {fileID: 519420029}
   - component: {fileID: 519420030}
+  - component: {fileID: 519420033}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -770,6 +769,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &519420033
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 519420028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e06424792d27fe741a27551450305dda, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 838276999}
+  offset: {x: 0, y: 1, z: -10}
+  smoothSpeed: 5
 --- !u!1 &619394800
 GameObject:
   m_ObjectHideFlags: 0

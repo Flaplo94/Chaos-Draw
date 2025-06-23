@@ -6,8 +6,10 @@ using UnityEngine.UI;
 
 public class WaveManager : MonoBehaviour
 {
+    [SerializeField] private Transform playerTransform;
+    [SerializeField] private float minSpawnDistance = 3f;
+    [SerializeField] private float spawnRadius = 10f;
     public GameObject[] enemyPrefabs;
-    public Transform[] spawnPoints;
     public GameObject bossPrefab;
     public Transform bossSpawnPoint;
     public GameObject bossHealthBarUI;
@@ -63,17 +65,26 @@ public class WaveManager : MonoBehaviour
         }
 
         int enemyCount = startEnemyCount + currentWave * 2;
+
         for (int i = 0; i < enemyCount; i++)
         {
-            // Pick a random spawn point from the list
-            Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
+            Vector2 spawnOffset;
+            do
+            {
+                spawnOffset = Random.insideUnitCircle * spawnRadius;
+            }
+            while (spawnOffset.magnitude < minSpawnDistance);
+
+            Vector2 spawnPos = (Vector2)playerTransform.position + spawnOffset;
+
             GameObject chosenPrefab = enemyPrefabs[Random.Range(0, enemyPrefabs.Length)];
-            GameObject enemy = Instantiate(chosenPrefab, spawnPoint.position, Quaternion.identity);
+            GameObject enemy = Instantiate(chosenPrefab, spawnPos, Quaternion.identity);
             enemiesInWave.Add(enemy);
 
-            // Remove from list when enemy dies
             enemy.GetComponent<EnemyHealth>().OnDeath += () => enemiesInWave.Remove(enemy);
         }
+
+
 
         waveInProgress = true;
     }
