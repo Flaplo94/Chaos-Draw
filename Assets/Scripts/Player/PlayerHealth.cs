@@ -2,12 +2,17 @@ using UnityEngine;
 
 public class PlayerHealth : MonoBehaviour
 {
+    private PlayerShield playerShield;
     public int maxHealth = 5;
     private int currentHealth;
 
     public float damageCooldown = 1f;
     private float lastDamageTime = -Mathf.Infinity;
 
+    void Awake()
+    {
+        playerShield = GetComponent<PlayerShield>();
+    }
     void Start()
     {
         currentHealth = maxHealth;
@@ -18,6 +23,12 @@ public class PlayerHealth : MonoBehaviour
     {
         if (Time.time - lastDamageTime < damageCooldown)
             return; // Still in cooldown
+
+        if (playerShield != null && playerShield.TryBlockDamage())
+        {
+            // Shield blocked the hit, do not apply damage or trigger cooldown
+            return;
+        }
 
         lastDamageTime = Time.time;
         currentHealth -= amount;

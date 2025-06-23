@@ -1,85 +1,129 @@
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections.Generic;
 using TMPro;
 using System.Collections;
+using UnityEngine.InputSystem;
 
 public class CardHandUI : MonoBehaviour
 {
-    public Image[] cardSlots; // Drag in your 4 slot Image objects
-    public Sprite[] abilityCardSprites; // All possible card images
+    [Header("UI References")]
+    [SerializeField] private Image[] cardSlots;
 
-    private Sprite[] currentCards = new Sprite[4];
-    private int pendingDrawIndex = -1;
+    [Header("Ability Settings")]
+    [SerializeField] private Ability[] availableAbilities;
+    [SerializeField] private float defaultCooldown = 3f;
+
+    [Header("Discard UI")]
+    [SerializeField] private TextMeshProUGUI discardCounterText;
+    [SerializeField] private Image discardSlotIcon;
+
+    private Ability[] equippedAbilities = new Ability[4];
+    private float[] cooldownTimers = new float[4];
     private int discardCount = 0;
+    [SerializeField] private Transform playerTransform;
 
-    [Header("Discard")]
-    public TextMeshProUGUI discardCounterText;
-    public Image discardSlotIcon;
-    void Start()
+    private void Start()
     {
-        DrawFullHand();
-    }
-
-    void Update()
-    {
-
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-            TryUseCard(0);
-        if (Input.GetKeyDown(KeyCode.Alpha2))
-            TryUseCard(1);
-        if (Input.GetKeyDown(KeyCode.Alpha3))
-            TryUseCard(2);
-        if (Input.GetKeyDown(KeyCode.Alpha4))
-            TryUseCard(3);
-    }
-
-    void DrawFullHand()
-    {
-        for (int i = 0; i < cardSlots.Length; i++)
+        for (int i = 0; i < equippedAbilities.Length; i++)
         {
-            DrawCard(i);
+            equippedAbilities[i] = availableAbilities[Random.Range(0, availableAbilities.Length)];
+            cardSlots[i].sprite = equippedAbilities[i].icon;
+            cardSlots[i].color = Color.white;
         }
-    }
 
-    void DrawCard(int slotIndex)
-    {
-        Sprite card = GetRandomCard();
-        currentCards[slotIndex] = card;
-        cardSlots[slotIndex].sprite = card;
-        cardSlots[slotIndex].color = Color.white; // make sure it's visible
-    }
-
-    Sprite GetRandomCard()
-    {
-        return abilityCardSprites[Random.Range(0, abilityCardSprites.Length)];
-    }
-
-    public void UseCard(int slotIndex)
-    {
-        Debug.Log("Used card in slot " + slotIndex);
-
-        currentCards[slotIndex] = null;
-        cardSlots[slotIndex].sprite = null;
-        cardSlots[slotIndex].color = new Color(1, 1, 1, 0); // transparent
-
-        // Discard logic
-        discardCount++;
         UpdateDiscardText();
     }
 
-    void TryUseCard(int slotIndex)
+    private void Update()
     {
-        if (currentCards[slotIndex] == null)
-        {
-            Debug.Log("Slot " + (slotIndex + 1) + " is empty.");
-            return;
-        }
+        HandleKeyboardInput();
 
-        UseCard(slotIndex);
+        for (int i = 0; i < cooldownTimers.Length; i++)
+        {
+            if (cooldownTimers[i] <= 0f) continue;
+
+            cooldownTimers[i] -= Time.deltaTime;
+            // Removed cooldownOverlays[i].fillAmount = fill;
+
+            if (cooldownTimers[i] <= 0f)
+                RedrawAbility(i);
+        }
     }
 
-    void UpdateDiscardText()
+    private void HandleKeyboardInput()
+    {
+        if (Keyboard.current.digit1Key.wasPressedThisFrame)
+        {
+            TryUseAbility(0);
+            Debug.Log("Key 1 pressed");
+        }
+        if (Keyboard.current.digit2Key.wasPressedThisFrame) TryUseAbility(1);
+        if (Keyboard.current.digit3Key.wasPressedThisFrame) TryUseAbility(2);
+        if (Keyboard.current.digit4Key.wasPressedThisFrame) TryUseAbility(3);
+    }
+
+    private void TryUseAbility(int index)
+    {
+        if (cooldownTimers[index] > 0f || equippedAbilities[index] == null) return;
+        UseAbility(index);
+    }
+
+    private void UseAbility(int index)
+    {
+        Ability ability = equippedAbilities[index];
+
+        if (ability.effectPrefab != null)
+        {
+            GameObject instance = Instantiate(ability.effectPrefab, playerTransform.position, Quaternion.identity);
+            Debug.Log("Instantiated: " + instance.name);
+            Fireball fireball = instance.GetComponent<Fireball>();
+            if (fireball != null)
+            {
+                // Get mouse position in world space
+                Vector3 mouseScreenPos = Mouse.current.position.ReadValue();
+                Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(mouseScreenPos);
+                mouseWorldPos.z = playerTransform.position.z; // Keep on same Z plane
+
+                // Calculate direction
+                Vector2 direction = (mouseWorldPos - playerTransform.position).normalized;
+
+                fireball.SetDirection(direction);
+                Debug.Log("Fireball component found and direction set.");
+            }
+        }
+        else
+        {
+            Debug.LogWarning("No effectPrefab assigned to this ability!");
+        }
+
+        cooldownTimers[index] = GetCooldown(index);
+        
+        cardSlots[index].color = new Color(1, 1, 1, 0);
+
+        
+
+        discardCount++;
+        UpdateDiscardText();
+        equippedAbilities[index] = null;
+        cardSlots[index].sprite = null;
+    }
+
+    private float GetCooldown(int index)
+    {
+        return equippedAbilities[index] != null ? equippedAbilities[index].cooldown : defaultCooldown;
+    }
+
+    private void RedrawAbility(int index)
+    {
+        Ability newAbility = availableAbilities[Random.Range(0, availableAbilities.Length)];
+        equippedAbilities[index] = newAbility;
+        cardSlots[index].sprite = newAbility.icon;
+        cardSlots[index].color = Color.white;
+    }
+
+    // Removed FlashSlot coroutine
+
+    private void UpdateDiscardText()
     {
         discardCounterText.text = discardCount.ToString();
     }

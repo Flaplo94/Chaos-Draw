@@ -310,7 +310,7 @@ MonoBehaviour:
   bossPrefab: {fileID: 5679082729230498780, guid: 3e9e53c37f7e83c4aa21d73127584b19, type: 3}
   bossSpawnPoint: {fileID: 1487545839}
   bossHealthBarUI: {fileID: 1325004279}
-  startEnemyCount: 3
+  startEnemyCount: 10
   timeBetweenWaves: 2
   waveText: {fileID: 1625025862}
 --- !u!1 &144952538
@@ -1129,6 +1129,7 @@ GameObject:
   - component: {fileID: 838277001}
   - component: {fileID: 838277002}
   - component: {fileID: 838277003}
+  - component: {fileID: 838277004}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -1326,7 +1327,7 @@ MonoBehaviour:
   bulletPrefab: {fileID: 4804991577932546782, guid: 671979fe7bb24ac41a2c88dc542ec91f, type: 3}
   firePoint: {fileID: 2091777804}
   bulletSpeed: 10
-  fireRate: 0.1
+  fireRate: 2
 --- !u!114 &838277003
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1341,6 +1342,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 5
   damageCooldown: 1
+--- !u!114 &838277004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 838276994}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7bfba1eed594dca4790558d4d862a32b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &852512752
 GameObject:
   m_ObjectHideFlags: 0
@@ -2416,6 +2429,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1484783531}
   - component: {fileID: 1484783530}
+  - component: {fileID: 1484783532}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -2454,6 +2468,30 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1484783532
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1484783529}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a372a90b60587b0428c64f65cfcb4906, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cardSlots:
+  - {fileID: 361328420}
+  - {fileID: 1265641728}
+  - {fileID: 733358008}
+  - {fileID: 946431694}
+  availableAbilities:
+  - {fileID: 11400000, guid: 74b663df28d37844a933bb6026934825, type: 2}
+  - {fileID: 11400000, guid: 5619a4450925fb14787fa6386938feca, type: 2}
+  defaultCooldown: 10
+  discardCounterText: {fileID: 1067721951}
+  discardSlotIcon: {fileID: 961268603}
+  playerTransform: {fileID: 838276999}
 --- !u!1 &1487545838
 GameObject:
   m_ObjectHideFlags: 0
@@ -2864,9 +2902,11 @@ MonoBehaviour:
   - {fileID: 1265641728}
   - {fileID: 733358008}
   - {fileID: 946431694}
-  abilityCardSprites: []
+  availableAbilities: []
+  defaultCooldown: 3
   discardCounterText: {fileID: 1067721951}
   discardSlotIcon: {fileID: 961268603}
+  playerTransform: {fileID: 0}
 --- !u!1 &1765111940
 GameObject:
   m_ObjectHideFlags: 0
