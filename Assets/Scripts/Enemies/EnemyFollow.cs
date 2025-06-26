@@ -6,14 +6,21 @@ public class EnemyFollow : MonoBehaviour
     [SerializeField] private float speed = 2f;
     [SerializeField] private float separationRadius = 1.5f;
     [SerializeField] private float separationStrength = 2f;
+    [SerializeField] private bool isHealer = false; // Set this true for healer enemies in the Inspector
 
     private Transform player;
-
     private static readonly List<EnemyFollow> allEnemies = new List<EnemyFollow>();
+    private RangedEnemyAttack rangedAttack;
+    private float attackRange = 0f;
 
     void Start()
     {
         player = GameObject.FindWithTag("Player").transform;
+        rangedAttack = GetComponent<RangedEnemyAttack>();
+        if (rangedAttack != null)
+            attackRange = rangedAttack.shootRange;
+        else
+            attackRange = 0.8f; // Or set a default melee range if you want
         allEnemies.Add(this);
     }
 
@@ -29,9 +36,40 @@ public class EnemyFollow : MonoBehaviour
 
     void Update()
     {
-        if (player == null) return;
+        Transform target = null;
 
-        Vector2 directionToPlayer = (player.position - transform.position).normalized;
+        if (isHealer)
+        {
+            // Find the nearest other enemy
+            float minDist = float.MaxValue;
+            foreach (var other in allEnemies)
+            {
+                if (other == this) continue;
+                float dist = Vector2.Distance(transform.position, other.transform.position);
+                if (dist < minDist)
+                {
+                    minDist = dist;
+                    target = other.transform;
+                }
+            }
+            if (target == null) return; // No other enemies to follow
+        }
+        else
+        {
+            target = player;
+        }
+
+        if (target == null) return;
+
+        // Stop if in attack range (only for non-healers)
+        if (!isHealer && attackRange > 0f)
+        {
+            float distance = Vector2.Distance(transform.position, player.position);
+            if (distance <= attackRange)
+                return; // Stop moving
+        }
+
+        Vector2 directionToTarget = (target.position - transform.position).normalized;
         Vector2 separation = Vector2.zero;
         int count = 0;
 
@@ -51,7 +89,7 @@ public class EnemyFollow : MonoBehaviour
         if (count > 0)
             separation /= count;
 
-        Vector2 finalDirection = (directionToPlayer + separation * separationStrength).normalized;
+        Vector2 finalDirection = (directionToTarget + separation * separationStrength).normalized;
         transform.position += (Vector3)(finalDirection * speed * Time.deltaTime);
     }
 }

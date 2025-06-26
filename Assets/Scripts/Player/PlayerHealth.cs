@@ -6,9 +6,6 @@ public class PlayerHealth : MonoBehaviour
     public int maxHealth = 5;
     private int currentHealth;
 
-    public float damageCooldown = 1f;
-    private float lastDamageTime = -Mathf.Infinity;
-
     void Awake()
     {
         playerShield = GetComponent<PlayerShield>();
@@ -21,8 +18,7 @@ public class PlayerHealth : MonoBehaviour
 
     public void TakeDamage(int amount)
     {
-        if (Time.time - lastDamageTime < damageCooldown)
-            return; // Still in cooldown
+        
 
         if (playerShield != null && playerShield.TryBlockDamage())
         {
@@ -30,7 +26,7 @@ public class PlayerHealth : MonoBehaviour
             return;
         }
 
-        lastDamageTime = Time.time;
+       
         currentHealth -= amount;
         UpdateUI();
 

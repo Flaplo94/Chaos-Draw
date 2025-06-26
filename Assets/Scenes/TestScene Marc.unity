@@ -305,12 +305,17 @@ MonoBehaviour:
   enemyPrefabs:
   - {fileID: 7502241114002446682, guid: af535699c9caddd418ddb82d17593458, type: 3}
   - {fileID: 5679082729230498780, guid: c25de75b8a76d504aa0ed013b1634e16, type: 3}
-  - {fileID: 7502241114002446682, guid: 368b5472c3ca5ac4eada3c3ad6cce4fc, type: 3}
   - {fileID: 7502241114002446682, guid: 142aa5be84e910d4d9bf9b2a7d7e2612, type: 3}
+  - {fileID: 7502241114002446682, guid: 368b5472c3ca5ac4eada3c3ad6cce4fc, type: 3}
+  enemySpawnWeights:
+  - 1
+  - 1
+  - 0.3
+  - 0.1
   bossPrefab: {fileID: 5679082729230498780, guid: 3e9e53c37f7e83c4aa21d73127584b19, type: 3}
   bossSpawnPoint: {fileID: 1487545839}
   bossHealthBarUI: {fileID: 1325004279}
-  startEnemyCount: 10
+  startEnemyCount: 5
   timeBetweenWaves: 2
   waveText: {fileID: 1625025862}
 --- !u!1 &144952538
@@ -1343,7 +1348,7 @@ MonoBehaviour:
   bulletPrefab: {fileID: 4804991577932546782, guid: 671979fe7bb24ac41a2c88dc542ec91f, type: 3}
   firePoint: {fileID: 2091777804}
   bulletSpeed: 10
-  fireRate: 2
+  fireRate: 0.1
 --- !u!114 &838277003
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1356,8 +1361,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07e18abbbf3ccc043a4315d551249f69, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 5
-  damageCooldown: 1
+  maxHealth: 5000
 --- !u!114 &838277004
 MonoBehaviour:
   m_ObjectHideFlags: 0

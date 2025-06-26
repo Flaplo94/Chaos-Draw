@@ -169,9 +169,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e69a65c1c69b43a49ab42864c6954d94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 3
+  speed: 2
   separationRadius: 0.7
   separationStrength: 2
+  isHealer: 1
 --- !u!114 &76683931486816045
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -198,6 +199,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damageAmount: 1
+  attackCooldown: 1
 --- !u!114 &-3969978128227254662
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -211,8 +213,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   healRange: 4
-  healAmount: 5
-  healCooldown: 3
+  healAmount: 1
+  healCooldown: 5
   ringRenderer: {fileID: -6007808778835646131}
   segments: 50
 --- !u!120 &-6007808778835646131
@@ -239,7 +241,7 @@ LineRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 0}
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

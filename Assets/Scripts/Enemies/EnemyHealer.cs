@@ -3,8 +3,8 @@ using UnityEngine;
 public class EnemyHealer : MonoBehaviour
 {
     [SerializeField] private float healRange = 4f;
-    [SerializeField] private float healAmount = 5f;
-    [SerializeField] private float healCooldown = 3f;
+    [SerializeField] private float healAmount = 1f;
+    [SerializeField] private float healCooldown = 5f;
     [Header("Healing Zone Visual")]
     [SerializeField] private LineRenderer ringRenderer;
     [SerializeField] private int segments = 50;
@@ -20,6 +20,9 @@ public class EnemyHealer : MonoBehaviour
     private void DrawHealingRing()
     {
         if (ringRenderer == null) return;
+
+        ringRenderer.startColor = Color.green;
+        ringRenderer.endColor = Color.green;
 
         ringRenderer.positionCount = segments + 1;
         ringRenderer.loop = true;

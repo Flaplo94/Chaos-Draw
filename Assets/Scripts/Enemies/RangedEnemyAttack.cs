@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class RangedEnemyAttack : MonoBehaviour
 {
-    [SerializeField] private float shootRange = 6f;
+    [SerializeField] public float shootRange = 6f;
     [SerializeField] private float fireRate = 1f;
     [SerializeField] private GameObject projectilePrefab;
     [SerializeField] private float projectileSpeed = 8f;
