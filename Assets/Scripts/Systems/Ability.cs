@@ -7,4 +7,5 @@ public class Ability : ScriptableObject
     public Sprite icon;
     public float cooldown = 3f;
     public GameObject effectPrefab; // Optional — for ability VFX
+    public bool spawnAtMousePosition;
 }

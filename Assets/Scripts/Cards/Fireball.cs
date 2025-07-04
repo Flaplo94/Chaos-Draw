@@ -6,6 +6,10 @@ public class Fireball : MonoBehaviour
     public int damage = 10;
     public float aoeRadius = 2f;
     private Vector2 direction;
+    [SerializeField] private GameObject aoeVisual;
+    [SerializeField] private Color aoeColor = Color.red; // Set in Inspector for each ability
+
+
 
     public void SetDirection(Vector2 dir)
     {
@@ -32,6 +36,17 @@ public class Fireball : MonoBehaviour
                 if (aoeEnemy != null && aoeEnemy != enemy)
                     aoeEnemy.TakeDamage(damage);
             }
+
+            if (aoeVisual != null)
+            {
+                GameObject vfx = Instantiate(aoeVisual, transform.position, Quaternion.identity);
+                vfx.transform.localScale = Vector3.one * aoeRadius * 2f; // Diameter
+                var sr = vfx.GetComponent<SpriteRenderer>();
+                if (sr != null)
+                    sr.color = aoeColor;
+                Destroy(vfx, 0.1f); // Auto-remove visual
+            }
+
             Destroy(gameObject);
             return;
         }
@@ -49,6 +64,17 @@ public class Fireball : MonoBehaviour
                 if (aoeBoss != null && aoeBoss != boss)
                     aoeBoss.TakeDamage(damage);
             }
+
+            if (aoeVisual != null)
+            {
+                GameObject vfx = Instantiate(aoeVisual, transform.position, Quaternion.identity);
+                vfx.transform.localScale = Vector3.one * aoeRadius * 2f; // Diameter
+                var sr = vfx.GetComponent<SpriteRenderer>();
+                if (sr != null)
+                    sr.color = aoeColor;
+                Destroy(vfx, 0.1f); // Auto-remove visual
+            }
+
             Destroy(gameObject);
             return;
         }

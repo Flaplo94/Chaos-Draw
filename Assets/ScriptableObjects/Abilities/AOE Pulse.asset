@@ -10,10 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 810580b0db5b0e84587b09ccac852a30, type: 3}
-  m_Name: Shield
+  m_Name: AOE Pulse
   m_EditorClassIdentifier: 
-  abilityName: Shield
-  icon: {fileID: -712631045867808456, guid: b670ab75dde984907b8570040daa08c5, type: 3}
-  cooldown: 20
-  effectPrefab: {fileID: 4804991577932546782, guid: 3e664dbe6b27497478539814cece0f6d, type: 3}
-  spawnAtMousePosition: 0
+  abilityName: AOE Pulse
+  icon: {fileID: -2381029641354267749, guid: 70a254eb20c4e53499fd31bbd43ebea6, type: 3}
+  cooldown: 3
+  effectPrefab: {fileID: 4804991577932546782, guid: c565b68d628f8594cbcfa5a6ef25b890, type: 3}

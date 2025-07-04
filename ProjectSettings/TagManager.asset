@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Enemy
   - Boss
+  - MouseAbility
   layers:
   - Default
   - TransparentFX

@@ -74,7 +74,15 @@ public class CardHandUI : MonoBehaviour
 
         if (ability.effectPrefab != null)
         {
-            GameObject instance = Instantiate(ability.effectPrefab, playerTransform.position, Quaternion.identity);
+            Vector3 spawnPos = transform.position;
+
+            if (ability.spawnAtMousePosition && Mouse.current != null)
+            {
+                Vector2 mouseScreenPos = Mouse.current.position.ReadValue();
+                Vector3 worldPos = Camera.main.ScreenToWorldPoint(mouseScreenPos);
+                spawnPos = new Vector3(worldPos.x, worldPos.y, 0f);
+            }
+            GameObject instance = Instantiate(ability.effectPrefab, spawnPos, Quaternion.identity);
             Debug.Log("Instantiated: " + instance.name);
             Fireball fireball = instance.GetComponent<Fireball>();
             if (fireball != null)

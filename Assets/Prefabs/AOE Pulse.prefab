@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: 2751747927999673603}
   - component: {fileID: 7394062187116095109}
   - component: {fileID: 1821094783447712840}
-  - component: {fileID: 2892527371099892744}
-  m_Layer: 0
-  m_Name: Fireball
+  - component: {fileID: -8708009796252805686}
+  m_Layer: 6
+  m_Name: AOE Pulse
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -58,7 +58,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: 1a136fee310f71641849c77bc0fdf0eb, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -80,7 +80,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
-  m_Color: {r: 1, g: 0.8822399, b: 0.013207495, a: 1}
+  m_Color: {r: 1, g: 0.3681196, b: 0, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -153,7 +153,7 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 0.1
---- !u!114 &2892527371099892744
+--- !u!114 &-8708009796252805686
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -162,11 +162,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 4804991577932546782}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aebd47b3fb23fd444a00db4f7a3efaba, type: 3}
+  m_Script: {fileID: 11500000, guid: 688119b977748284c962b70c3b54d1c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 10
-  damage: 20
-  aoeRadius: 1
-  aoeVisual: {fileID: 5099764968069139248, guid: 959015f40c52cd34c800a81344dd92f5, type: 3}
-  aoeColor: {r: 1, g: 0.88235295, b: 0.011764706, a: 0.5921569}
+  radius: 3
+  damage: 3
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  radiusVisual: {fileID: 5099764968069139248, guid: 959015f40c52cd34c800a81344dd92f5, type: 3}
+  aoeColor: {r: 1, g: 0.36862746, b: 0, a: 0.6117647}

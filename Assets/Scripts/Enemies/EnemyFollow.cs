@@ -12,9 +12,11 @@ public class EnemyFollow : MonoBehaviour
     private static readonly List<EnemyFollow> allEnemies = new List<EnemyFollow>();
     private RangedEnemyAttack rangedAttack;
     private float attackRange = 0f;
+    private Rigidbody2D rb;
 
     void Start()
     {
+        rb = GetComponent<Rigidbody2D>();
         player = GameObject.FindWithTag("Player").transform;
         rangedAttack = GetComponent<RangedEnemyAttack>();
         if (rangedAttack != null)
@@ -90,6 +92,7 @@ public class EnemyFollow : MonoBehaviour
             separation /= count;
 
         Vector2 finalDirection = (directionToTarget + separation * separationStrength).normalized;
-        transform.position += (Vector3)(finalDirection * speed * Time.deltaTime);
+        rb.MovePosition(rb.position + finalDirection * speed * Time.deltaTime);
+
     }
 }

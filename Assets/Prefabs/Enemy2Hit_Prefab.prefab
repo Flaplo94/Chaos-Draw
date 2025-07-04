@@ -16,6 +16,14 @@ PrefabInstance:
       propertyPath: maxHealth
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 251748052483166877, guid: af535699c9caddd418ddb82d17593458, type: 3}
+      propertyPath: m_BodyType
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 251748052483166877, guid: af535699c9caddd418ddb82d17593458, type: 3}
+      propertyPath: m_CollisionDetection
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1849891846209710151, guid: af535699c9caddd418ddb82d17593458, type: 3}
       propertyPath: speed
       value: 1
@@ -74,6 +82,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4774877285035006597, guid: af535699c9caddd418ddb82d17593458, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6706808530034103868, guid: af535699c9caddd418ddb82d17593458, type: 3}
+      propertyPath: m_IsTrigger
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7502241114002446682, guid: af535699c9caddd418ddb82d17593458, type: 3}
