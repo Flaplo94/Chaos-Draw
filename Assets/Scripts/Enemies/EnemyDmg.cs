@@ -13,6 +13,8 @@ public class EnemyDamage : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
+            Debug.Log("Player entered range: " + other.name); // Add this line
+
             PlayerHealth player = other.GetComponent<PlayerHealth>();
             if (player != null && !playersInRange.Contains(player))
                 playersInRange.Add(player);

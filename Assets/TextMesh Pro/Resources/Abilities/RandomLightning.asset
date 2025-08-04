@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 810580b0db5b0e84587b09ccac852a30, type: 3}
-  m_Name: AOE Pulse
+  m_Name: RandomLightning
   m_EditorClassIdentifier: 
-  abilityName: AOE Pulse
-  icon: {fileID: -2381029641354267749, guid: 70a254eb20c4e53499fd31bbd43ebea6, type: 3}
-  cooldown: 3
-  effectPrefab: {fileID: 4804991577932546782, guid: c565b68d628f8594cbcfa5a6ef25b890, type: 3}
+  abilityName: Random Lightning
+  icon: {fileID: -855298285791758126, guid: bddb5ed8dbac1284295117214b569c24, type: 3}
+  effectPrefab: {fileID: 4804991577932546782, guid: 89338cd98ad037d4cb5b37ec702a2efe, type: 3}
+  spawnAtMousePosition: 0

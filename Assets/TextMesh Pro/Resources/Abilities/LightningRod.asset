@@ -10,10 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 810580b0db5b0e84587b09ccac852a30, type: 3}
-  m_Name: PlaceWall
+  m_Name: LightningRod
   m_EditorClassIdentifier: 
-  abilityName: PlaceWall
-  icon: {fileID: 0}
-  cooldown: 3
-  effectPrefab: {fileID: 4804991577932546782, guid: a5939ed10f5cedb4eb4f7b4d5fb39f3b, type: 3}
+  abilityName: Lightning Rod
+  icon: {fileID: -1783808350427418317, guid: d815f599388e98c458b574eaef833fbe, type: 3}
+  effectPrefab: {fileID: 4804991577932546782, guid: 604a5d0f1ce92474d909e6c86dbe5acd, type: 3}
   spawnAtMousePosition: 1

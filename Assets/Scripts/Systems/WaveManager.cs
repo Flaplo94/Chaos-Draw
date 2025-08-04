@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 public class WaveManager : MonoBehaviour
 {
+    [SerializeField] private CardHandUI cardHandUI;
     [SerializeField] private Transform playerTransform;
     [SerializeField] private float minSpawnDistance = 3f;
     [SerializeField] private float spawnRadius = 10f;
@@ -57,6 +58,7 @@ public class WaveManager : MonoBehaviour
             if (currentBoss == null && enemiesInWave.Count == 0)
             {
                 bossSpawned = false;
+                cardHandUI.OnWaveCompleted();
                 StartCoroutine(NextWave()); // resume normal waves
             }
             return; // don't spawn waves while boss or minions are alive
@@ -66,6 +68,11 @@ public class WaveManager : MonoBehaviour
         if (waveInProgress && enemiesInWave.Count == 0)
         {
             waveInProgress = false;
+            CardHandUI cardUI = FindFirstObjectByType<CardHandUI>();
+            if (cardUI != null)
+            {
+                cardUI.OnWaveCompleted();
+            }
             StartCoroutine(NextWave());
         }
     }

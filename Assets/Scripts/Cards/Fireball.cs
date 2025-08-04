@@ -9,11 +9,12 @@ public class Fireball : MonoBehaviour
     [SerializeField] private GameObject aoeVisual;
     [SerializeField] private Color aoeColor = Color.red; // Set in Inspector for each ability
 
-
+    
 
     public void SetDirection(Vector2 dir)
     {
         direction = dir.normalized;
+        
     }
 
     void Update()

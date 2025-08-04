@@ -10,9 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 810580b0db5b0e84587b09ccac852a30, type: 3}
-  m_Name: Chain Lightning
+  m_Name: Fireball
   m_EditorClassIdentifier: 
-  abilityName: Chain Lightining
-  icon: {fileID: 0}
-  cooldown: 3
-  effectPrefab: {fileID: 4804991577932546782, guid: 8b4dd582ffba7ce4ea20ff06f1199905, type: 3}
+  abilityName: Fireball
+  icon: {fileID: -5750353039905602045, guid: 6cb2033f257ea304d923eb39eca3b8d0, type: 3}
+  cooldown: 10
+  effectPrefab: {fileID: 4804991577932546782, guid: e683a791c96afe847a2b82a7f6b6e1e9, type: 3}
+  spawnAtMousePosition: 0

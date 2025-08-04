@@ -10,10 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 810580b0db5b0e84587b09ccac852a30, type: 3}
-  m_Name: LightningRod
+  m_Name: FireTrail
   m_EditorClassIdentifier: 
-  abilityName: LightningRod
-  icon: {fileID: 0}
-  cooldown: 3
-  effectPrefab: {fileID: 4804991577932546782, guid: 604a5d0f1ce92474d909e6c86dbe5acd, type: 3}
-  spawnAtMousePosition: 1
+  abilityName: Fire Trail
+  icon: {fileID: -2947526863502713391, guid: 369b1e1d3514a7b4d85ac2233615de27, type: 3}
+  effectPrefab: {fileID: 4804991577932546782, guid: 3c18a37447b62754498692a052d80e02, type: 3}
+  spawnAtMousePosition: 0

@@ -11,10 +11,9 @@ GameObject:
   - component: {fileID: 323042042030148053}
   - component: {fileID: 2751747927999673603}
   - component: {fileID: 7394062187116095109}
-  - component: {fileID: 1821094783447712840}
-  - component: {fileID: -5216010925066985148}
+  - component: {fileID: 3053976771763455956}
   m_Layer: 0
-  m_Name: Bullet 1
+  m_Name: RandomLightning
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -80,7 +79,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
-  m_Color: {r: 0.5826187, g: 0, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -117,43 +116,7 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!58 &1821094783447712840
-CircleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4804991577932546782}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 1
-  m_UsedByEffector: 0
-  m_CompositeOperation: 0
-  m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
-  m_Radius: 0.1
---- !u!114 &-5216010925066985148
+--- !u!114 &3053976771763455956
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -162,8 +125,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 4804991577932546782}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 75669923750a1fa41a1bfb8a3483b996, type: 3}
+  m_Script: {fileID: 11500000, guid: 922f35c844bcc3641aa0c4b04edfeeda, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  radius: 10
+  minStrikes: 1
+  maxStrikes: 2
   damage: 2
-  lifetime: 5
+  lightningEffect: {fileID: 6422944563533170519, guid: ecab06e113dceeb49853d98e15bcc636, type: 3}

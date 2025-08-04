@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 810580b0db5b0e84587b09ccac852a30, type: 3}
-  m_Name: Fireball
+  m_Name: FireOnGround
   m_EditorClassIdentifier: 
-  abilityName: Fireball
-  icon: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
-  cooldown: 10
-  effectPrefab: {fileID: 4804991577932546782, guid: e683a791c96afe847a2b82a7f6b6e1e9, type: 3}
+  abilityName: Fire On Ground
+  icon: {fileID: 8288426215254106694, guid: da112e855d25f0245b13499b5eed90e3, type: 3}
+  effectPrefab: {fileID: 4804991577932546782, guid: ad655e86463b36d4a9430b78a142e9aa, type: 3}
+  spawnAtMousePosition: 1

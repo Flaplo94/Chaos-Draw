@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 810580b0db5b0e84587b09ccac852a30, type: 3}
-  m_Name: FireOnGround
+  m_Name: Shield
   m_EditorClassIdentifier: 
-  abilityName: FireOnGround
-  icon: {fileID: 0}
-  cooldown: 3
-  effectPrefab: {fileID: 4804991577932546782, guid: ad655e86463b36d4a9430b78a142e9aa, type: 3}
-  spawnAtMousePosition: 1
+  abilityName: Shield
+  icon: {fileID: -7184297413194633895, guid: 8c967477790141e47a99a1c1f07c98eb, type: 3}
+  cooldown: 20
+  effectPrefab: {fileID: 4804991577932546782, guid: 3e664dbe6b27497478539814cece0f6d, type: 3}
+  spawnAtMousePosition: 0
