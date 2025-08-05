@@ -11,14 +11,14 @@ TagManager:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - Ground
+  - 
   - Water
   - UI
   - Terrain
+  - 
   - Player
   - Enemies
   - Projectiles
-  - 
   - 
   - 
   - 
@@ -47,19 +47,19 @@ TagManager:
   - name: Background
     uniqueID: 1853276139
     locked: 0
-  - name: PropsBack
+  - name: Props
     uniqueID: 1495628409
     locked: 0
-  - name: EnemiesBack
+  - name: Enemies
     uniqueID: 3337200989
     locked: 0
   - name: Player
     uniqueID: 2529771321
     locked: 0
-  - name: EnemiesFront
+  - name: 
     uniqueID: 1120424415
     locked: 0
-  - name: PropsFront
+  - name: 
     uniqueID: 1351077463
     locked: 0
   - name: FX
