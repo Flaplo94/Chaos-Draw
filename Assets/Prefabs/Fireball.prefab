@@ -167,4 +167,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 10
   damage: 20
+  aoeRadius: 1
+  aoeVisual: {fileID: 5099764968069139248, guid: 959015f40c52cd34c800a81344dd92f5, type: 3}
+  aoeColor: {r: 1, g: 0.88235295, b: 0.011764706, a: 0.5921569}
   aoeRadius: 2

@@ -34,15 +34,14 @@ public class PlayerHealth : MonoBehaviour
 
     public void TakeDamage(int amount)
     {
-        if (Time.time - lastDamageTime < damageCooldown)
-            return; // Still in cooldown
+        
 
         if (playerShield != null && playerShield.TryBlockDamage())
         {
             return;
         }
 
-        lastDamageTime = Time.time;
+       
         currentHealth -= amount;
         UpdateUI();
 
