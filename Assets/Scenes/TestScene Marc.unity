@@ -554,7 +554,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 457967227}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 2.0628, y: 2.1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -565,8 +565,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 8.8104, y: -173}
-  m_SizeDelta: {x: 160, y: 20}
+  m_AnchoredPosition: {x: 62.233093, y: -292.327}
+  m_SizeDelta: {x: 50, y: 8}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &457967229
 MonoBehaviour:
@@ -577,9 +577,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 457967227}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7851085a6bbe36840bb61cba40012e08, type: 3}
+  m_Script: {fileID: 11500000, guid: 30166675ceac7f249ab84b0ed5f1547c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  slider: {fileID: 457967230}
+  target: {fileID: 838276999}
+  offset: {x: 0, y: 1, z: 0}
 --- !u!114 &457967230
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -956,6 +959,7 @@ GameObject:
   - component: {fileID: 793357398}
   - component: {fileID: 793357397}
   - component: {fileID: 793357396}
+  - component: {fileID: 793357400}
   m_Layer: 5
   m_Name: UI
   m_TagString: Untagged
@@ -992,10 +996,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
@@ -1038,8 +1042,8 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1625025861}
   - {fileID: 457967228}
+  - {fileID: 1625025861}
   - {fileID: 1765111941}
   - {fileID: 1325004280}
   - {fileID: 1713710170}
@@ -1051,6 +1055,21 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &793357400
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 793357395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30166675ceac7f249ab84b0ed5f1547c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  slider: {fileID: 457967230}
+  target: {fileID: 838276999}
+  offset: {x: 0, y: 1.5, z: 0}
 --- !u!1 &819075726
 GameObject:
   m_ObjectHideFlags: 0
@@ -1751,7 +1770,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -400, y: -164}
+  m_AnchoredPosition: {x: -794, y: -303}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &961268603
@@ -1826,7 +1845,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 72}
+  m_AnchoredPosition: {x: -676, y: -319}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1067721951
@@ -2494,18 +2513,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a372a90b60587b0428c64f65cfcb4906, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cardSlots:
-  - {fileID: 361328420}
-  - {fileID: 1265641728}
-  - {fileID: 733358008}
-  - {fileID: 946431694}
-  availableAbilities:
-  - {fileID: 11400000, guid: 74b663df28d37844a933bb6026934825, type: 2}
-  - {fileID: 11400000, guid: 5619a4450925fb14787fa6386938feca, type: 2}
-  defaultCooldown: 10
-  discardCounterText: {fileID: 1067721951}
-  discardSlotIcon: {fileID: 961268603}
-  playerTransform: {fileID: 838276999}
 --- !u!1 &1487545838
 GameObject:
   m_ObjectHideFlags: 0
@@ -2571,7 +2578,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 487, y: 168}
+  m_AnchoredPosition: {x: 798, y: 317}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1625025862
@@ -2896,7 +2903,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 328, y: -152}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1713710171
@@ -2911,16 +2918,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a372a90b60587b0428c64f65cfcb4906, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cardSlots:
-  - {fileID: 361328420}
-  - {fileID: 1265641728}
-  - {fileID: 733358008}
-  - {fileID: 946431694}
-  availableAbilities: []
-  defaultCooldown: 3
-  discardCounterText: {fileID: 1067721951}
-  discardSlotIcon: {fileID: 961268603}
-  playerTransform: {fileID: 0}
 --- !u!1 &1765111940
 GameObject:
   m_ObjectHideFlags: 0

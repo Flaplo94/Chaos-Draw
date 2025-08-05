@@ -9,13 +9,26 @@ public class PlayerHealth : MonoBehaviour
     public float damageCooldown = 1f;
     private float lastDamageTime = -Mathf.Infinity;
 
+    private UIHealthBar healthBar;
+
     void Awake()
     {
         playerShield = GetComponent<PlayerShield>();
     }
+
+    [System.Obsolete]
     void Start()
     {
         currentHealth = maxHealth;
+
+        // Find UI health bar
+        healthBar = FindObjectOfType<UIHealthBar>();
+        if (healthBar != null)
+        {
+            healthBar.SetTarget(this.transform);
+            healthBar.SetValue(1f); // Fuld HP
+        }
+
         UpdateUI();
     }
 
@@ -26,7 +39,6 @@ public class PlayerHealth : MonoBehaviour
 
         if (playerShield != null && playerShield.TryBlockDamage())
         {
-            // Shield blocked the hit, do not apply damage or trigger cooldown
             return;
         }
 
@@ -51,8 +63,12 @@ public class PlayerHealth : MonoBehaviour
 
         Destroy(gameObject);
     }
+
     void UpdateUI()
     {
-        UIHealthBar.Instance.SetValue(currentHealth / (float)maxHealth);
+        if (healthBar != null)
+        {
+            healthBar.SetValue(currentHealth / (float)maxHealth);
+        }
     }
 }
