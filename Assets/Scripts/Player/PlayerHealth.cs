@@ -22,7 +22,7 @@ public class PlayerHealth : MonoBehaviour
         currentHealth = maxHealth;
 
         // Find UI health bar
-        healthBar = FindObjectOfType<UIHealthBar>();
+        healthBar = FindFirstObjectByType<UIHealthBar>();
         if (healthBar != null)
         {
             healthBar.SetTarget(this.transform);
