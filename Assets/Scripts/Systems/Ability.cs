@@ -11,6 +11,8 @@ public class Ability : ScriptableObject
     [HideInInspector] public Vector2? overrideDirection;
     [Header("Ability Settings")]
     public float manaCost = 10f;
+    [TextArea]
+    public string description;
 
     public bool Activate()
     {

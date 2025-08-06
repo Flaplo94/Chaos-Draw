@@ -16,7 +16,7 @@ public class CardHandUI : MonoBehaviour
 
     [Header("Reward UI")]
     [SerializeField] private GameObject rewardUI;
-    [SerializeField] private Button[] rewardButtons;
+    [SerializeField] private GameObject[] rewardCards;
     [SerializeField] private Button skipButton;
 
 
@@ -168,24 +168,36 @@ public class CardHandUI : MonoBehaviour
         for (int i = 0; i < 3; i++)
         {
             Ability ability = pool[i];
+            Ability abilityCopy = ability; // Prevent closure bug
 
-            var icon = rewardButtons[i].transform.Find("AbilityIcon").GetComponent<Image>();
-            var nameText = rewardButtons[i].transform.Find("AbilityName").GetComponent<TextMeshProUGUI>();
+            // Get UI elements from card
+            var nameText = rewardCards[i].transform.Find("AbilityName")?.GetComponent<TextMeshProUGUI>();
+            var artImage = rewardCards[i].transform.Find("AbilityArt")?.GetComponent<Image>();
+            var descText = rewardCards[i].transform.Find("AbilityDescription")?.GetComponent<TextMeshProUGUI>();
 
-            icon.sprite = ability.icon;
-            icon.color = Color.white;
-
-            nameText.text = ability.abilityName;
-
-            rewardButtons[i].onClick.RemoveAllListeners();
-            rewardButtons[i].onClick.AddListener(() =>
+            if (nameText != null) nameText.text = abilityCopy.abilityName;
+            if (artImage != null)
             {
-                AddCardToDeck(ability);
-                rewardUI.SetActive(false);
-                Time.timeScale = 1f;
-            });
+                artImage.sprite = abilityCopy.icon;
+                artImage.color = Color.white;
+            }
+            if (descText != null) descText.text = abilityCopy.description;
+
+            // Set up click listener on the button
+            Button cardButton = rewardCards[i].GetComponent<Button>();
+            if (cardButton != null)
+            {
+                cardButton.onClick.RemoveAllListeners();
+                cardButton.onClick.AddListener(() =>
+                {
+                    AddCardToDeck(abilityCopy);
+                    rewardUI.SetActive(false);
+                    Time.timeScale = 1f;
+                });
+            }
         }
 
+        // Optional: skip button
         skipButton.onClick.RemoveAllListeners();
         skipButton.onClick.AddListener(() =>
         {
