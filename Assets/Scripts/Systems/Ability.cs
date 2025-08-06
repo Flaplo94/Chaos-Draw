@@ -9,9 +9,22 @@ public class Ability : ScriptableObject
     public GameObject effectPrefab;
     public bool spawnAtMousePosition;
     [HideInInspector] public Vector2? overrideDirection;
+    [Header("Ability Settings")]
+    public float manaCost = 10f;
 
-    public void Activate()
+    public bool Activate()
     {
+        if (!PlayerMana.Instance.TrySpend(manaCost))
+        {
+            Debug.Log("Not enough mana to cast: " + abilityName);
+            UIMessage messageUI = GameObject.FindFirstObjectByType<UIMessage>();
+            if (messageUI != null)
+            {
+                messageUI.ShowMessage("Not enough mana for " + abilityName);
+            }
+            return false;
+        }
+
         Vector3 spawnPos = Vector3.zero;
         Vector3 mouseWorld = Vector3.zero;
         Vector2 shootDir = Vector2.right;
@@ -46,6 +59,7 @@ public class Ability : ScriptableObject
                 
             }
         }
+        return true;
     }
 
 }

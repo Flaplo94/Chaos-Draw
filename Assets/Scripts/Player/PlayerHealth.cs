@@ -1,15 +1,12 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerHealth : MonoBehaviour
 {
     private PlayerShield playerShield;
     public int maxHealth = 5;
     private int currentHealth;
-
-    public float damageCooldown = 1f;
-    private float lastDamageTime = -Mathf.Infinity;
-
-    private UIHealthBar healthBar;
+    [SerializeField] public Slider healthBar;
 
     void Awake()
     {
@@ -20,15 +17,6 @@ public class PlayerHealth : MonoBehaviour
     void Start()
     {
         currentHealth = maxHealth;
-
-        // Find UI health bar
-        healthBar = FindFirstObjectByType<UIHealthBar>();
-        if (healthBar != null)
-        {
-            healthBar.SetTarget(this.transform);
-            healthBar.SetValue(1f); // Fuld HP
-        }
-
         UpdateUI();
     }
 
@@ -53,7 +41,6 @@ public class PlayerHealth : MonoBehaviour
 
     void Die()
     {
-        Debug.Log("Player died!");
         GameOverManager gameOver = FindFirstObjectByType<GameOverManager>();
         if (gameOver != null)
         {
@@ -67,7 +54,7 @@ public class PlayerHealth : MonoBehaviour
     {
         if (healthBar != null)
         {
-            healthBar.SetValue(currentHealth / (float)maxHealth);
+            healthBar.value = (float)currentHealth / maxHealth;
         }
     }
 }

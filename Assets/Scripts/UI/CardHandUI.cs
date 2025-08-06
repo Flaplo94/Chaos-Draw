@@ -115,7 +115,9 @@ public class CardHandUI : MonoBehaviour
     {
         if (hand[index] == null) return;
 
-        hand[index].Activate(); // Use real ability logic
+        bool success = hand[index].Activate();
+
+        if (!success) return;
 
         discardPile.Add(hand[index]);
         hand[index] = null;
@@ -131,7 +133,10 @@ public class CardHandUI : MonoBehaviour
 
     private void UpdateDiscardText()
     {
-        discardCounterText.text = discardCount.ToString();
+        if (discardCounterText != null)
+            discardCounterText.text = discardCount.ToString();
+        else
+            Debug.LogWarning("Discard counter text is not assigned!");
     }
 
     private void Shuffle<T>(List<T> list)
