@@ -1879,7 +1879,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1198563085}
   - component: {fileID: 1198563084}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: MapController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1904,14 +1904,13 @@ MonoBehaviour:
   - {fileID: 5227129467491382116, guid: 6d9c84aad9bebad4d8a76520c24e7bc0, type: 3}
   player: {fileID: 838276994}
   checkerRadius: 0.2
-  noTerrainPosition: {x: 0, y: 0, z: 0}
   terrainMask:
     serializedVersion: 2
     m_Bits: 64
   currentChunk: {fileID: 0}
   spawnedChunks: []
-  maxOpDist: 0
-  optimizerCooldownDur: 0
+  maxOpDist: 50
+  optimizerCooldownDur: 1
 --- !u!4 &1198563085
 Transform:
   m_ObjectHideFlags: 0
