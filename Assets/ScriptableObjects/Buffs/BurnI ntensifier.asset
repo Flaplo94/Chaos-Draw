@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   buffName: Burn Intensifier
   description: Burn damage over time is increased by 20%.
-  icon: {fileID: 0}
+  icon: {fileID: 6240649592010973758, guid: ce71d7dce409fd2409caa5e80b1051c5, type: 3}
   type: 3
   value: 0.2
   rarity: 2

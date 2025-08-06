@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   buffName: Flame Affinity
   description: Fire abilities deal +15% more damage.
-  icon: {fileID: 0}
+  icon: {fileID: 1009049853055315898, guid: 2482764a12c439449aa6eb0512c99db4, type: 3}
   type: 1
   value: 0.15
   rarity: 3

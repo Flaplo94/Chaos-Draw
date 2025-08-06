@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   buffName: Fortified Body
   description: Max HP is increased by 15%.
-  icon: {fileID: 0}
+  icon: {fileID: 6505026738284537468, guid: e92d354513285574882d0740cc09232a, type: 3}
   type: 4
   value: 0.15
   rarity: 0

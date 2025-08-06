@@ -17,6 +17,11 @@ public class PlayerBuffManager : MonoBehaviour
     {
         activeBuffs.Add(buff);
         Debug.Log($"Buff added: {buff.buffName}");
+
+        // Opdater UI
+        BuffUIManager ui = FindFirstObjectByType<BuffUIManager>();
+        if (ui != null)
+            ui.UpdateBuffUI();
     }
 
     public float GetTotalValue(BuffData.BuffType type)

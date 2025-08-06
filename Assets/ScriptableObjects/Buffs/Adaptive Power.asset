@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   buffName: Adaptive Power
   description: Gain +5% damage for each active buff.
-  icon: {fileID: 0}
+  icon: {fileID: -4902245710394564183, guid: 6af1457fab7069f43adb41b4d3b88af2, type: 3}
   type: 14
   value: 0.05
   rarity: 4

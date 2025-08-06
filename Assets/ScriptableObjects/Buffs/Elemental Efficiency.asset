@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   buffName: Elemental Efficiency
   description: spells cost 1 less mana
-  icon: {fileID: 0}
+  icon: {fileID: -6186231880139380768, guid: 31d683afd18755547999221a2352646f, type: 3}
   type: 0
   value: 1
   rarity: 4

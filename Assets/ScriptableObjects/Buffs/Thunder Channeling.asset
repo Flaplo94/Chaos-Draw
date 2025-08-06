@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   buffName: Thunder Channeling
   description: Lightning abilities deal +15% more damage.
-  icon: {fileID: 0}
+  icon: {fileID: -2278440341621924931, guid: 80f368d4ce06dec4b8d3484812446fe4, type: 3}
   type: 2
   value: 0.15
   rarity: 3
