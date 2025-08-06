@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   abilityName: Fireball
   icon: {fileID: -5750353039905602045, guid: 6cb2033f257ea304d923eb39eca3b8d0, type: 3}
-  cooldown: 10
   effectPrefab: {fileID: 4804991577932546782, guid: e683a791c96afe847a2b82a7f6b6e1e9, type: 3}
   spawnAtMousePosition: 0
+  manaCost: 10

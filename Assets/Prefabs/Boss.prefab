@@ -34,11 +34,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2777700163195333270, guid: af535699c9caddd418ddb82d17593458, type: 3}
       propertyPath: m_SortingLayer
-      value: 5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2777700163195333270, guid: af535699c9caddd418ddb82d17593458, type: 3}
       propertyPath: m_SortingLayerID
-      value: 1120424415
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4774877285035006597, guid: af535699c9caddd418ddb82d17593458, type: 3}
       propertyPath: m_LocalScale.x
@@ -143,3 +143,4 @@ MonoBehaviour:
   - {fileID: 5679082729230498780, guid: c25de75b8a76d504aa0ed013b1634e16, type: 3}
   spawnInterval: 3
   spawnRadius: 5
+  waveManager: {fileID: 0}
