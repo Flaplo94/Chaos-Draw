@@ -29,11 +29,6 @@ public class EnemyFollow : MonoBehaviour
     void OnDestroy()
     {
         allEnemies.Remove(this);
-
-        if (PlayerXP.Instance != null)
-        {
-            PlayerXP.Instance.GainXP(1);
-        }
     }
 
     void Update()
