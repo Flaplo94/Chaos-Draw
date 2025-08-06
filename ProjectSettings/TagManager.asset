@@ -5,7 +5,8 @@ TagManager:
   serializedVersion: 3
   tags:
   - Enemy
-  - Projectile
+  - Boss
+  - MouseAbility
   layers:
   - Default
   - TransparentFX
@@ -13,11 +14,11 @@ TagManager:
   - 
   - Water
   - UI
-  - Enemy
+  - Terrain
+  - 
   - Player
-  - Projectile
-  - 
-  - 
+  - Enemies
+  - Projectiles
   - 
   - 
   - 
@@ -42,6 +43,30 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Background
+    uniqueID: 1853276139
+    locked: 0
+  - name: Props
+    uniqueID: 1495628409
+    locked: 0
+  - name: Enemies
+    uniqueID: 3337200989
+    locked: 0
+  - name: Player
+    uniqueID: 2529771321
+    locked: 0
+  - name: 
+    uniqueID: 1120424415
+    locked: 0
+  - name: 
+    uniqueID: 1351077463
+    locked: 0
+  - name: FX
+    uniqueID: 2457579397
+    locked: 0
+  - name: UI
+    uniqueID: 4056196689
     locked: 0
   m_RenderingLayers:
   - Default

@@ -3,38 +3,36 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     public float moveSpeed = 5f;
-    private Rigidbody2D rb;
-    private Vector2 moveInput;
-    private PlayerHealth playerHealth;
 
-    private void Awake()
-    {
-        rb = GetComponent<Rigidbody2D>();
-        playerHealth = GetComponent<PlayerHealth>();
-    }
+    private Rigidbody2D rb;
+    private Vector2 moveDir;
+    public Vector2 MoveDir => moveDir; // kun denne public adgang
 
     void Start()
     {
-        // Her kan du fremover tilf�je fx animation setup, men pt. bruges Awake
+        rb = GetComponent<Rigidbody2D>();
     }
 
     void Update()
     {
-        moveInput.x = Input.GetAxisRaw("Horizontal");
-        moveInput.y = Input.GetAxisRaw("Vertical");
-        moveInput.Normalize();
+        HandleInput();
     }
 
     void FixedUpdate()
     {
-        rb.linearVelocity = moveInput * moveSpeed;
-    }
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.CompareTag("Enemy"))
-        {
-            playerHealth.TakeDamage(1);
-        }
+        Move();
     }
 
+    void HandleInput()
+    {
+        float moveX = Input.GetAxisRaw("Horizontal");
+        float moveY = Input.GetAxisRaw("Vertical");
+
+        moveDir = new Vector2(moveX, moveY).normalized;
+    }
+
+    void Move()
+    {
+        rb.linearVelocity = moveDir * moveSpeed;
+    }
 }

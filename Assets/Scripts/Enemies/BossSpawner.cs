@@ -5,6 +5,7 @@ public class BossSpawner : MonoBehaviour
     public GameObject[] minionPrefabs;
     public float spawnInterval = 3f;
     public float spawnRadius = 5f;
+    public WaveManager waveManager; // Set this from WaveManager
 
     private float spawnTimer = 0f;
 
@@ -20,7 +21,11 @@ public class BossSpawner : MonoBehaviour
             Vector2 spawnPos = (Vector2)transform.position + spawnOffset;
 
             GameObject prefab = minionPrefabs[Random.Range(0, minionPrefabs.Length)];
-            Instantiate(prefab, spawnPos, Quaternion.identity);
+            GameObject minion = Instantiate(prefab, spawnPos, Quaternion.identity);
+            if (waveManager != null)
+            {
+                waveManager.RegisterMinion(minion);
+            }
         }
     }
 }
