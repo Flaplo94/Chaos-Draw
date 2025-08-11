@@ -16,3 +16,7 @@ MonoBehaviour:
   icon: {fileID: -1783808350427418317, guid: d815f599388e98c458b574eaef833fbe, type: 3}
   effectPrefab: {fileID: 4804991577932546782, guid: 604a5d0f1ce92474d909e6c86dbe5acd, type: 3}
   spawnAtMousePosition: 1
+  manaCost: 10
+  description: Place a lightning rod where you aim, lightning will jump between you
+    and other rods in range.
+  rarity: 4

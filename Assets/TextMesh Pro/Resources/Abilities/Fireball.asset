@@ -17,3 +17,5 @@ MonoBehaviour:
   effectPrefab: {fileID: 4804991577932546782, guid: e683a791c96afe847a2b82a7f6b6e1e9, type: 3}
   spawnAtMousePosition: 0
   manaCost: 10
+  description: Shoots where you aim it and explodes when it hits an enemy.
+  rarity: 0

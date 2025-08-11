@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public class LightningRod : MonoBehaviour
+public class LightningRod : MonoBehaviour, IAbilityBehavior
 {
     [SerializeField] private float lifetime = 8f;
     [SerializeField] private float rodRange = 5f;
@@ -15,20 +15,57 @@ public class LightningRod : MonoBehaviour
     private static List<LightningRod> activeRods = new List<LightningRod>();
     private List<LineRenderer> lines = new List<LineRenderer>();
 
+   
+    public void Initialize(Vector2 _, Rarity rarity)
+    {
+        switch (rarity)
+        {
+            case Rarity.Uncommon:
+                rodRange *= 1.10f;
+                damage *= 1.10f;
+                damageTickRate *= 0.90f;
+                break;
+            case Rarity.Rare:
+                rodRange *= 1.20f;
+                damage *= 1.20f;
+                damageTickRate *= 0.85f;
+                break;
+            case Rarity.Epic:
+                rodRange *= 1.30f;
+                damage *= 1.30f;
+                damageTickRate *= 0.80f;
+                break;
+            case Rarity.Legendary:
+                rodRange *= 1.40f;
+                damage *= 1.40f;
+                damageTickRate *= 0.70f;
+                break;
+                // Common = baseline
+        }
+
+        if (damageTickRate < 0.05f) damageTickRate = 0.05f;
+    }
+
     private void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player")?.transform;
         activeRods.Add(this);
         Invoke(nameof(DestroySelf), lifetime);
+        damageTimer = 0f;
     }
 
     private void Update()
     {
+        // Tick timer once per frame (prevents multi-decrement across multiple lines)
+        damageTimer -= Time.deltaTime;
+
         ClearLines();
 
+        // Draw to player (if inside range)
         if (player != null && Vector2.Distance(player.position, transform.position) <= rodRange)
             DrawLightning(transform.position, player.position);
 
+        // Draw to other rods in range
         foreach (var other in activeRods)
         {
             if (other == this) continue;
@@ -45,26 +82,29 @@ public class LightningRod : MonoBehaviour
         line.SetPosition(1, to);
         lines.Add(line);
 
-        RaycastHit2D[] hits = Physics2D.RaycastAll(from, (to - from).normalized, Vector2.Distance(from, to), enemyLayer);
-        damageTimer -= Time.deltaTime;
+        // Damage along the line on tick
         if (damageTimer <= 0f)
         {
-            damageTimer = damageTickRate;
+            var dir = (to - from).normalized;
+            float len = Vector2.Distance(from, to);
+            RaycastHit2D[] hits = Physics2D.RaycastAll(from, dir, len, enemyLayer);
 
             foreach (var hit in hits)
             {
-                hit.collider.GetComponent<EnemyHealth>()?.TakeDamage((int)damage);
+                hit.collider.GetComponent<EnemyHealth>()?.TakeDamage(Mathf.RoundToInt(damage));
             }
+
+            damageTimer = damageTickRate;
         }
 
-        Destroy(line.gameObject, Time.deltaTime); // Quick flicker effect
+        // Quick flicker
+        Destroy(line.gameObject, Time.deltaTime);
     }
 
     private void ClearLines()
     {
-        foreach (var line in lines)
-            if (line != null) Destroy(line.gameObject);
-
+        for (int i = 0; i < lines.Count; i++)
+            if (lines[i] != null) Destroy(lines[i].gameObject);
         lines.Clear();
     }
 

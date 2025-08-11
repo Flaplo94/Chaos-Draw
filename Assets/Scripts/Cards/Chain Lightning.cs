@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public class ChainLightning : MonoBehaviour
+public class ChainLightning : MonoBehaviour, IAbilityBehavior
 {
     [SerializeField] private float range = 5f;
     [SerializeField] private int damage = 1;
@@ -9,6 +9,21 @@ public class ChainLightning : MonoBehaviour
     [SerializeField] private LayerMask enemyLayer;
     [SerializeField] private GameObject castVisual;
     [SerializeField] private GameObject lightningVisual;
+
+    public void Initialize(Vector2 dir, Rarity rarity)
+    {
+        switch (rarity)
+        {
+            case Rarity.Uncommon:
+                maxChains += 1; damage += 1; break;
+            case Rarity.Rare:
+                maxChains += 2; damage += 2; break;
+            case Rarity.Epic:
+                maxChains += 3; damage += 3; break;
+            case Rarity.Legendary:
+                maxChains += 5; damage += 4; break;
+        }
+    }
 
     private void Start()
     {
@@ -42,7 +57,6 @@ public class ChainLightning : MonoBehaviour
 
             if (nearest == null) break;
 
-            // Visual: draw lightning from previousPosition to nearest.transform.position
             if (lightningVisual != null)
             {
                 GameObject vfx = Instantiate(lightningVisual);
@@ -63,4 +77,3 @@ public class ChainLightning : MonoBehaviour
         Destroy(gameObject);
     }
 }
-

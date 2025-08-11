@@ -1,5 +1,13 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
+
+public enum Rarity
+{
+    Common,
+    Uncommon,
+    Rare,
+    Epic,
+    Legendary
+}
 
 [CreateAssetMenu(fileName = "NewAbility", menuName = "Abilities/Ability")]
 public class Ability : ScriptableObject
@@ -9,59 +17,47 @@ public class Ability : ScriptableObject
     public GameObject effectPrefab;
     public bool spawnAtMousePosition;
     [HideInInspector] public Vector2? overrideDirection;
+
     [Header("Ability Settings")]
     public float manaCost = 10f;
-    [TextArea]
-    public string description;
+    [TextArea] public string description;
+
+    [Header("Rarity")]
+    public Rarity rarity = Rarity.Common;
 
     public bool Activate()
     {
-        if (!PlayerMana.Instance.TrySpend(manaCost))
-        {
-            Debug.Log("Not enough mana to cast: " + abilityName);
-            UIMessage messageUI = GameObject.FindFirstObjectByType<UIMessage>();
-            if (messageUI != null)
-            {
-                messageUI.ShowMessage("Not enough mana for " + abilityName);
-            }
-            return false;
-        }
+        if (!PlayerMana.Instance.TrySpend(manaCost)) return false;
 
         Vector3 spawnPos = Vector3.zero;
         Vector3 mouseWorld = Vector3.zero;
         Vector2 shootDir = Vector2.right;
 
         GameObject player = GameObject.FindGameObjectWithTag("Player");
-        if (player != null)
-            spawnPos = player.transform.position;
+        if (player != null) spawnPos = player.transform.position;
 
-        if (Mouse.current != null)
+        if (UnityEngine.InputSystem.Mouse.current != null)
         {
-            Vector2 mouseScreen = Mouse.current.position.ReadValue();
+            Vector2 mouseScreen = UnityEngine.InputSystem.Mouse.current.position.ReadValue();
             mouseWorld = Camera.main.ScreenToWorldPoint(mouseScreen);
             mouseWorld.z = 0f;
-
             shootDir = (mouseWorld - spawnPos).normalized;
         }
 
-        // Override spawn position if this ability is placed at the mouse
-        if (spawnAtMousePosition)
-        {
-            spawnPos = mouseWorld;
-        }
+        if (spawnAtMousePosition) spawnPos = mouseWorld;
 
         if (effectPrefab != null)
         {
             GameObject obj = Instantiate(effectPrefab, spawnPos, Quaternion.identity);
 
-            var fireball = obj.GetComponent<Fireball>();
-            if (fireball != null)
+            // Use IAbilityBehavior interface to handle direction and rarity setup
+            var behavior = obj.GetComponent<IAbilityBehavior>();
+            if (behavior != null)
             {
-                fireball.SetDirection(shootDir);
-                
+                behavior.Initialize(shootDir, rarity);
             }
         }
+
         return true;
     }
-
 }

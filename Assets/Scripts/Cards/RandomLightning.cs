@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public class RandomLightning : MonoBehaviour
+public class RandomLightning : MonoBehaviour, IAbilityBehavior
 {
     [SerializeField] private float radius = 6f;
     [SerializeField] private int minStrikes = 1;
@@ -9,42 +9,73 @@ public class RandomLightning : MonoBehaviour
     [SerializeField] private int damage = 2;
     [SerializeField] private GameObject lightningEffect;
 
+    // rarity scaling
+    private int bonusStrikes = 0;
+    private float damageMultiplier = 1f;
+
+    // Called by Ability after Instantiate
+    public void Initialize(Vector2 _, Rarity rarity)
+    {
+        switch (rarity)
+        {
+            case Rarity.Uncommon:
+                bonusStrikes = 1;
+                damageMultiplier = 1.10f;
+                break;
+            case Rarity.Rare:
+                bonusStrikes = 2;
+                damageMultiplier = 1.20f;
+                break;
+            case Rarity.Epic:
+                bonusStrikes = 3;
+                damageMultiplier = 1.30f;
+                break;
+            case Rarity.Legendary:
+                bonusStrikes = 4;
+                damageMultiplier = 1.40f;
+                break;
+                // Common = baseline
+        }
+    }
+
     private void Start()
     {
+        // collect enemies in radius
         GameObject[] allEnemies = GameObject.FindGameObjectsWithTag("Enemy");
-        List<GameObject> validEnemies = new List<GameObject>();
+        List<GameObject> validEnemies = new List<GameObject>(allEnemies.Length);
 
         foreach (GameObject enemy in allEnemies)
         {
+            if (enemy == null) continue;
             float dist = Vector2.Distance(transform.position, enemy.transform.position);
             if (dist <= radius)
-            {
                 validEnemies.Add(enemy);
-                Debug.Log("Enemy in range: " + enemy.name);
-            }
         }
 
         if (validEnemies.Count == 0)
         {
-            Debug.Log("RandomLightning: No enemies in range.");
             Destroy(gameObject);
             return;
         }
 
-        int strikeCount = Mathf.Clamp(Random.Range(minStrikes, maxStrikes + 1), 0, validEnemies.Count);
+        // apply rarity bonuses
+        int adjMin = Mathf.Max(0, minStrikes + bonusStrikes);
+        int adjMax = Mathf.Max(adjMin, maxStrikes + bonusStrikes);
+        int strikeCount = Mathf.Clamp(Random.Range(adjMin, adjMax + 1), 0, validEnemies.Count);
+        int finalDamage = Mathf.Max(1, Mathf.RoundToInt(damage * damageMultiplier));
 
+        // strike unique random targets
         for (int i = 0; i < strikeCount; i++)
         {
             int index = Random.Range(0, validEnemies.Count);
             GameObject target = validEnemies[index];
             validEnemies.RemoveAt(index);
 
+            if (target == null) continue;
+
             var health = target.GetComponent<EnemyHealth>();
             if (health != null)
-            {
-                health.TakeDamage(damage);
-                Debug.Log("RandomLightning: Damaged " + target.name);
-            }
+                health.TakeDamage(finalDamage);
 
             if (lightningEffect != null)
                 Instantiate(lightningEffect, target.transform.position, Quaternion.identity);

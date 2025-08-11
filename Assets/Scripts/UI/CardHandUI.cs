@@ -157,6 +157,30 @@ public class CardHandUI : MonoBehaviour
         }
     }
 
+    private Rarity RollRarity()
+    {
+        float roll = Random.value;
+
+        if (roll < 0.005f) return Rarity.Legendary;
+        if (roll < 0.03f) return Rarity.Epic;
+        if (roll < 0.10f) return Rarity.Rare;
+        if (roll < 0.30f) return Rarity.Uncommon;
+        return Rarity.Common;
+    }
+
+    private Color GetRarityColor(Rarity rarity)
+    {
+        return rarity switch
+        {
+            Rarity.Common => Color.white,
+            Rarity.Uncommon => Color.green,
+            Rarity.Rare => Color.blue,
+            Rarity.Epic => new Color(0.6f, 0f, 0.8f),
+            Rarity.Legendary => Color.yellow,
+            _ => Color.gray
+        };
+    }
+
     private void ShowRewardUI()
     {
         Time.timeScale = 0f;
@@ -167,23 +191,24 @@ public class CardHandUI : MonoBehaviour
 
         for (int i = 0; i < 3; i++)
         {
-            Ability ability = pool[i];
-            Ability abilityCopy = ability; // Prevent closure bug
+            Ability baseAbility = pool[i];
+            Ability abilityCopy = Instantiate(baseAbility);
+            abilityCopy.rarity = RollRarity();
 
-            // Get UI elements from card
-            var nameText = rewardCards[i].transform.Find("AbilityName")?.GetComponent<TextMeshProUGUI>();
-            var artImage = rewardCards[i].transform.Find("AbilityArt")?.GetComponent<Image>();
-            var descText = rewardCards[i].transform.Find("AbilityDescription")?.GetComponent<TextMeshProUGUI>();
+            var nameText = rewardCards[i].transform.Find("AbilityName")?.GetComponent<TMPro.TextMeshProUGUI>();
+            var artImage = rewardCards[i].transform.Find("AbilityArt")?.GetComponent<UnityEngine.UI.Image>();
+            var descText = rewardCards[i].transform.Find("AbilityDescription")?.GetComponent<TMPro.TextMeshProUGUI>();
+            var buttonImage = rewardCards[i].GetComponent<UnityEngine.UI.Image>();
 
-            if (nameText != null) nameText.text = abilityCopy.abilityName;
+            if (nameText != null) nameText.text = abilityCopy.abilityName + " [" + abilityCopy.rarity + "]";
             if (artImage != null)
             {
                 artImage.sprite = abilityCopy.icon;
                 artImage.color = Color.white;
             }
             if (descText != null) descText.text = abilityCopy.description;
+            if (buttonImage != null) buttonImage.color = GetRarityColor(abilityCopy.rarity);
 
-            // Set up click listener on the button
             Button cardButton = rewardCards[i].GetComponent<Button>();
             if (cardButton != null)
             {
@@ -197,7 +222,6 @@ public class CardHandUI : MonoBehaviour
             }
         }
 
-        // Optional: skip button
         skipButton.onClick.RemoveAllListeners();
         skipButton.onClick.AddListener(() =>
         {
@@ -205,6 +229,8 @@ public class CardHandUI : MonoBehaviour
             Time.timeScale = 1f;
         });
     }
+
+
 
 
     private void AddCardToDeck(Ability ability)

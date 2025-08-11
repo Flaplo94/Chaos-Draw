@@ -1,14 +1,27 @@
 using UnityEngine;
 
-public class AOEPulse : MonoBehaviour
+public class AOEPulse : MonoBehaviour, IAbilityBehavior
 {
-    [SerializeField] private float radius = 4f;
+    [SerializeField] private float radius = 3f;
     [SerializeField] private int damage = 3;
     [SerializeField] private LayerMask enemyLayer;
     [SerializeField] private GameObject radiusVisual;
-    [SerializeField] private Color aoeColor = Color.red; // Set in Inspector for each ability
+    [SerializeField] private Color aoeColor = Color.red;
 
-
+    public void Initialize(Vector2 dir, Rarity rarity)
+    {
+        switch (rarity)
+        {
+            case Rarity.Uncommon:
+                radius *= 1.1f; break;
+            case Rarity.Rare:
+                radius *= 1.3f; damage += 2; break;
+            case Rarity.Epic:
+                radius *= 1.5f; damage += 4; break;
+            case Rarity.Legendary:
+                radius *= 2f; damage += 7; break;
+        }
+    }
 
     private void Start()
     {
@@ -21,14 +34,13 @@ public class AOEPulse : MonoBehaviour
         if (radiusVisual != null)
         {
             GameObject vfx = Instantiate(radiusVisual, transform.position, Quaternion.identity);
-            vfx.transform.localScale = Vector3.one * radius * 2f; // Diameter
+            vfx.transform.localScale = Vector3.one * radius * 2f;
             var sr = vfx.GetComponent<SpriteRenderer>();
             if (sr != null)
                 sr.color = aoeColor;
-            Destroy(vfx, 0.2f); // Auto-remove visual
+            Destroy(vfx, 0.2f);
         }
 
-        // Optional: play animation or flash
         Destroy(gameObject, 0.1f);
     }
 
