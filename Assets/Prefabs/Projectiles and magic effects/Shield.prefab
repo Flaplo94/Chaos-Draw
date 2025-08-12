@@ -165,4 +165,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b367869cc50512e49a7e62c9ea687bd6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  baseShieldHealth: 1
   duration: 0
+  reflectChance: 0
+  reflectDamage: 1
+  reflectRadius: 1.75
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 640
+  activeTint: {r: 0, g: 0, b: 0.3018868, a: 1}

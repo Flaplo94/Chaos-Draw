@@ -63,6 +63,9 @@ public class FireOnGround : MonoBehaviour, IAbilityBehavior
                 var eh = hit.GetComponent<EnemyHealth>();
                 if (eh != null)
                     eh.TakeDamage(damagePerTick);
+                var bh = hit.GetComponent<BossHealth>();
+                if (bh != null)
+                    bh.TakeDamage(damagePerTick);
             }
         }
     }

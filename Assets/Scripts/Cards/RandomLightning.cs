@@ -13,74 +13,90 @@ public class RandomLightning : MonoBehaviour, IAbilityBehavior
     private int bonusStrikes = 0;
     private float damageMultiplier = 1f;
 
-    // Called by Ability after Instantiate
     public void Initialize(Vector2 _, Rarity rarity)
     {
         switch (rarity)
         {
-            case Rarity.Uncommon:
-                bonusStrikes = 1;
-                damageMultiplier = 1.10f;
-                break;
-            case Rarity.Rare:
-                bonusStrikes = 2;
-                damageMultiplier = 1.20f;
-                break;
-            case Rarity.Epic:
-                bonusStrikes = 3;
-                damageMultiplier = 1.30f;
-                break;
-            case Rarity.Legendary:
-                bonusStrikes = 4;
-                damageMultiplier = 1.40f;
-                break;
+            case Rarity.Uncommon: bonusStrikes = 1; damageMultiplier = 1.10f; break;
+            case Rarity.Rare: bonusStrikes = 2; damageMultiplier = 1.20f; break;
+            case Rarity.Epic: bonusStrikes = 3; damageMultiplier = 1.30f; break;
+            case Rarity.Legendary: bonusStrikes = 4; damageMultiplier = 1.40f; break;
                 // Common = baseline
         }
     }
 
     private void Start()
     {
-        // collect enemies in radius
-        GameObject[] allEnemies = GameObject.FindGameObjectsWithTag("Enemy");
-        List<GameObject> validEnemies = new List<GameObject>(allEnemies.Length);
+        // Collect valid targets by component (works for both enemies and bosses)
+        Collider2D[] inRange = Physics2D.OverlapCircleAll(transform.position, radius);
+        List<Collider2D> valid = new List<Collider2D>(inRange.Length);
 
-        foreach (GameObject enemy in allEnemies)
+        for (int i = 0; i < inRange.Length; i++)
         {
-            if (enemy == null) continue;
-            float dist = Vector2.Distance(transform.position, enemy.transform.position);
-            if (dist <= radius)
-                validEnemies.Add(enemy);
+            var c = inRange[i];
+            if (c == null) continue;
+
+            // Must have either EnemyHealth or BossHealth
+            if (c.GetComponent<EnemyHealth>() != null || c.GetComponent<BossHealth>() != null)
+            {
+                valid.Add(c);
+            }
         }
 
-        if (validEnemies.Count == 0)
-        {
-            Destroy(gameObject);
-            return;
-        }
+        if (valid.Count == 0) { Destroy(gameObject); return; }
 
-        // apply rarity bonuses
+        // Apply rarity bonuses
         int adjMin = Mathf.Max(0, minStrikes + bonusStrikes);
         int adjMax = Mathf.Max(adjMin, maxStrikes + bonusStrikes);
-        int strikeCount = Mathf.Clamp(Random.Range(adjMin, adjMax + 1), 0, validEnemies.Count);
+        int strikeCount = Mathf.Clamp(Random.Range(adjMin, adjMax + 1), 0, valid.Count);
         int finalDamage = Mathf.Max(1, Mathf.RoundToInt(damage * damageMultiplier));
 
-        // strike unique random targets
+        // Strike unique random targets
         for (int i = 0; i < strikeCount; i++)
         {
-            int index = Random.Range(0, validEnemies.Count);
-            GameObject target = validEnemies[index];
-            validEnemies.RemoveAt(index);
+            int idx = Random.Range(0, valid.Count);
+            var targetCol = valid[idx];
+            valid.RemoveAt(idx);
 
-            if (target == null) continue;
+            if (targetCol == null) continue;
+            var t = targetCol.transform;
 
-            var health = target.GetComponent<EnemyHealth>();
-            if (health != null)
-                health.TakeDamage(finalDamage);
+            // Deal damage to either type
+            var eh = targetCol.GetComponent<EnemyHealth>();
+            if (eh != null) eh.TakeDamage(finalDamage);
 
+            var bh = targetCol.GetComponent<BossHealth>();
+            if (bh != null) bh.TakeDamage(finalDamage);
+
+            // Optional VFX
             if (lightningEffect != null)
-                Instantiate(lightningEffect, target.transform.position, Quaternion.identity);
+            {
+                var vfx = Instantiate(lightningEffect);
+
+                
+                if (vfx.TryGetComponent<LineRenderer>(out var lr))
+                {
+                    lr.useWorldSpace = true;
+                    if (lr.positionCount < 2) lr.positionCount = 2;
+                    lr.SetPosition(0, transform.position);
+                    lr.SetPosition(1, t.position);
+                    Destroy(vfx, 0.12f);
+                }
+                else
+                {
+                    // Otherwise spawn a burst at the target
+                    vfx.transform.position = t.position;
+                    Destroy(vfx, 0.25f);
+                }
+            }
         }
 
         Destroy(gameObject);
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = new Color(0.6f, 0.9f, 1f, 0.25f);
+        Gizmos.DrawWireSphere(transform.position, radius);
     }
 }

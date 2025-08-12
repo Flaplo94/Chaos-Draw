@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 289022092848225740}
   - component: {fileID: 3308837611534964102}
   - component: {fileID: 7540859639785825885}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: DamageTrigger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -97,8 +97,8 @@ GameObject:
   - component: {fileID: 6706808530034103868}
   - component: {fileID: 1849891846209710151}
   - component: {fileID: 76683931486816045}
-  m_Layer: 6
-  m_Name: Enemy1Hit_prefab
+  m_Layer: 9
+  m_Name: EnemySpeedy
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -250,7 +250,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e69a65c1c69b43a49ab42864c6954d94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 7
+  speed: 3
   separationRadius: 0.7
   separationStrength: 2
   isHealer: 0

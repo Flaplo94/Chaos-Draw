@@ -18,4 +18,4 @@ MonoBehaviour:
   spawnAtMousePosition: 0
   manaCost: 10
   description: Gives you a shield that will block the next attack thats hits you.
-  rarity: 4
+  rarity: 0

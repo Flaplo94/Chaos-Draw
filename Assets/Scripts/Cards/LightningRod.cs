@@ -7,7 +7,7 @@ public class LightningRod : MonoBehaviour, IAbilityBehavior
     [SerializeField] private float rodRange = 5f;
     [SerializeField] private float damage = 10f;
     [SerializeField] private float damageTickRate = 0.5f;
-    [SerializeField] private LayerMask enemyLayer;
+    [SerializeField] private LayerMask enemyLayer;              // <- make sure this includes the Boss layer too
     [SerializeField] private LineRenderer lightningLinePrefab;
 
     private float damageTimer = 0f;
@@ -15,34 +15,19 @@ public class LightningRod : MonoBehaviour, IAbilityBehavior
     private static List<LightningRod> activeRods = new List<LightningRod>();
     private List<LineRenderer> lines = new List<LineRenderer>();
 
-   
     public void Initialize(Vector2 _, Rarity rarity)
     {
         switch (rarity)
         {
             case Rarity.Uncommon:
-                rodRange *= 1.10f;
-                damage *= 1.10f;
-                damageTickRate *= 0.90f;
-                break;
+                rodRange *= 1.10f; damage *= 1.10f; damageTickRate *= 0.90f; break;
             case Rarity.Rare:
-                rodRange *= 1.20f;
-                damage *= 1.20f;
-                damageTickRate *= 0.85f;
-                break;
+                rodRange *= 1.20f; damage *= 1.20f; damageTickRate *= 0.85f; break;
             case Rarity.Epic:
-                rodRange *= 1.30f;
-                damage *= 1.30f;
-                damageTickRate *= 0.80f;
-                break;
+                rodRange *= 1.30f; damage *= 1.30f; damageTickRate *= 0.80f; break;
             case Rarity.Legendary:
-                rodRange *= 1.40f;
-                damage *= 1.40f;
-                damageTickRate *= 0.70f;
-                break;
-                // Common = baseline
+                rodRange *= 1.40f; damage *= 1.40f; damageTickRate *= 0.70f; break;
         }
-
         if (damageTickRate < 0.05f) damageTickRate = 0.05f;
     }
 
@@ -56,7 +41,6 @@ public class LightningRod : MonoBehaviour, IAbilityBehavior
 
     private void Update()
     {
-        // Tick timer once per frame (prevents multi-decrement across multiple lines)
         damageTimer -= Time.deltaTime;
 
         ClearLines();
@@ -78,6 +62,8 @@ public class LightningRod : MonoBehaviour, IAbilityBehavior
     private void DrawLightning(Vector2 from, Vector2 to)
     {
         LineRenderer line = Instantiate(lightningLinePrefab);
+        line.useWorldSpace = true;
+        if (line.positionCount < 2) line.positionCount = 2;
         line.SetPosition(0, from);
         line.SetPosition(1, to);
         lines.Add(line);
@@ -91,7 +77,11 @@ public class LightningRod : MonoBehaviour, IAbilityBehavior
 
             foreach (var hit in hits)
             {
-                hit.collider.GetComponent<EnemyHealth>()?.TakeDamage(Mathf.RoundToInt(damage));
+                var eh = hit.collider.GetComponent<EnemyHealth>();
+                if (eh != null) eh.TakeDamage(Mathf.RoundToInt(damage));
+
+                var bh = hit.collider.GetComponent<BossHealth>();
+                if (bh != null) bh.TakeDamage(Mathf.RoundToInt(damage));   // <- boss damage
             }
 
             damageTimer = damageTickRate;

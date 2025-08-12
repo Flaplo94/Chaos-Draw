@@ -12,7 +12,7 @@ public class WaveManager : MonoBehaviour
     [SerializeField] private float spawnRadius = 10f;
     public GameObject[] enemyPrefabs;
     [Header("Spawn weights must match enemyPrefabs order!")]
-    [SerializeField] private float[] enemySpawnWeights = new float[] { 1f, 1f, 0.3f, 0.1f }; // Example: melee, melee, ranged, healer
+    [SerializeField] private float[] enemySpawnWeights = new float[] { 1f, 1f, 0.3f, 0.1f };
     public GameObject bossPrefab;
     public Transform bossSpawnPoint;
     public GameObject bossHealthBarUI;
@@ -21,14 +21,13 @@ public class WaveManager : MonoBehaviour
     public int startEnemyCount = 3;
     public float timeBetweenWaves = 2f;
     private int singleTypeIndex = -1;
-    private int unlockedEnemyTypes = 2; // Start with 2 types unlocked
+    private int unlockedEnemyTypes = 2; 
 
     private int currentWave = 0;
     private List<GameObject> enemiesInWave = new List<GameObject>();
     private bool waveInProgress = false;
     public TextMeshProUGUI waveText;
 
-    // --- Weighted random selection helper ---
     private int GetWeightedRandomIndex(int maxIndex)
     {
         float totalWeight = 0f;
@@ -43,9 +42,9 @@ public class WaveManager : MonoBehaviour
             if (randomValue < cumulative)
                 return i;
         }
-        return maxIndex - 1; // fallback
+        return maxIndex - 1; 
     }
-    // ----------------------------------------
+    
 
     void Update()
     {
@@ -53,15 +52,15 @@ public class WaveManager : MonoBehaviour
         {
             if (currentBoss == null)
             {
-                bossHealthBarUI.SetActive(false); // Hide health bar immediately when boss dies
+                bossHealthBarUI.SetActive(false);
             }
             if (currentBoss == null && enemiesInWave.Count == 0)
             {
                 bossSpawned = false;
                 cardHandUI.OnWaveCompleted();
-                StartCoroutine(NextWave()); // resume normal waves
+                StartCoroutine(NextWave());
             }
-            return; // don't spawn waves while boss or minions are alive
+            return;
         }
 
 
@@ -84,20 +83,20 @@ public class WaveManager : MonoBehaviour
         currentWave++;
         waveText.text = "Wave " + currentWave;
 
-        // Unlock a new enemy type every 5th wave, up to all types
+        
         if (currentWave % 5 == 0 && unlockedEnemyTypes < enemyPrefabs.Length)
         {
             unlockedEnemyTypes++;
         }
         int maxIndex = Mathf.Min(unlockedEnemyTypes, enemyPrefabs.Length);
 
-        // Boss wave every 10th wave
+        
         if (currentWave % 10 == 0)
         {
             bossHealthBarUI.SetActive(true);
             currentBoss = Instantiate(bossPrefab, bossSpawnPoint.position, Quaternion.identity);
 
-            // Set the waveManager reference on the boss's BossSpawner
+            
             BossSpawner spawner = currentBoss.GetComponent<BossSpawner>();
             if (spawner != null)
             {
@@ -106,19 +105,19 @@ public class WaveManager : MonoBehaviour
 
             bossSpawned = true;
 
-            // Assign health bar
+            
             Slider bossSlider = bossHealthBarUI.GetComponent<Slider>();
             BossHealth bossHealth = currentBoss.GetComponent<BossHealth>();
             bossHealth.AssignHealthBar(bossSlider);
 
             Camera.main.GetComponent<CameraFollow>().FocusTemporarily(bossSpawnPoint.position, 2.5f);
-            singleTypeIndex = -1; // Reset for after boss
-            yield break; // skip regular enemies this wave
+            singleTypeIndex = -1;
+            yield break;
         }
 
         int enemyCount = startEnemyCount + currentWave * 2;
 
-        // Every 5th wave, pick a single random enemy type (from unlocked, weighted)
+       
         bool singleTypeWave = (currentWave % 5 == 0);
 
         if (singleTypeWave)

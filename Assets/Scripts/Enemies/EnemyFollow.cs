@@ -6,7 +6,7 @@ public class EnemyFollow : MonoBehaviour
     [SerializeField] private float speed = 2f;
     [SerializeField] private float separationRadius = 1.5f;
     [SerializeField] private float separationStrength = 2f;
-    [SerializeField] private bool isHealer = false; // Set this true for healer enemies in the Inspector
+    [SerializeField] private bool isHealer = false;
 
     private Transform player;
     private static readonly List<EnemyFollow> allEnemies = new List<EnemyFollow>();
@@ -17,12 +17,15 @@ public class EnemyFollow : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        player = GameObject.FindWithTag("Player").transform;
+        rb.gravityScale = 0f;
+        rb.linearDamping = 0f;
+        rb.freezeRotation = true;
+        rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+
+        player = GameObject.FindWithTag("Player")?.transform;
         rangedAttack = GetComponent<RangedEnemyAttack>();
-        if (rangedAttack != null)
-            attackRange = rangedAttack.shootRange;
-        else
-            attackRange = 0.8f; // Or set a default melee range if you want
+        attackRange = (rangedAttack != null) ? rangedAttack.shootRange : 0.8f;
+
         allEnemies.Add(this);
     }
 
@@ -31,16 +34,23 @@ public class EnemyFollow : MonoBehaviour
         allEnemies.Remove(this);
     }
 
-    void Update()
+    void FixedUpdate()
     {
+        // reacquire if needed
+        if (player == null)
+        {
+            var p = GameObject.FindWithTag("Player");
+            if (p != null) player = p.transform;
+        }
+
         Transform target = null;
 
         if (isHealer)
         {
-            // Find the nearest other enemy
             float minDist = float.MaxValue;
-            foreach (var other in allEnemies)
+            for (int i = 0; i < allEnemies.Count; i++)
             {
+                var other = allEnemies[i];
                 if (other == this) continue;
                 float dist = Vector2.Distance(transform.position, other.transform.position);
                 if (dist < minDist)
@@ -49,45 +59,48 @@ public class EnemyFollow : MonoBehaviour
                     target = other.transform;
                 }
             }
-            if (target == null) return; // No other enemies to follow
+            if (target == null) { rb.linearVelocity = Vector2.zero; return; }
         }
         else
         {
             target = player;
-        }
+            if (target == null) { rb.linearVelocity = Vector2.zero; return; }
 
-        if (target == null) return;
-
-        // Stop if in attack range (only for non-healers)
-        if (!isHealer && attackRange > 0f)
-        {
-            float distance = Vector2.Distance(transform.position, player.position);
-            if (distance <= attackRange)
-                return; // Stop moving
-        }
-
-        Vector2 directionToTarget = (target.position - transform.position).normalized;
-        Vector2 separation = Vector2.zero;
-        int count = 0;
-
-        foreach (var other in allEnemies)
-        {
-            if (other == this) continue;
-
-            float dist = Vector2.Distance(transform.position, other.transform.position);
-            if (dist < separationRadius && dist > 0f)
+            // Stop if in attack range
+            if (attackRange > 0f)
             {
-                Vector2 push = (Vector2)(transform.position - other.transform.position);
-                separation += push.normalized / dist;
-                count++;
+                float distance = Vector2.Distance(transform.position, target.position);
+                if (distance <= attackRange)
+                {
+                    rb.linearVelocity = Vector2.zero;
+                    return;
+                }
             }
         }
 
-        if (count > 0)
-            separation /= count;
+        // Steering + separation
+        Vector2 toTarget = ((Vector2)target.position - rb.position).normalized;
 
-        Vector2 finalDirection = (directionToTarget + separation * separationStrength).normalized;
-        rb.MovePosition(rb.position + finalDirection * speed * Time.deltaTime);
+        Vector2 separation = Vector2.zero;
+        int count = 0;
+        for (int i = 0; i < allEnemies.Count; i++)
+        {
+            var other = allEnemies[i];
+            if (other == this) continue;
 
+            float dist = Vector2.Distance(rb.position, other.transform.position);
+            if (dist < separationRadius && dist > 0f)
+            {
+                Vector2 away = (rb.position - (Vector2)other.transform.position).normalized / dist;
+                separation += away;
+                count++;
+            }
+        }
+        if (count > 0) separation /= count;
+
+        Vector2 finalDir = (toTarget + separation * separationStrength).normalized;
+
+        // Drive with velocity (physics-friendly, consistent speed)
+        rb.linearVelocity = finalDir * speed;
     }
 }

@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 810580b0db5b0e84587b09ccac852a30, type: 3}
-  m_Name: LightningRod
+  m_Name: LightningBall
   m_EditorClassIdentifier: 
-  abilityName: Lightning Rod
-  icon: {fileID: -1783808350427418317, guid: d815f599388e98c458b574eaef833fbe, type: 3}
-  effectPrefab: {fileID: 4804991577932546782, guid: 604a5d0f1ce92474d909e6c86dbe5acd, type: 3}
-  spawnAtMousePosition: 1
+  abilityName: Lightning Ball
+  icon: {fileID: 8369304094877553587, guid: 40327cf57fd376c4eadbae19c749c671, type: 3}
+  effectPrefab: {fileID: 4804991577932546782, guid: 32054acbc325aa4489fb441bd976a866, type: 3}
+  spawnAtMousePosition: 0
   manaCost: 10
-  description: Place a lightning rod where you aim, lightning will jump between you
-    and other rods in range.
+  description: A slow-moving sphere that zaps anything it passes near until it dissipates
+    and bounces of enemies or terrain.
   rarity: 0

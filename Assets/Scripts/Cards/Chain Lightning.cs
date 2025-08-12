@@ -6,7 +6,7 @@ public class ChainLightning : MonoBehaviour, IAbilityBehavior
     [SerializeField] private float range = 5f;
     [SerializeField] private int damage = 1;
     [SerializeField] private int maxChains = 3;
-    [SerializeField] private LayerMask enemyLayer;
+    [SerializeField] private LayerMask enemyLayer;          // <- must include the Boss layer too
     [SerializeField] private GameObject castVisual;
     [SerializeField] private GameObject lightningVisual;
 
@@ -29,49 +29,57 @@ public class ChainLightning : MonoBehaviour, IAbilityBehavior
     {
         if (castVisual != null)
         {
-            GameObject vfx = Instantiate(castVisual, transform.position, Quaternion.identity);
+            var vfx = Instantiate(castVisual, transform.position, Quaternion.identity);
             Destroy(vfx, 0.5f);
         }
 
-        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(transform.position, range, enemyLayer);
-        HashSet<Collider2D> hitSet = new HashSet<Collider2D>();
+        // Make sure enemyLayer includes BOTH normal enemies AND bosses
+        Collider2D[] inRange = Physics2D.OverlapCircleAll(transform.position, range, enemyLayer);
 
-        Vector3 previousPosition = transform.position;
+        var hitSet = new HashSet<Collider2D>();
+        Vector3 prevPos = transform.position;
 
         for (int i = 0; i < maxChains; i++)
         {
             Collider2D nearest = null;
             float nearestDist = float.MaxValue;
 
-            foreach (var enemy in hitEnemies)
+            foreach (var c in inRange)
             {
-                if (hitSet.Contains(enemy)) continue;
+                if (c == null || hitSet.Contains(c)) continue;
 
-                float dist = Vector2.Distance(previousPosition, enemy.transform.position);
+                float dist = Vector2.Distance(prevPos, c.transform.position);
                 if (dist < nearestDist)
                 {
-                    nearest = enemy;
+                    nearest = c;
                     nearestDist = dist;
                 }
             }
 
             if (nearest == null) break;
 
+            // Draw arc
             if (lightningVisual != null)
             {
-                GameObject vfx = Instantiate(lightningVisual);
+                var vfx = Instantiate(lightningVisual);
                 var lr = vfx.GetComponent<LineRenderer>();
                 if (lr != null)
                 {
-                    lr.SetPosition(0, previousPosition);
+                    lr.useWorldSpace = true;
+                    if (lr.positionCount < 2) lr.positionCount = 2;
+                    lr.SetPosition(0, prevPos);
                     lr.SetPosition(1, nearest.transform.position);
                 }
                 Destroy(vfx, 0.2f);
             }
 
             hitSet.Add(nearest);
-            nearest.GetComponent<EnemyHealth>()?.TakeDamage(damage);
-            previousPosition = nearest.transform.position;
+
+            // Damage enemy OR boss
+            if (nearest.TryGetComponent(out EnemyHealth eh)) eh.TakeDamage(damage);
+            if (nearest.TryGetComponent(out BossHealth bh)) bh.TakeDamage(damage);
+
+            prevPos = nearest.transform.position;
         }
 
         Destroy(gameObject);

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 810580b0db5b0e84587b09ccac852a30, type: 3}
   m_Name: ChainLightning
   m_EditorClassIdentifier: 
-  abilityName: Chain Lightining
+  abilityName: Chain Lightning
   icon: {fileID: 7680820834086852892, guid: 67b23ed8c815a7d448851a76cb376c64, type: 3}
   effectPrefab: {fileID: 4804991577932546782, guid: 8b4dd582ffba7ce4ea20ff06f1199905, type: 3}
   spawnAtMousePosition: 0

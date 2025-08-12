@@ -7,7 +7,7 @@ using UnityEngine.InputSystem;
 public class CardHandUI : MonoBehaviour
 {
     [Header("Card UI")]
-    [SerializeField] private Image[] cardSlots;
+    [SerializeField] private CardSlotUI[] cardSlots;
     [SerializeField] private TextMeshProUGUI discardCounterText;
 
     [Header("Card Pool")]
@@ -18,7 +18,6 @@ public class CardHandUI : MonoBehaviour
     [SerializeField] private GameObject rewardUI;
     [SerializeField] private GameObject[] rewardCards;
     [SerializeField] private Button skipButton;
-
 
     private int waveCount = 0;
     private List<Ability> deck = new();
@@ -83,7 +82,7 @@ public class CardHandUI : MonoBehaviour
 
     private void DrawCard(int slotIndex)
     {
-        // Reshuffle if needed
+        
         if (drawPile.Count == 0 && discardPile.Count == deck.Count)
         {
             drawPile.AddRange(discardPile);
@@ -92,7 +91,7 @@ public class CardHandUI : MonoBehaviour
             discardCount = 0;
             UpdateDiscardText();
 
-            // Refill all empty slots after reshuffle
+            
             for (int i = 0; i < hand.Length; i++)
             {
                 if (hand[i] == null)
@@ -107,8 +106,9 @@ public class CardHandUI : MonoBehaviour
         drawPile.RemoveAt(0);
         hand[slotIndex] = card;
 
-        cardSlots[slotIndex].sprite = card.icon;
-        cardSlots[slotIndex].color = Color.white;
+        
+        if (cardSlots != null && slotIndex < cardSlots.Length && cardSlots[slotIndex] != null)
+            cardSlots[slotIndex].Show(card, GetRarityColor(card.rarity));
     }
 
     private void TryUseCard(int index)
@@ -116,14 +116,14 @@ public class CardHandUI : MonoBehaviour
         if (hand[index] == null) return;
 
         bool success = hand[index].Activate();
-
         if (!success) return;
 
         discardPile.Add(hand[index]);
         hand[index] = null;
 
-        cardSlots[index].sprite = null;
-        cardSlots[index].color = new Color(1, 1, 1, 0);
+       
+        if (cardSlots != null && index < cardSlots.Length && cardSlots[index] != null)
+            cardSlots[index].Clear();
 
         discardCount++;
         UpdateDiscardText();
@@ -195,17 +195,13 @@ public class CardHandUI : MonoBehaviour
             Ability abilityCopy = Instantiate(baseAbility);
             abilityCopy.rarity = RollRarity();
 
-            var nameText = rewardCards[i].transform.Find("AbilityName")?.GetComponent<TMPro.TextMeshProUGUI>();
-            var artImage = rewardCards[i].transform.Find("AbilityArt")?.GetComponent<UnityEngine.UI.Image>();
-            var descText = rewardCards[i].transform.Find("AbilityDescription")?.GetComponent<TMPro.TextMeshProUGUI>();
-            var buttonImage = rewardCards[i].GetComponent<UnityEngine.UI.Image>();
+            var nameText = rewardCards[i].transform.Find("AbilityName")?.GetComponent<TextMeshProUGUI>();
+            var artImage = rewardCards[i].transform.Find("AbilityArt")?.GetComponent<Image>();
+            var descText = rewardCards[i].transform.Find("AbilityDescription")?.GetComponent<TextMeshProUGUI>();
+            var buttonImage = rewardCards[i].GetComponent<Image>();
 
             if (nameText != null) nameText.text = abilityCopy.abilityName + " [" + abilityCopy.rarity + "]";
-            if (artImage != null)
-            {
-                artImage.sprite = abilityCopy.icon;
-                artImage.color = Color.white;
-            }
+            if (artImage != null) { artImage.sprite = abilityCopy.icon; artImage.color = Color.white; }
             if (descText != null) descText.text = abilityCopy.description;
             if (buttonImage != null) buttonImage.color = GetRarityColor(abilityCopy.rarity);
 
@@ -230,13 +226,9 @@ public class CardHandUI : MonoBehaviour
         });
     }
 
-
-
-
     private void AddCardToDeck(Ability ability)
     {
         deck.Add(ability);
         drawPile.Add(ability);
     }
-
 }
