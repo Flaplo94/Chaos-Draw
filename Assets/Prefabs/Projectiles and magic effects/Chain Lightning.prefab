@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7394062187116095109}
   - component: {fileID: 1821094783447712840}
   - component: {fileID: 6065762283956925937}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Chain Lightning
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -21,6 +21,9 @@ public class PlayerArtifactManager : MonoBehaviour
             Debug.Log($"Artifact added: {artifact.artifactName}");
 
             ApplyArtifactEffect(artifact);
+
+            var ui = FindFirstObjectByType<ArtifactUIManager>();
+            if (ui != null) ui.UpdateArtifactUI();
         }
     }
 

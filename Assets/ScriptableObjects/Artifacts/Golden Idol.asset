@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a73ad28a0c1ec464b9c7f2bada0c5158, type: 3}
   m_Name: Golden Idol
   m_EditorClassIdentifier: 
-  artifactName: 
-  description: 
+  artifactName: Golden Idol
+  description: Enemies drop 50% more gold. You absolute goblin.
   icon: {fileID: 0}
   rarity: 0
   internalID: 
