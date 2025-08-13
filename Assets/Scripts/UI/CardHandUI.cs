@@ -151,7 +151,7 @@ public class CardHandUI : MonoBehaviour
     public void OnWaveCompleted()
     {
         waveCount++;
-        if (waveCount % 5 == 0)
+        if (waveCount % 4 == 0)
         {
             ShowRewardUI();
         }
