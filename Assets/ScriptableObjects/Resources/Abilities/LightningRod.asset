@@ -10,12 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 810580b0db5b0e84587b09ccac852a30, type: 3}
-  m_Name: ChainLightning
+  m_Name: LightningRod
   m_EditorClassIdentifier: 
-  abilityName: Chain Lightning
-  icon: {fileID: 7680820834086852892, guid: 67b23ed8c815a7d448851a76cb376c64, type: 3}
-  effectPrefab: {fileID: 4804991577932546782, guid: 8b4dd582ffba7ce4ea20ff06f1199905, type: 3}
-  spawnAtMousePosition: 0
+  abilityName: Lightning Rod
+  icon: {fileID: -1783808350427418317, guid: d815f599388e98c458b574eaef833fbe, type: 3}
+  effectPrefab: {fileID: 4804991577932546782, guid: 604a5d0f1ce92474d909e6c86dbe5acd, type: 3}
+  spawnAtMousePosition: 1
   manaCost: 10
-  description: Hits a random enemy in range and jumps to 2 other random enemies.
+  description: Place a lightning rod where you aim, lightning will jump between you
+    and other rods in range.
   rarity: 0
+  magicType: 1

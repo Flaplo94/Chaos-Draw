@@ -23,12 +23,19 @@ public class Shield : MonoBehaviour, IAbilityBehavior
     private Color originalColor;
 
     // Called by Ability right after Instantiate
-    public void Initialize(Vector2 _, Rarity rarity)
+    public bool Initialize(Vector2 _, Rarity rarity)
     {
         // Replace any existing shield
         if (Active != null && Active != this)
-            Destroy(Active.gameObject);
-
+        {
+            UIMessage uiMessage = FindFirstObjectByType<UIMessage>();
+            if (uiMessage != null)
+            {
+                uiMessage.ShowMessage("Shield is already active");
+            }
+            Destroy(gameObject);
+            return false; // already active, do not consume card
+        }
         Active = this;
         currentHealth = baseShieldHealth;
 
@@ -56,6 +63,7 @@ public class Shield : MonoBehaviour, IAbilityBehavior
         }
 
         if (duration < 0f) duration = 0f;
+        return true;
     }
 
     private void Start()

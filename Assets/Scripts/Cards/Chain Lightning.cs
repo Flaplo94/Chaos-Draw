@@ -10,7 +10,7 @@ public class ChainLightning : MonoBehaviour, IAbilityBehavior
     [SerializeField] private GameObject castVisual;
     [SerializeField] private GameObject lightningVisual;
 
-    public void Initialize(Vector2 dir, Rarity rarity)
+    public bool Initialize(Vector2 dir, Rarity rarity)
     {
         switch (rarity)
         {
@@ -23,6 +23,7 @@ public class ChainLightning : MonoBehaviour, IAbilityBehavior
             case Rarity.Legendary:
                 maxChains += 5; damage += 4; break;
         }
+        return true;
     }
 
     private void Start()

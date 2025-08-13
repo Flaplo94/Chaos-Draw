@@ -10,12 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 810580b0db5b0e84587b09ccac852a30, type: 3}
-  m_Name: Fireball
+  m_Name: AOEPulse
   m_EditorClassIdentifier: 
-  abilityName: Fireball
-  icon: {fileID: -5750353039905602045, guid: 6cb2033f257ea304d923eb39eca3b8d0, type: 3}
-  effectPrefab: {fileID: 4804991577932546782, guid: e683a791c96afe847a2b82a7f6b6e1e9, type: 3}
+  abilityName: AOE Pulse
+  icon: {fileID: -2381029641354267749, guid: 70a254eb20c4e53499fd31bbd43ebea6, type: 3}
+  effectPrefab: {fileID: 4804991577932546782, guid: c565b68d628f8594cbcfa5a6ef25b890, type: 3}
   spawnAtMousePosition: 0
   manaCost: 10
-  description: Shoots where you aim it and explodes when it hits an enemy.
+  description: Hits all enemies around the player in range.
   rarity: 0
+  magicType: 0

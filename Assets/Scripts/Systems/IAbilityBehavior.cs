@@ -2,5 +2,6 @@ using UnityEngine;
 
 public interface IAbilityBehavior
 {
-    void Initialize(Vector2 direction, Rarity rarity);
+    // Return true to allow activation; false to veto (card should not be consumed)
+    bool Initialize(Vector2 direction, Rarity rarity);
 }

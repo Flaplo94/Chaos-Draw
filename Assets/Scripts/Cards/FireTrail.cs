@@ -13,7 +13,7 @@ public class FireTrail : MonoBehaviour, IAbilityBehavior
     private Rarity rarityApplied = Rarity.Common;
 
     // Rarity hook — called by Ability when spawning this controller
-    public void Initialize(Vector2 _, Rarity rarity)
+    public bool Initialize(Vector2 _, Rarity rarity)
     {
         rarityApplied = rarity;
 
@@ -42,6 +42,7 @@ public class FireTrail : MonoBehaviour, IAbilityBehavior
                 break;
                 // Common = no bonus
         }
+        return true;
     }
 
     private void Start()

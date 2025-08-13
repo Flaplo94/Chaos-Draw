@@ -17,7 +17,7 @@ public class PlaceWall : MonoBehaviour, IAbilityBehavior
     private readonly Dictionary<Collider2D, float> nextTickTime = new Dictionary<Collider2D, float>();
 
     // Called by Ability after Instantiate
-    public void Initialize(Vector2 _, Rarity rarity)
+    public bool Initialize(Vector2 _, Rarity rarity)
     {
         switch (rarity)
         {
@@ -52,6 +52,7 @@ public class PlaceWall : MonoBehaviour, IAbilityBehavior
         // safety
         if (thornsInterval < 0.05f) thornsInterval = 0.05f;
         if (lifetime < 0.1f) lifetime = 0.1f;
+        return true;
     }
 
     private void Start()

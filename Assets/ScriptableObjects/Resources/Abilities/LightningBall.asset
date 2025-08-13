@@ -10,12 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 810580b0db5b0e84587b09ccac852a30, type: 3}
-  m_Name: GodSpeed
+  m_Name: LightningBall
   m_EditorClassIdentifier: 
-  abilityName: God Speed
-  icon: {fileID: -963791335356448533, guid: 2eb521d373827fb409bbc6051444afb1, type: 3}
-  effectPrefab: {fileID: 4804991577932546782, guid: 8bc3f8327a435c842a89e756c90fcd79, type: 3}
+  abilityName: Lightning Ball
+  icon: {fileID: 8369304094877553587, guid: 40327cf57fd376c4eadbae19c749c671, type: 3}
+  effectPrefab: {fileID: 4804991577932546782, guid: 32054acbc325aa4489fb441bd976a866, type: 3}
   spawnAtMousePosition: 0
   manaCost: 10
-  description: Increases the players movement speed and zaps enemies that gets close
+  description: A slow-moving sphere that zaps anything it passes near until it dissipates
+    and bounces of enemies or terrain.
   rarity: 0
+  magicType: 1

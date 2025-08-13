@@ -18,7 +18,7 @@ public class LightningBall : MonoBehaviour, IAbilityBehavior
     private Collider2D col;
     private Vector2 lastVelocity;
 
-    public void Initialize(Vector2 dir, Rarity rarity)
+    public bool Initialize(Vector2 dir, Rarity rarity)
     {
         direction = dir.normalized;
 
@@ -29,6 +29,7 @@ public class LightningBall : MonoBehaviour, IAbilityBehavior
             case Rarity.Epic: zapRadius *= 1.3f; duration += 2f; damagePerTick += 2; break;
             case Rarity.Legendary: zapRadius *= 1.5f; duration += 3f; damagePerTick += 3; break;
         }
+        return true;
     }
 
     private void Start()

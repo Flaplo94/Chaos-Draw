@@ -19,3 +19,4 @@ MonoBehaviour:
   manaCost: 10
   description: Flying through enemies dealing damage when it go through them
   rarity: 0
+  magicType: 0

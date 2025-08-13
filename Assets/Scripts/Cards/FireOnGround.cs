@@ -13,7 +13,7 @@ public class FireOnGround : MonoBehaviour, IAbilityBehavior
     private float tickTimer;
     private float lifeTimer;
 
-    public void Initialize(Vector2 dir, Rarity rarity)
+    public bool Initialize(Vector2 dir, Rarity rarity)
     {
         switch (rarity)
         {
@@ -26,6 +26,7 @@ public class FireOnGround : MonoBehaviour, IAbilityBehavior
             case Rarity.Legendary:
                 radius *= 2f; damagePerTick += 3; break;
         }
+        return true;
     }
 
     private void Start()

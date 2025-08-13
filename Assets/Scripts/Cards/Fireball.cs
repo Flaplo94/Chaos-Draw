@@ -9,7 +9,7 @@ public class Fireball : MonoBehaviour, IAbilityBehavior
     [SerializeField] private GameObject aoeVisual;
     [SerializeField] private Color aoeColor = Color.red;
 
-    public void Initialize(Vector2 dir, Rarity rarity)
+    public bool Initialize(Vector2 dir, Rarity rarity)
     {
         direction = dir.normalized;
 
@@ -24,6 +24,7 @@ public class Fireball : MonoBehaviour, IAbilityBehavior
             case Rarity.Legendary:
                 aoeRadius *= 2f; damage += 20; break;
         }
+        return true;
     }
 
     void Update()

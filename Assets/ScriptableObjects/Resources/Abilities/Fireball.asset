@@ -10,12 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 810580b0db5b0e84587b09ccac852a30, type: 3}
-  m_Name: FireTrail
+  m_Name: Fireball
   m_EditorClassIdentifier: 
-  abilityName: Fire Trail
-  icon: {fileID: -2947526863502713391, guid: 369b1e1d3514a7b4d85ac2233615de27, type: 3}
-  effectPrefab: {fileID: 4804991577932546782, guid: 3c18a37447b62754498692a052d80e02, type: 3}
+  abilityName: Fireball
+  icon: {fileID: -5750353039905602045, guid: 6cb2033f257ea304d923eb39eca3b8d0, type: 3}
+  effectPrefab: {fileID: 4804991577932546782, guid: e683a791c96afe847a2b82a7f6b6e1e9, type: 3}
   spawnAtMousePosition: 0
   manaCost: 10
-  description: Place fire where you walk.
+  description: Shoots where you aim it and explodes when it hits an enemy.
   rarity: 0
+  magicType: 0

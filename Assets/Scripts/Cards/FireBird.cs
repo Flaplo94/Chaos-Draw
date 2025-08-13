@@ -19,7 +19,7 @@ public class FireBird : MonoBehaviour, IAbilityBehavior
     private float lifeTimer;
     private readonly HashSet<Transform> hitRoots = new HashSet<Transform>(); // avoid multi-hit on same target
 
-    public void Initialize(Vector2 dir, Rarity rarity)
+    public bool Initialize(Vector2 dir, Rarity rarity)
     {
         direction = dir.normalized;
         remainingPierces = basePierces;
@@ -38,9 +38,9 @@ public class FireBird : MonoBehaviour, IAbilityBehavior
                 scaleMul = 1.5f; damage += 12; remainingPierces += 5; break;
                 // Common: baseline
         }
-
         // Apply visual size
         transform.localScale *= baseScale * scaleMul;
+        return true;
     }
 
     void Update()

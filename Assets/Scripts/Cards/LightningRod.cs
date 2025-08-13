@@ -15,7 +15,7 @@ public class LightningRod : MonoBehaviour, IAbilityBehavior
     private static List<LightningRod> activeRods = new List<LightningRod>();
     private List<LineRenderer> lines = new List<LineRenderer>();
 
-    public void Initialize(Vector2 _, Rarity rarity)
+    public bool Initialize(Vector2 _, Rarity rarity)
     {
         switch (rarity)
         {
@@ -29,6 +29,7 @@ public class LightningRod : MonoBehaviour, IAbilityBehavior
                 rodRange *= 1.40f; damage *= 1.40f; damageTickRate *= 0.70f; break;
         }
         if (damageTickRate < 0.05f) damageTickRate = 0.05f;
+        return true;
     }
 
     private void Start()

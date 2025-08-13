@@ -10,12 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 810580b0db5b0e84587b09ccac852a30, type: 3}
-  m_Name: FireOnGround
+  m_Name: ChainLightning
   m_EditorClassIdentifier: 
-  abilityName: Fire On Ground
-  icon: {fileID: 8288426215254106694, guid: da112e855d25f0245b13499b5eed90e3, type: 3}
-  effectPrefab: {fileID: 4804991577932546782, guid: ad655e86463b36d4a9430b78a142e9aa, type: 3}
-  spawnAtMousePosition: 1
+  abilityName: Chain Lightning
+  icon: {fileID: 7680820834086852892, guid: 67b23ed8c815a7d448851a76cb376c64, type: 3}
+  effectPrefab: {fileID: 4804991577932546782, guid: 8b4dd582ffba7ce4ea20ff06f1199905, type: 3}
+  spawnAtMousePosition: 0
   manaCost: 10
-  description: Place fire where you aim it.
+  description: Hits a random enemy in range and jumps to 2 other random enemies.
   rarity: 0
+  magicType: 1

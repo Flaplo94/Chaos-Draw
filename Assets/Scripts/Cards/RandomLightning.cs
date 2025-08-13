@@ -13,7 +13,7 @@ public class RandomLightning : MonoBehaviour, IAbilityBehavior
     private int bonusStrikes = 0;
     private float damageMultiplier = 1f;
 
-    public void Initialize(Vector2 _, Rarity rarity)
+    public bool Initialize(Vector2 _, Rarity rarity)
     {
         switch (rarity)
         {
@@ -23,6 +23,7 @@ public class RandomLightning : MonoBehaviour, IAbilityBehavior
             case Rarity.Legendary: bonusStrikes = 4; damageMultiplier = 1.40f; break;
                 // Common = baseline
         }
+        return true;
     }
 
     private void Start()

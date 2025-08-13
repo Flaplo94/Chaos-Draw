@@ -9,7 +9,7 @@ public class AOEPulse : MonoBehaviour, IAbilityBehavior
     [SerializeField] private GameObject radiusVisual;
     [SerializeField] private Color aoeColor = Color.red;
 
-    public void Initialize(Vector2 dir, Rarity rarity)
+    public bool Initialize(Vector2 dir, Rarity rarity)
     {
         switch (rarity)
         {
@@ -22,6 +22,7 @@ public class AOEPulse : MonoBehaviour, IAbilityBehavior
             case Rarity.Legendary:
                 radius *= 2f; damage += 7; break;
         }
+        return true;
     }
 
     private void Start()
