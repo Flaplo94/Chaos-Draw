@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 810580b0db5b0e84587b09ccac852a30, type: 3}
+  m_Name: FireBird
+  m_EditorClassIdentifier: 
+  abilityName: Fire Bird
+  icon: {fileID: -8586417740124189794, guid: a93bace5f3f458944a6d018144bd0ea2, type: 3}
+  effectPrefab: {fileID: 4804991577932546782, guid: 9019518a972eb32498dabb87b5a33b0c, type: 3}
+  spawnAtMousePosition: 0
+  manaCost: 10
+  description: Flying through enemies dealing damage when it go through them
+  rarity: 0
+  magicType: 0

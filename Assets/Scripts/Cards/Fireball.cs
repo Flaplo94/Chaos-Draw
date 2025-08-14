@@ -1,20 +1,30 @@
 using UnityEngine;
 
-public class Fireball : MonoBehaviour
+public class Fireball : MonoBehaviour, IAbilityBehavior
 {
     public float speed = 10f;
     public int damage = 10;
     public float aoeRadius = 2f;
     private Vector2 direction;
     [SerializeField] private GameObject aoeVisual;
-    [SerializeField] private Color aoeColor = Color.red; // Set in Inspector for each ability
+    [SerializeField] private Color aoeColor = Color.red;
 
-    
-
-    public void SetDirection(Vector2 dir)
+    public bool Initialize(Vector2 dir, Rarity rarity)
     {
         direction = dir.normalized;
-        
+
+        switch (rarity)
+        {
+            case Rarity.Uncommon:
+                aoeRadius *= 1.2f; break;
+            case Rarity.Rare:
+                aoeRadius *= 1.4f; damage += 5; break;
+            case Rarity.Epic:
+                aoeRadius *= 1.6f; damage += 10; break;
+            case Rarity.Legendary:
+                aoeRadius *= 2f; damage += 20; break;
+        }
+        return true;
     }
 
     void Update()
@@ -24,60 +34,27 @@ public class Fireball : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        // Damage single enemy
-        EnemyHealth enemy = other.GetComponent<EnemyHealth>();
-        if (enemy != null)
+        if (!other.CompareTag("Enemy") && !other.CompareTag("Boss")) return;
+
+        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, aoeRadius);
+        foreach (var hit in hits)
         {
-            enemy.TakeDamage(damage);
-            // AOE
-            Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, aoeRadius);
-            foreach (var hit in hits)
-            {
-                EnemyHealth aoeEnemy = hit.GetComponent<EnemyHealth>();
-                if (aoeEnemy != null && aoeEnemy != enemy)
-                    aoeEnemy.TakeDamage(damage);
-            }
-
-            if (aoeVisual != null)
-            {
-                GameObject vfx = Instantiate(aoeVisual, transform.position, Quaternion.identity);
-                vfx.transform.localScale = Vector3.one * aoeRadius * 2f; // Diameter
-                var sr = vfx.GetComponent<SpriteRenderer>();
-                if (sr != null)
-                    sr.color = aoeColor;
-                Destroy(vfx, 0.1f); // Auto-remove visual
-            }
-
-            Destroy(gameObject);
-            return;
+            if (hit.TryGetComponent(out EnemyHealth eh))
+                eh.TakeDamage(damage);
+            if (hit.TryGetComponent(out BossHealth bh))
+                bh.TakeDamage(damage);
         }
 
-        // Damage boss
-        BossHealth boss = other.GetComponent<BossHealth>();
-        if (boss != null)
+        if (aoeVisual != null)
         {
-            boss.TakeDamage(damage);
-            // AOE
-            Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, aoeRadius);
-            foreach (var hit in hits)
-            {
-                BossHealth aoeBoss = hit.GetComponent<BossHealth>();
-                if (aoeBoss != null && aoeBoss != boss)
-                    aoeBoss.TakeDamage(damage);
-            }
-
-            if (aoeVisual != null)
-            {
-                GameObject vfx = Instantiate(aoeVisual, transform.position, Quaternion.identity);
-                vfx.transform.localScale = Vector3.one * aoeRadius * 2f; // Diameter
-                var sr = vfx.GetComponent<SpriteRenderer>();
-                if (sr != null)
-                    sr.color = aoeColor;
-                Destroy(vfx, 0.1f); // Auto-remove visual
-            }
-
-            Destroy(gameObject);
-            return;
+            GameObject vfx = Instantiate(aoeVisual, transform.position, Quaternion.identity);
+            vfx.transform.localScale = Vector3.one * aoeRadius * 2f;
+            var sr = vfx.GetComponent<SpriteRenderer>();
+            if (sr != null)
+                sr.color = aoeColor;
+            Destroy(vfx, 0.1f);
         }
+
+        Destroy(gameObject);
     }
 }

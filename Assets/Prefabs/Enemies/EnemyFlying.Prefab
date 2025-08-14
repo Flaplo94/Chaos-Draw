@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 289022092848225740}
   - component: {fileID: 3308837611534964102}
   - component: {fileID: 7540859639785825885}
-  m_Layer: 9
+  m_Layer: 7
   m_Name: DamageTrigger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -95,10 +95,10 @@ GameObject:
   - component: {fileID: 2777700163195333270}
   - component: {fileID: 251748052483166877}
   - component: {fileID: 6706808530034103868}
-  - component: {fileID: 1849891846209710151}
   - component: {fileID: 76683931486816045}
-  m_Layer: 9
-  m_Name: Enemy1Hit_prefab
+  - component: {fileID: 8842564766879278348}
+  m_Layer: 7
+  m_Name: EnemyFlying
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -161,11 +161,11 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -957766307
-  m_SortingLayer: 3
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
-  m_Color: {r: 0, g: 1, b: 0.9137254, a: 1}
+  m_Sprite: {fileID: 7482667652216324306, guid: 75f5f34dc1b5347e0b8351032682f224, type: 3}
+  m_Color: {r: 0, g: 0.5269728, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -238,22 +238,6 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 0.5
---- !u!114 &1849891846209710151
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7502241114002446682}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e69a65c1c69b43a49ab42864c6954d94, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 7
-  separationRadius: 0.7
-  separationStrength: 2
-  isHealer: 0
 --- !u!114 &76683931486816045
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -266,4 +250,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d32584ad1a20fe24b9522d8dbef73d33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 1
+  maxHealth: 2
+--- !u!114 &8842564766879278348
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7502241114002446682}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd3461a880fa24a4abeb7e314371d3e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 3

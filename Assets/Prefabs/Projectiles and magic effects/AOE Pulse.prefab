@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7394062187116095109}
   - component: {fileID: 1821094783447712840}
   - component: {fileID: -8708009796252805686}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: AOE Pulse
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -169,6 +169,6 @@ MonoBehaviour:
   damage: 3
   enemyLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 640
   radiusVisual: {fileID: 5099764968069139248, guid: 959015f40c52cd34c800a81344dd92f5, type: 3}
   aoeColor: {r: 1, g: 0.36862746, b: 0, a: 0.6117647}

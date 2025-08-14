@@ -14,8 +14,7 @@ public class WaveManager : MonoBehaviour
     public GameObject[] enemyPrefabs;
 
     [Header("Spawn weights must match enemyPrefabs order!")]
-    [SerializeField] private float[] enemySpawnWeights = new float[] { 1f, 1f, 0.3f, 0.1f }; // Example: melee, melee, ranged, healer
-
+    [SerializeField] private float[] enemySpawnWeights = new float[] { 1f, 1f, 0.3f, 0.1f };
     public GameObject bossPrefab;
     public Transform bossSpawnPoint;
     public GameObject bossHealthBarUI;
@@ -27,7 +26,7 @@ public class WaveManager : MonoBehaviour
     public float timeBetweenWaves = 2f;
 
     private int singleTypeIndex = -1;
-    private int unlockedEnemyTypes = 2; // Start with 2 types unlocked
+    private int unlockedEnemyTypes = 2; 
 
     private int currentWave = 0;
     private readonly List<GameObject> enemiesInWave = new List<GameObject>();
@@ -35,7 +34,6 @@ public class WaveManager : MonoBehaviour
 
     public TextMeshProUGUI waveText;
 
-    // --- Weighted random selection helper ---
     private int GetWeightedRandomIndex(int maxIndex)
     {
         float totalWeight = 0f;
@@ -50,9 +48,9 @@ public class WaveManager : MonoBehaviour
             if (randomValue < cumulative)
                 return i;
         }
-        return maxIndex - 1; // fallback
+        return maxIndex - 1; 
     }
-    // ----------------------------------------
+    
 
     void Awake()
     {
@@ -70,7 +68,7 @@ public class WaveManager : MonoBehaviour
         {
             if (currentBoss == null)
             {
-                bossHealthBarUI.SetActive(false); // Hide health bar immediately when boss dies
+                bossHealthBarUI.SetActive(false);
             }
             if (currentBoss == null && enemiesInWave.Count == 0)
             {
@@ -78,10 +76,10 @@ public class WaveManager : MonoBehaviour
 
                 if (cardHandUI != null) cardHandUI.OnWaveCompleted();
 
-                // SHOP-HOOK: åbn shop efter hver 5. afsluttet wave (inkl. boss)
+                // SHOP-HOOK: ï¿½bn shop efter hver 5. afsluttet wave (inkl. boss)
                 TryOpenShopOrStartNextWave();
             }
-            return; // don't spawn waves while boss or minions are alive
+            return;
         }
 
         // NORMAL WAVE SLUT
@@ -93,7 +91,7 @@ public class WaveManager : MonoBehaviour
             if (cardUI != null)
                 cardUI.OnWaveCompleted();
 
-            // SHOP-HOOK: åbn shop efter hver 5. afsluttet wave
+            // SHOP-HOOK: ï¿½bn shop efter hver 5. afsluttet wave
             TryOpenShopOrStartNextWave();
         }
     }
@@ -105,20 +103,20 @@ public class WaveManager : MonoBehaviour
         currentWave++;
         if (waveText != null) waveText.text = "Wave " + currentWave;
 
-        // Unlock a new enemy type every 5th wave, up to all types
+        
         if (currentWave % 5 == 0 && unlockedEnemyTypes < enemyPrefabs.Length)
         {
             unlockedEnemyTypes++;
         }
         int maxIndex = Mathf.Min(unlockedEnemyTypes, enemyPrefabs.Length);
 
-        // Boss wave every 10th wave
+        
         if (currentWave % 10 == 0)
         {
             bossHealthBarUI.SetActive(true);
             currentBoss = Instantiate(bossPrefab, bossSpawnPoint.position, Quaternion.identity);
 
-            // Set the waveManager reference on the boss's BossSpawner
+            
             BossSpawner spawner = currentBoss.GetComponent<BossSpawner>();
             if (spawner != null)
             {
@@ -127,19 +125,19 @@ public class WaveManager : MonoBehaviour
 
             bossSpawned = true;
 
-            // Assign health bar
+            
             Slider bossSlider = bossHealthBarUI.GetComponent<Slider>();
             BossHealth bossHealth = currentBoss.GetComponent<BossHealth>();
             bossHealth.AssignHealthBar(bossSlider);
 
             Camera.main.GetComponent<CameraFollow>().FocusTemporarily(bossSpawnPoint.position, 2.5f);
-            singleTypeIndex = -1; // Reset for after boss
-            yield break; // skip regular enemies this wave
+            singleTypeIndex = -1;
+            yield break;
         }
 
         int enemyCount = startEnemyCount + currentWave * 2;
 
-        // Every 5th wave, pick a single random enemy type (from unlocked, weighted)
+       
         bool singleTypeWave = (currentWave % 5 == 0);
 
         if (singleTypeWave)
@@ -171,7 +169,7 @@ public class WaveManager : MonoBehaviour
             GameObject enemy = Instantiate(chosenPrefab, spawnPos, Quaternion.identity);
             enemiesInWave.Add(enemy);
 
-            // Fjern fjenden fra listen når den dør
+            // Fjern fjenden fra listen nï¿½r den dï¿½r
             var eh = enemy.GetComponent<EnemyHealth>();
             if (eh != null)
                 eh.OnDeath += () => enemiesInWave.Remove(enemy);
@@ -180,13 +178,13 @@ public class WaveManager : MonoBehaviour
         waveInProgress = true;
     }
 
-    // SHOP: Åbn shop hver 5. afsluttet wave, ellers start næste wave
+    // SHOP: ï¿½bn shop hver 5. afsluttet wave, ellers start nï¿½ste wave
     private void TryOpenShopOrStartNextWave()
     {
         // currentWave er den wave, der netop er AFSLUTTET her
         if (currentWave > 0 && currentWave % 5 == 0 && ShopManager.Instance != null)
         {
-            // Når shoppen lukkes, starter vi næste wave
+            // Nï¿½r shoppen lukkes, starter vi nï¿½ste wave
             ShopManager.Instance.OnClosed = () => StartCoroutine(NextWave());
             ShopManager.Instance.Open();
         }

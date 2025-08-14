@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class FireOnGround : MonoBehaviour
+public class FireOnGround : MonoBehaviour, IAbilityBehavior
 {
     [SerializeField] private float radius = 2f;
     [SerializeField] private int damagePerTick = 1;
@@ -13,12 +13,27 @@ public class FireOnGround : MonoBehaviour
     private float tickTimer;
     private float lifeTimer;
 
+    public bool Initialize(Vector2 dir, Rarity rarity)
+    {
+        switch (rarity)
+        {
+            case Rarity.Uncommon:
+                radius *= 1.2f; break;
+            case Rarity.Rare:
+                radius *= 1.4f; damagePerTick += 1; break;
+            case Rarity.Epic:
+                radius *= 1.6f; damagePerTick += 2; break;
+            case Rarity.Legendary:
+                radius *= 2f; damagePerTick += 3; break;
+        }
+        return true;
+    }
+
     private void Start()
     {
         tickTimer = 0f;
         lifeTimer = duration;
 
-        // Visual
         if (fireVisual != null)
         {
             GameObject vfx = Instantiate(fireVisual, transform.position, Quaternion.identity, transform);
@@ -49,6 +64,9 @@ public class FireOnGround : MonoBehaviour
                 var eh = hit.GetComponent<EnemyHealth>();
                 if (eh != null)
                     eh.TakeDamage(damagePerTick);
+                var bh = hit.GetComponent<BossHealth>();
+                if (bh != null)
+                    bh.TakeDamage(damagePerTick);
             }
         }
     }
@@ -59,4 +77,3 @@ public class FireOnGround : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, radius);
     }
 }
-

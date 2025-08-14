@@ -171,6 +171,6 @@ MonoBehaviour:
   duration: 3
   enemyLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 640
   fireVisual: {fileID: 5099764968069139248, guid: 959015f40c52cd34c800a81344dd92f5, type: 3}
   fireColor: {r: 1, g: 0.61960787, b: 0.011764706, a: 0.64705884}
