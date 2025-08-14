@@ -186,7 +186,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Undead_card_back 1_0: -4778200967651022954
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
