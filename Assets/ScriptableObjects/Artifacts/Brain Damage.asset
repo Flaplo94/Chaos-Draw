@@ -15,6 +15,6 @@ MonoBehaviour:
   artifactName: Brain Damage
   description: "All spells cost 1 mana. But your muscle memory is toast \u2013 keybinds
     shuffle like a toddler on sugar."
-  icon: {fileID: 0}
+  icon: {fileID: 6477366327749791160, guid: 8549990fdcdac3449a070c2aa63b2828, type: 3}
   rarity: 2
   internalID: 

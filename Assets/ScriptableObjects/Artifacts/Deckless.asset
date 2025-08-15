@@ -15,6 +15,6 @@ MonoBehaviour:
   artifactName: Deckless
   description: No deck, no plan, no problem. Remove your current Deck and gain 2
     random cards after every wave.
-  icon: {fileID: 0}
+  icon: {fileID: 4192800577837134953, guid: 36a5733395170fd459c083a01a5c6bd2, type: 3}
   rarity: 2
   internalID: 

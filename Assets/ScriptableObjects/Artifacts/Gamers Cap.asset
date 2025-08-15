@@ -15,6 +15,6 @@ MonoBehaviour:
   artifactName: Gamers Cap
   description: "+10% to all stats. You can\u2019t skip cutscenes anymore. (There
     are none.)"
-  icon: {fileID: 0}
+  icon: {fileID: 2451428771736204148, guid: aa1599f0efae5754d9a58a1e9855cc01, type: 3}
   rarity: 0
   internalID: 

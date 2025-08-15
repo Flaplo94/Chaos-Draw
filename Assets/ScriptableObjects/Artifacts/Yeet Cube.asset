@@ -15,6 +15,6 @@ MonoBehaviour:
   artifactName: Yeet Cube
   description: Roll a die at the start of each wave. Hit a 6? Godmode. Anything else?
     Weird stuff happens.
-  icon: {fileID: 0}
+  icon: {fileID: -2205863333093305225, guid: 97e6f235542b9f445b12a3e0b9cb5cb2, type: 3}
   rarity: 4
   internalID: 

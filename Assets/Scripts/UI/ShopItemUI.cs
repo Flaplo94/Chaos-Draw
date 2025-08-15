@@ -11,59 +11,63 @@ public class ShopItemUI : MonoBehaviour
     public TMP_Text priceText;
     public Button buyButton;
 
+    [Header("Layout options")]
+    [Tooltip("Hvis true skjules navn-tekstens GameObject helt for RemoveCard (bedre layout).")]
+    public bool disableNameObjectForRemoveCard = true;
+
     private ShopItem item;
     private ShopManager shop;
     private int cachedPrice;
 
-    public void Bind(ShopItem s, ShopManager m)
+    public void Bind(ShopItem s, ShopManager manager)
     {
         item = s;
-        shop = m;
+        shop = manager;
+        cachedPrice = item != null ? item.basePrice : 0;
 
-        // Sæt ikon + tekster
-        switch (item.itemType)
+        // --- Titel (skjul for RemoveCard) ---
+        if (nameText)
         {
-            case ShopItemType.Artifact:
-                if (item.artifactData != null)
-                {
-                    if (icon) icon.sprite = item.artifactData.icon;
-                    if (nameText) nameText.text =
-                        string.IsNullOrEmpty(item.artifactData.artifactName)
-                        ? item.artifactData.name
-                        : item.artifactData.artifactName;
-                    if (descText) descText.text = item.artifactData.description ?? "";
-                }
-                break;
+            bool isRemoveCard = (item != null &&
+                                 item.itemType == ShopItemType.Service &&
+                                 item.serviceType == ShopServiceType.RemoveCard);
 
-            case ShopItemType.Buff:
-                if (item.buffData != null)
-                {
-                    if (icon) icon.sprite = item.buffData.icon;
-                    if (nameText) nameText.text =
-                        string.IsNullOrEmpty(item.buffData.buffName)
-                        ? item.buffData.name
-                        : item.buffData.buffName;
-                    if (descText) descText.text = item.buffData.description ?? "";
-                }
-                break;
-
-            case ShopItemType.Service:
-                if (nameText) nameText.text = item.serviceType.ToString(); // "RemoveCard"
-                if (descText) descText.text = "Remove a card from your deck";
-                break;
+            if (isRemoveCard)
+            {
+                if (disableNameObjectForRemoveCard)
+                    nameText.gameObject.SetActive(false);   // skjul helt (bedst m. VerticalLayoutGroup)
+                else
+                    nameText.text = "";                      // behold pladsen, men tom tekst
+            }
+            else
+            {
+                nameText.gameObject.SetActive(true);
+                nameText.text = item != null ? item.GetTitle() : "";
+            }
         }
 
-        // Pris + klik
-        cachedPrice = item.basePrice;
+        // --- Beskrivelse ---
+        if (descText) descText.text = item != null ? item.GetDescription() : "";
+
+        // --- Ikon (Service har typisk ingen) ---
+        if (icon)
+        {
+            var sp = (item != null) ? item.GetIcon() : null;
+            icon.sprite = sp;
+            icon.enabled = sp != null;       // Undgå hvid boks
+            if (sp != null) icon.preserveAspect = true;
+        }
+
+        // --- Pris ---
         if (priceText) priceText.text = cachedPrice.ToString();
 
+        // --- Knap ---
         if (buyButton != null)
         {
             buyButton.onClick.RemoveAllListeners();
             buyButton.onClick.AddListener(OnBuy);
         }
 
-        // Initial interaktivitet ift. guld/eje
         RefreshInteractable(Wallet.Instance != null ? Wallet.Instance.Gold : 0);
     }
 
@@ -83,21 +87,26 @@ public class ShopItemUI : MonoBehaviour
     {
         bool enough = gold >= cachedPrice;
 
-        bool owned =
-            (item.itemType == ShopItemType.Artifact && item.artifactData && PlayerInventory.Instance.Has(item.artifactData)) ||
-            (item.itemType == ShopItemType.Buff && item.buffData && PlayerInventory.Instance.Has(item.buffData));
+        bool owned = false;
+        var inv = PlayerInventory.Instance; // kan være null
+        if (inv != null && item != null)
+        {
+            if (item.itemType == ShopItemType.Artifact && item.artifactData != null)
+                owned = inv.Has(item.artifactData);
+            else if (item.itemType == ShopItemType.Buff && item.buffData != null)
+                owned = inv.Has(item.buffData);
+        }
 
-        // Services kan altid købes hvis man har råd; andre kræver også at man ikke allerede ejer dem
-        bool interactable = (item.itemType == ShopItemType.Service) ? enough : (enough && !owned);
-
+        // Services kan altid købes, hvis der er penge nok
+        bool interactable = (item != null && item.itemType == ShopItemType.Service) ? enough : (enough && !owned);
         if (buyButton) buyButton.interactable = interactable;
     }
 
     private void OnBuy()
     {
+        if (shop == null || item == null) return;
         if (!shop.TryBuy(item, cachedPrice)) return;
 
-        // Efter succes: disable køb for non-service
         if (item.itemType != ShopItemType.Service && buyButton != null)
             buyButton.interactable = false;
     }

@@ -15,6 +15,6 @@ MonoBehaviour:
   artifactName: Chicken Overlord Egg
   description: Slay 100 enemies to hatch the Egg. Unleash the wrath of a divine chicken
     that pecks your foes to death.
-  icon: {fileID: 0}
+  icon: {fileID: 7186739750386130996, guid: f1d69d31f70bbfa449c2afc81d74fba6, type: 3}
   rarity: 3
   internalID: 

@@ -15,6 +15,6 @@ MonoBehaviour:
   artifactName: Error 404 Name not found
   description: This artifact doesn't exist. Ignore it. (Definitely not causing random
     enemy explosions).
-  icon: {fileID: 0}
+  icon: {fileID: 7246689870275705222, guid: 2e00e0c4e5f529242b472e01985dc7e1, type: 3}
   rarity: 1
   internalID: 

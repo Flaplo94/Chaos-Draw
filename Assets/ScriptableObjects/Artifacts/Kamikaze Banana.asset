@@ -15,6 +15,6 @@ MonoBehaviour:
   artifactName: Kamikaze Banana
   description: 'Every 15s, this emotionally unstable banana hurls itself at a random
     enemy.. '
-  icon: {fileID: 0}
+  icon: {fileID: 7381965769198725172, guid: 00f0285a7bd80b94d9c54f7228a92329, type: 3}
   rarity: 1
   internalID: 

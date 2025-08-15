@@ -15,6 +15,6 @@ MonoBehaviour:
   artifactName: Glass Cannon
   description: Your HP is set to 1. In return, your spells hit like a truck.  +300%
     damage.
-  icon: {fileID: 0}
+  icon: {fileID: -406505386535922096, guid: 51b0920a9bf0dda41b3986ec41a1096d, type: 3}
   rarity: 4
   internalID: 
