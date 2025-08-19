@@ -97,6 +97,7 @@ GameObject:
   - component: {fileID: 6706808530034103868}
   - component: {fileID: 76683931486816045}
   - component: {fileID: 8842564766879278348}
+  - component: {fileID: 3380281956299672159}
   m_Layer: 7
   m_Name: EnemyFlying
   m_TagString: Enemy
@@ -143,7 +144,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: 5fd388d368d93314991d1293d2f31f19, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -251,6 +252,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 2
+  flashOnLethalHit: 1
 --- !u!114 &8842564766879278348
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -264,3 +266,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 3
+--- !u!114 &3380281956299672159
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7502241114002446682}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 624296d15d55e334d8a67eab54e9dad2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spriteRenderers: []
+  flashUpTime: 0.03
+  flashHoldTime: 0.04
+  flashDownTime: 0.1

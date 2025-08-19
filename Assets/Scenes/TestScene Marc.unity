@@ -355,12 +355,12 @@ MonoBehaviour:
   minSpawnDistance: 3
   spawnRadius: 10
   enemyPrefabs:
-  - {fileID: 7502241114002446682, guid: af535699c9caddd418ddb82d17593458, type: 3}
+  - {fileID: 7502241114002446682, guid: 04e8239b255693a4e8254ab6869f0802, type: 3}
+  - {fileID: 7502241114002446682, guid: 142aa5be84e910d4d9bf9b2a7d7e2612, type: 3}
+  - {fileID: 7502241114002446682, guid: 368b5472c3ca5ac4eada3c3ad6cce4fc, type: 3}
   - {fileID: 5679082729230498780, guid: 1025ba9c4858a9b43810ebe5cb37bf37, type: 3}
   - {fileID: 5679082729230498780, guid: c25de75b8a76d504aa0ed013b1634e16, type: 3}
-  - {fileID: 7502241114002446682, guid: 142aa5be84e910d4d9bf9b2a7d7e2612, type: 3}
-  - {fileID: 7502241114002446682, guid: 04e8239b255693a4e8254ab6869f0802, type: 3}
-  - {fileID: 7502241114002446682, guid: 368b5472c3ca5ac4eada3c3ad6cce4fc, type: 3}
+  - {fileID: 7502241114002446682, guid: af535699c9caddd418ddb82d17593458, type: 3}
   enemySpawnWeights:
   - 1
   - 1
