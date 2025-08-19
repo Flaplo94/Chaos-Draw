@@ -35,14 +35,14 @@ PrefabInstance:
     - target: {fileID: 2777700163195333270, guid: af535699c9caddd418ddb82d17593458, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
+      objectReference: {fileID: 574561108381417458, guid: d1b81f71966094341a0d88adbd6317f3, type: 3}
     - target: {fileID: 2777700163195333270, guid: af535699c9caddd418ddb82d17593458, type: 3}
       propertyPath: m_Color.b
-      value: 0.021970272
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2777700163195333270, guid: af535699c9caddd418ddb82d17593458, type: 3}
       propertyPath: m_Color.g
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2777700163195333270, guid: af535699c9caddd418ddb82d17593458, type: 3}
       propertyPath: m_Color.r
@@ -55,6 +55,18 @@ PrefabInstance:
     - target: {fileID: 2777700163195333270, guid: af535699c9caddd418ddb82d17593458, type: 3}
       propertyPath: m_SortingLayerID
       value: -957766307
+      objectReference: {fileID: 0}
+    - target: {fileID: 3308837611534964102, guid: af535699c9caddd418ddb82d17593458, type: 3}
+      propertyPath: m_Radius
+      value: 0.11144356
+      objectReference: {fileID: 0}
+    - target: {fileID: 3308837611534964102, guid: af535699c9caddd418ddb82d17593458, type: 3}
+      propertyPath: m_Offset.x
+      value: -0.00055422384
+      objectReference: {fileID: 0}
+    - target: {fileID: 3308837611534964102, guid: af535699c9caddd418ddb82d17593458, type: 3}
+      propertyPath: m_Offset.y
+      value: 0.008823077
       objectReference: {fileID: 0}
     - target: {fileID: 4774877285035006597, guid: af535699c9caddd418ddb82d17593458, type: 3}
       propertyPath: m_LocalPosition.x
@@ -97,7 +109,23 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6706808530034103868, guid: af535699c9caddd418ddb82d17593458, type: 3}
+      propertyPath: m_Radius
+      value: 0.16682862
+      objectReference: {fileID: 0}
+    - target: {fileID: 6706808530034103868, guid: af535699c9caddd418ddb82d17593458, type: 3}
+      propertyPath: m_Offset.x
+      value: -0.0005469918
+      objectReference: {fileID: 0}
+    - target: {fileID: 6706808530034103868, guid: af535699c9caddd418ddb82d17593458, type: 3}
+      propertyPath: m_Offset.y
+      value: 0.020797273
+      objectReference: {fileID: 0}
+    - target: {fileID: 6706808530034103868, guid: af535699c9caddd418ddb82d17593458, type: 3}
       propertyPath: m_IsTrigger
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6706808530034103868, guid: af535699c9caddd418ddb82d17593458, type: 3}
+      propertyPath: m_UsedByEffector
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7502241114002446682, guid: af535699c9caddd418ddb82d17593458, type: 3}

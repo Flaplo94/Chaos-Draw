@@ -2,12 +2,10 @@ Shader "Universal Render Pipeline/WhiteFlashSprite"
 {
     Properties
     {
-        // Per-renderer sprite texture (SpriteRenderer supplies it)
         [MainTexture] [PerRendererData] _MainTex ("Sprite Texture", 2D) = "white" {}
-        // Per-renderer tint (SpriteRenderer.color)
         [PerRendererData] _BaseColor ("Tint", Color) = (1,1,1,1)
-        // Driven from C#
         _FlashAmount ("Flash Amount", Range(0,1)) = 0
+        _FlashColor ("Flash Color", Color) = (1,0,0,1)
     }
 
     SubShader
@@ -49,6 +47,7 @@ Shader "Universal Render Pipeline/WhiteFlashSprite"
             CBUFFER_START(UnityPerMaterial)
             float4 _BaseColor;
             float  _FlashAmount;
+            float4 _FlashColor;
             CBUFFER_END
 
             Varyings vert (Attributes IN)
@@ -67,7 +66,7 @@ Shader "Universal Render Pipeline/WhiteFlashSprite"
                 half3 baseRGB = tex.rgb * _BaseColor.rgb * IN.color.rgb;
                 half  alpha   = tex.a  * _BaseColor.a  * IN.color.a;
 
-                baseRGB = lerp(baseRGB, half3(1,1,1), saturate(_FlashAmount));
+                baseRGB = lerp(baseRGB, _FlashColor.rgb, saturate(_FlashAmount));
 
                 return half4(baseRGB, alpha);
             }

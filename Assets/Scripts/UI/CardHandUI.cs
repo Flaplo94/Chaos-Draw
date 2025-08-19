@@ -334,6 +334,7 @@ public class CardHandUI : MonoBehaviour
     private void CloseRewardUI()
     {
         rewardUI.SetActive(false);
+        skipButton.gameObject.SetActive(false);
         ClearRewardCardsParent();
         Time.timeScale = 1f;
     }
