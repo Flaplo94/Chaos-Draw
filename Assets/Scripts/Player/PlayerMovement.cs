@@ -6,7 +6,7 @@ public class PlayerMovement : MonoBehaviour
 
     private Rigidbody2D rb;
     private Vector2 moveDir;
-    public Vector2 MoveDir => moveDir; // kun denne public adgang
+    public Vector2 MoveDir { get { return moveDir; } } // kun denne public adgang
 
     void Start()
     {
@@ -33,6 +33,10 @@ public class PlayerMovement : MonoBehaviour
 
     void Move()
     {
-        rb.linearVelocity = moveDir * moveSpeed;
+        float mult = 1f;
+        if (PlayerBuffManager.Instance != null)
+            mult = PlayerBuffManager.Instance.GetMoveSpeedMult(); // Swift Feet
+
+        rb.linearVelocity = moveDir * moveSpeed * mult;
     }
 }

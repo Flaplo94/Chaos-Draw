@@ -99,6 +99,7 @@ GameObject:
   - component: {fileID: 76683931486816045}
   - component: {fileID: -3969978128227254662}
   - component: {fileID: -6007808778835646131}
+  - component: {fileID: -5935290034336339593}
   m_Layer: 9
   m_Name: EnemyHealer
   m_TagString: Enemy
@@ -393,3 +394,17 @@ LineRenderer:
   m_UseWorldSpace: 0
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
+--- !u!114 &-5935290034336339593
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7502241114002446682}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ebfeac23010ef7b44b5d2f0f2555698c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  baseGold: 1
+  perWaveScale: 0.1

@@ -1,70 +1,72 @@
 using UnityEngine;
-using UnityEngine.UI;
 
+/// Simpel health-komponent med ekstra liv og helper-metoder
 public class PlayerHealth : MonoBehaviour
 {
+    [Header("Health")]
     public int maxHealth = 5;
-    private int currentHealth;
+    public int currentHealth = 5;
 
-    [SerializeField] public Slider healthBar;
-
-    void Awake()
-    {
-        currentHealth = maxHealth;
-    }
+    [Header("Revive")]
+    public int extraLives = 0;
 
     void Start()
     {
-        UpdateUI();
+        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
     }
 
     public void TakeDamage(int amount)
     {
-        // NEW: let an active Shield consume the hit BEFORE applying damage
-        if (ShieldActiveAndConsumed())
-        {
-            // Shield blocked this hit; do not reduce player HP
-            return;
-        }
-
+        if (amount <= 0) return;
         currentHealth -= amount;
-        UpdateUI();
-
-        if (currentHealth <= 0)
-        {
-            Die();
-        }
+        if (currentHealth <= 0) OnDeath();
     }
 
-    private bool ShieldActiveAndConsumed()
+    public void Heal(int amount)
     {
-        // Check if a Shield instance is active and consume one shield hit
-        // (Shield class manages its own internal HP and destroy logic)
-        if (Shield.Active != null)
+        if (amount <= 0) return;
+        currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
+    }
+
+    // Kravet fra artifacts: saet alt til 1 HP
+    public void ForceSetToOneHP()
+    {
+        maxHealth = 1;
+        if (currentHealth > 1) currentHealth = 1;
+        Debug.Log("[PlayerHealth] ForceSetToOneHP");
+        // TODO: opdater UI hvis noedvendigt
+    }
+
+    // Ekstra liv (Spare Rib)
+    public void AddExtraLife(int n)
+    {
+        extraLives += Mathf.Max(0, n);
+        Debug.Log("[PlayerHealth] AddExtraLife: +" + n + " (total: " + extraLives + ")");
+        // TODO: UI badge/ikon
+    }
+
+    public bool TryConsumeExtraLife()
+    {
+        if (extraLives > 0)
         {
-            bool consumed = Shield.Active.ConsumeHit();
-            if (consumed)
-                return true;
+            extraLives--;
+            currentHealth = maxHealth;
+            Debug.Log("[PlayerHealth] Extra life consumed. Lives left: " + extraLives);
+            // TODO: kort invuln, fx 1s
+            return true;
         }
         return false;
     }
 
-    void Die()
+    // Kald denne i din death-flow
+    public void OnDeath()
     {
-        GameOverManager gameOver = FindFirstObjectByType<GameOverManager>();
-        if (gameOver != null)
+        if (TryConsumeExtraLife())
         {
-            gameOver.TriggerGameOver();
+            // Afbryd doed
+            return;
         }
-
-        Destroy(gameObject);
-    }
-
-    void UpdateUI()
-    {
-        if (healthBar != null)
-        {
-            healthBar.value = (float)currentHealth / maxHealth;
-        }
+        Debug.Log("[PlayerHealth] Dead - Game Over flow her");
+        // TODO: Game Over
     }
 }

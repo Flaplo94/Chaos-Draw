@@ -2,29 +2,33 @@ using UnityEngine;
 
 public class ChunkTrigger : MonoBehaviour
 {
-    MapController mc;
-    public GameObject targetMap;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private MapController mc;
+    public GameObject targetMap;   // Peger på chunk-roden
+
+    private void Awake()
     {
         mc = FindFirstObjectByType<MapController>();
     }
 
-    private void OnTriggerStay2D(Collider2D collision)
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        if (collision.CompareTag("Player"))
+        if (!other.CompareTag("Player")) return;
+
+        // Sæt currentChunk og kald MapController til at opdatere radius
+        if (mc.currentChunk != targetMap)
         {
             mc.currentChunk = targetMap;
+            mc.OnChunkChanged(other.transform.position);
         }
     }
-    private void OnTriggerExit2D(Collider2D col)
+
+    private void OnTriggerExit2D(Collider2D other)
     {
-        if (col.CompareTag("Player"))
+        if (!other.CompareTag("Player")) return;
+
+        if (mc.currentChunk == targetMap)
         {
-            if(!mc.currentChunk == targetMap)
-            {
-                mc.currentChunk = null;
-            }
-        }  
+            mc.currentChunk = null;
+        }
     }
 }

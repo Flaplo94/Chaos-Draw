@@ -17,7 +17,10 @@ public class PlayerInventory : MonoBehaviour
     {
         if (!a || artifacts.Contains(a)) return;
         artifacts.Add(a);
-        // TODO: ArtifactSystem.Instance.Apply(a);
+
+        //  APPLY RUNTIME EFFEKT:
+        if (ArtifactSystem.Instance != null)
+            ArtifactSystem.Instance.Apply(a);
     }
 
     public void Add(BuffData b)

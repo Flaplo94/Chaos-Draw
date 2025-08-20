@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   artifactName: Charcoal
   description: +40% Fire Damage. Because everything tastes better slightly burnt.
-  icon: {fileID: -406505386535922096, guid: 51b0920a9bf0dda41b3986ec41a1096d, type: 3}
+  icon: {fileID: 5838570765213527895, guid: 3a1a896c1aa3cd6449cda5b624d0a06a, type: 3}
   rarity: 1
   internalID: 

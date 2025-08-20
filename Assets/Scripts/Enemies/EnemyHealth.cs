@@ -6,7 +6,11 @@ public class EnemyHealth : MonoBehaviour
     [SerializeField] private int maxHealth = 3;
     private int currentHealth;
 
+    // Lokalt event (kun denne enemy)
     public Action OnDeath;
+
+    // Globalt event (for alle enemies)
+    public static event Action<EnemyHealth> OnAnyEnemyDied;
 
     void Awake()
     {
@@ -32,7 +36,8 @@ public class EnemyHealth : MonoBehaviour
 
     void Die()
     {
-        OnDeath?.Invoke();
+        OnDeath?.Invoke();                 // lokale lyttere
+        OnAnyEnemyDied?.Invoke(this);      // globalt broadcast til fx BountySystem
         Destroy(gameObject);
     }
 }

@@ -16,4 +16,8 @@ MonoBehaviour:
   artifactData: {fileID: 11400000, guid: db915c013fb8f7d4c997fdeecb4814f5, type: 2}
   buffData: {fileID: 0}
   serviceType: 0
-  basePrice: 50
+  serviceIcon: {fileID: 0}
+  basePrice: 100
+  titleOverride: 
+  descriptionOverride: 
+  iconOverride: {fileID: 0}
