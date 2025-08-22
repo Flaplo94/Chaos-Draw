@@ -76,18 +76,18 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -1837387899
-  m_SortingLayer: 7
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 0}
-  m_Color: {r: 1, g: 0.6199482, b: 0.011764705, a: 0.64705884}
+  m_Sprite: {fileID: -740004497, guid: 1720641bf39b9544ba14193dd9f63eb2, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.2, y: 0.2}
+  m_Size: {x: 0.39, y: 0.53}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 0
+  m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!50 &7394062187116095109
@@ -172,5 +172,8 @@ MonoBehaviour:
   enemyLayer:
     serializedVersion: 2
     m_Bits: 640
-  fireVisual: {fileID: 5099764968069139248, guid: 959015f40c52cd34c800a81344dd92f5, type: 3}
-  fireColor: {r: 1, g: 0.61960787, b: 0.011764706, a: 0.64705884}
+  tilePrefab: {fileID: 4804991577932546782, guid: 26fc8d9d16147e84791b7be08a5cd240, type: 3}
+  tileSpacing: 0.6
+  positionJitter: 0.12
+  randomizeRotation: 0
+  spawnTrigger: Spawn

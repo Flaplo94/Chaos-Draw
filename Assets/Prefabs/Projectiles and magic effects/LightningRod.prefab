@@ -76,10 +76,10 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -1837387899
-  m_SortingLayer: 7
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  m_Sprite: {fileID: 2102038073974554466, guid: 2401b2a128812f44e9334274960e640a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -172,4 +172,10 @@ MonoBehaviour:
   enemyLayer:
     serializedVersion: 2
     m_Bits: 640
-  lightningLinePrefab: {fileID: 1469922997673925513, guid: d0b854a5cf35a654ab4ddee0a7959da7, type: 3}
+  lightningVisual: {fileID: 6422944563533170519, guid: d0b854a5cf35a654ab4ddee0a7959da7, type: 3}
+  boltTrigger: Play
+  boltStateName: Zap
+  boltWidthScale: 1
+  boltAnimSpeed: 1
+  boltTTLMin: 0.06
+  boltTTLMax: 0.12

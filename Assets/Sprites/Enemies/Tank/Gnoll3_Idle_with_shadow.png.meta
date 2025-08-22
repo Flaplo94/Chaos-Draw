@@ -561,7 +561,23 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Gnoll3_Idle_with_shadow_0: 574561108381417458
+      Gnoll3_Idle_with_shadow_1: -5794554598110619272
+      Gnoll3_Idle_with_shadow_10: -6691578842664318700
+      Gnoll3_Idle_with_shadow_11: -4716942267716940435
+      Gnoll3_Idle_with_shadow_12: -697964153179956084
+      Gnoll3_Idle_with_shadow_13: 943705703138886499
+      Gnoll3_Idle_with_shadow_14: -607211879994807441
+      Gnoll3_Idle_with_shadow_15: -5317950894848084721
+      Gnoll3_Idle_with_shadow_2: -5858176872217924609
+      Gnoll3_Idle_with_shadow_3: -660298626342816700
+      Gnoll3_Idle_with_shadow_4: -8063589500315536164
+      Gnoll3_Idle_with_shadow_5: 5213596676750558897
+      Gnoll3_Idle_with_shadow_6: 8401341865332013169
+      Gnoll3_Idle_with_shadow_7: 1010096107077908864
+      Gnoll3_Idle_with_shadow_8: -1719957554145899887
+      Gnoll3_Idle_with_shadow_9: -5070659143990957348
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

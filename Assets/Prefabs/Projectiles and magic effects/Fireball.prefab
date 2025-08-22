@@ -80,7 +80,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  m_Sprite: {fileID: -1650852056751786817, guid: ada7bb9944b3b284c90854f766ca7f54, type: 3}
   m_Color: {r: 1, g: 0.8822399, b: 0.013207495, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -168,7 +168,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 10
   damage: 20
-  aoeRadius: 1
+  aoeRadius: 2
   aoeVisual: {fileID: 0}
   aoeColor: {r: 1, g: 1, b: 1, a: 0.5921569}
 --- !u!95 &8514319962859819570

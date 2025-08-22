@@ -7,20 +7,17 @@ public class Fireball : MonoBehaviour, IAbilityBehavior
     public int damage = 10;
     public float aoeRadius = 2f;
 
-    [Header("Visuals")]
-    [SerializeField] private GameObject aoeVisual;  
-    [SerializeField] private Color aoeColor = Color.red;
-
     private Vector2 direction;
     private bool impacted;
 
-   
     private Animator anim;
     private Collider2D col;
 
     public bool Initialize(Vector2 dir, Rarity rarity)
     {
         direction = dir.normalized;
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
 
         switch (rarity)
         {
@@ -34,13 +31,13 @@ public class Fireball : MonoBehaviour, IAbilityBehavior
 
     void Awake()
     {
-        anim = GetComponent<Animator>();     
-        col = GetComponent<Collider2D>();   
+        anim = GetComponent<Animator>();
+        col = GetComponent<Collider2D>();
     }
 
     void Update()
     {
-        if (impacted) return; 
+        if (impacted) return;
         transform.position += (Vector3)direction * speed * Time.deltaTime;
     }
 
@@ -59,33 +56,31 @@ public class Fireball : MonoBehaviour, IAbilityBehavior
         if (impacted) return;
         impacted = true;
 
-        
         speed = 0f;
         if (col) col.enabled = false;
 
-        
+        // Damage enemies in radius
         var hits = Physics2D.OverlapCircleAll(transform.position, aoeRadius);
-        foreach (var hit in hits)
+        foreach (var h in hits)
         {
-            if (hit.TryGetComponent(out EnemyHealth eh)) eh.TakeDamage(damage);
-            if (hit.TryGetComponent(out BossHealth bh)) bh.TakeDamage(damage);
+            if (h.TryGetComponent(out EnemyHealth eh)) eh.TakeDamage(damage);
+            if (h.TryGetComponent(out BossHealth bh)) bh.TakeDamage(damage);
         }
 
-        
-        if (aoeVisual != null)
-        {
-            GameObject vfx = Instantiate(aoeVisual, transform.position, Quaternion.identity);
-            vfx.transform.localScale = Vector3.one * aoeRadius * 2f;
-            var sr = vfx.GetComponent<SpriteRenderer>();
-            if (sr != null) sr.color = aoeColor;
-            Destroy(vfx, 0.15f);
-        }
+        // Auto-scale sprite to match AOE radius
+        float baseSpriteSize = 32f;  // pixels
+        float ppu = 32f;             // pixels per unit
+        float worldSize = baseSpriteSize / ppu;
+        float targetDiameter = aoeRadius * 2f;
+        float scaleFactor = targetDiameter / worldSize;
 
-        
+        transform.localScale = new Vector3(scaleFactor, scaleFactor, 1f);
+
+        // Trigger impact animation
         if (anim) anim.SetTrigger("Impact");
-        else Destroy(gameObject); 
     }
 
+    // Called by Animation Event at end of impact
     public void OnImpactFinished()
     {
         Destroy(gameObject);

@@ -8,42 +8,42 @@ public class FireBird : MonoBehaviour, IAbilityBehavior
     [SerializeField] private int damage = 10;
 
     [Header("Piercing")]
-    [SerializeField] private int basePierces = 1;       // how many enemies it can pass through at Common
-    [SerializeField] private float maxLifetime = 6f;    // safety so it can’t fly forever
+    [SerializeField] private int basePierces = 1;    // how many targets it can pass through at Common
+    [SerializeField] private float maxLifetime = 6f; // safety cap
 
     [Header("Visual")]
-    [SerializeField] private float baseScale = 1f;      // visual size at Common (multiplies localScale)
+    [SerializeField] private float baseScale = 1f;   // visual size at Common (multiplies localScale)
 
     private Vector2 direction;
     private int remainingPierces;
     private float lifeTimer;
-    private readonly HashSet<Transform> hitRoots = new HashSet<Transform>(); // avoid multi-hit on same target
+
+    // Track roots so multi-collider enemies don't get double-hit
+    private readonly HashSet<Transform> hitRoots = new HashSet<Transform>();
 
     public bool Initialize(Vector2 dir, Rarity rarity)
     {
         direction = dir.normalized;
+        FaceDirection(direction);
+
         remainingPierces = basePierces;
 
-        // Rarity scaling: bigger, stronger, pierces more
+        // Rarity scaling: size, damage, pierces
         float scaleMul = 1f;
         switch (rarity)
         {
-            case Rarity.Uncommon:
-                scaleMul = 1.1f; damage += 2; remainingPierces += 1; break;
-            case Rarity.Rare:
-                scaleMul = 1.2f; damage += 5; remainingPierces += 2; break;
-            case Rarity.Epic:
-                scaleMul = 1.35f; damage += 8; remainingPierces += 3; break;
-            case Rarity.Legendary:
-                scaleMul = 1.5f; damage += 12; remainingPierces += 5; break;
+            case Rarity.Uncommon: scaleMul = 1.1f; damage += 2; remainingPierces += 1; break;
+            case Rarity.Rare: scaleMul = 1.2f; damage += 5; remainingPierces += 2; break;
+            case Rarity.Epic: scaleMul = 1.35f; damage += 8; remainingPierces += 3; break;
+            case Rarity.Legendary: scaleMul = 1.5f; damage += 12; remainingPierces += 5; break;
                 // Common: baseline
         }
-        // Apply visual size
+
         transform.localScale *= baseScale * scaleMul;
         return true;
     }
 
-    void Update()
+    private void Update()
     {
         transform.position += (Vector3)direction * speed * Time.deltaTime;
 
@@ -52,27 +52,43 @@ public class FireBird : MonoBehaviour, IAbilityBehavior
             Destroy(gameObject);
     }
 
-    void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        // Match Fireball’s style: only react to enemies/bosses
+        // Only react to enemies/bosses
         if (!other.CompareTag("Enemy") && !other.CompareTag("Boss"))
             return;
 
         // Use root to avoid multi-hit from child colliders
         Transform root = other.attachedRigidbody ? other.attachedRigidbody.transform : other.transform;
-        if (hitRoots.Contains(root))
+        if (!hitRoots.Add(root))
             return; // already damaged this target once
-        hitRoots.Add(root);
 
         // Deal damage
-        if (root.TryGetComponent(out EnemyHealth eh))
-            eh.TakeDamage(damage);
-        if (root.TryGetComponent(out BossHealth bh))
-            bh.TakeDamage(damage);
+        if (root.TryGetComponent(out EnemyHealth eh)) eh.TakeDamage(damage);
+        if (root.TryGetComponent(out BossHealth bh)) bh.TakeDamage(damage);
 
         // Consume a pierce and continue flying until we run out
         remainingPierces--;
         if (remainingPierces < 0)
             Destroy(gameObject);
     }
+
+    private void FaceDirection(Vector2 dir)
+    {
+        if (dir.sqrMagnitude > 0.0001f)
+        {
+            float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+            transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+        }
+    }
+
+#if UNITY_EDITOR
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = new Color(1f, 0.5f, 0f, 0.8f);
+        Vector3 p = transform.position;
+        Vector3 fwd = transform.right * 0.5f;
+        Gizmos.DrawLine(p, p + fwd);
+    }
+#endif
 }

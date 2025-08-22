@@ -1361,7 +1361,55 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Beholder3_Idle_with_shadow_0: -8991685658158161803
+      Beholder3_Idle_with_shadow_1: -8646164579574378492
+      Beholder3_Idle_with_shadow_10: -5463191556247274741
+      Beholder3_Idle_with_shadow_11: -5568564777221889910
+      Beholder3_Idle_with_shadow_12: 1637932080603853922
+      Beholder3_Idle_with_shadow_13: 450795235943223959
+      Beholder3_Idle_with_shadow_14: 6931928571197526728
+      Beholder3_Idle_with_shadow_15: 3538671253323561205
+      Beholder3_Idle_with_shadow_16: 9219430802244118567
+      Beholder3_Idle_with_shadow_17: 1970665259489464624
+      Beholder3_Idle_with_shadow_18: 5030054003246733929
+      Beholder3_Idle_with_shadow_19: -3763608633763147560
+      Beholder3_Idle_with_shadow_2: -7117146653250644489
+      Beholder3_Idle_with_shadow_20: 8702457142039016323
+      Beholder3_Idle_with_shadow_21: -4895341439987508954
+      Beholder3_Idle_with_shadow_22: -6074682023070135448
+      Beholder3_Idle_with_shadow_23: 6409790748668275937
+      Beholder3_Idle_with_shadow_24: 3737558673865394658
+      Beholder3_Idle_with_shadow_25: 2749852534751992538
+      Beholder3_Idle_with_shadow_26: 7758561129113793160
+      Beholder3_Idle_with_shadow_27: -3833600546575658968
+      Beholder3_Idle_with_shadow_28: 4055422223085195481
+      Beholder3_Idle_with_shadow_29: -7484031781161727284
+      Beholder3_Idle_with_shadow_3: 4436798738359582585
+      Beholder3_Idle_with_shadow_30: -3402169536337060740
+      Beholder3_Idle_with_shadow_31: 8163734155016946134
+      Beholder3_Idle_with_shadow_32: 1350107455052200011
+      Beholder3_Idle_with_shadow_33: 5633884072903548994
+      Beholder3_Idle_with_shadow_34: 7289864391505429328
+      Beholder3_Idle_with_shadow_35: -5314649618509154424
+      Beholder3_Idle_with_shadow_36: 9072577637476711186
+      Beholder3_Idle_with_shadow_37: 3375657959975614683
+      Beholder3_Idle_with_shadow_38: -6549194291873120603
+      Beholder3_Idle_with_shadow_39: 1959370397320982175
+      Beholder3_Idle_with_shadow_4: -1643937969099612759
+      Beholder3_Idle_with_shadow_40: 3119049831965715119
+      Beholder3_Idle_with_shadow_41: -2769578270382736025
+      Beholder3_Idle_with_shadow_42: 3611320405345109959
+      Beholder3_Idle_with_shadow_43: 1479451999750702004
+      Beholder3_Idle_with_shadow_44: 3880167323459023734
+      Beholder3_Idle_with_shadow_45: -2120534600056658926
+      Beholder3_Idle_with_shadow_46: -5087856979761651334
+      Beholder3_Idle_with_shadow_47: 1921063255247373556
+      Beholder3_Idle_with_shadow_5: -8139664952860429130
+      Beholder3_Idle_with_shadow_6: -5420103458854957695
+      Beholder3_Idle_with_shadow_7: 7291319713358228859
+      Beholder3_Idle_with_shadow_8: -8699346088581617453
+      Beholder3_Idle_with_shadow_9: 2281920255381526746
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

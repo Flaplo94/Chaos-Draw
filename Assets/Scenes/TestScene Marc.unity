@@ -1900,8 +1900,8 @@ CircleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
-  m_Radius: 0.5
+  m_Offset: {x: -0.0035458505, y: 0.019501954}
+  m_Radius: 0.083367035
 --- !u!50 &838276997
 Rigidbody2D:
   serializedVersion: 5
@@ -1973,7 +1973,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
+  m_Sprite: {fileID: -6618273671536832972, guid: 5b9f55dbebdab3d47bb542cc8ed6037f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -1994,7 +1994,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.5932267, y: -0.63537174, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 5, y: 5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2091777804}
@@ -3053,7 +3053,7 @@ MonoBehaviour:
   otherBack: {fileID: -8678478477245134283, guid: 6d4b27b0e0e21a74ca4a873b74eab1b9, type: 3}
   emptyBack: {fileID: 0}
   startingDeckList:
-  - abilityName: Fireball
+  - abilityName: LightningRod
     count: 4
   rewardUI: {fileID: 1045093887}
   rewardCardsParent: {fileID: 1045093888}
@@ -4470,7 +4470,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2091777803}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0

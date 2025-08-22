@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 7394062187116095109}
   - component: {fileID: 1821094783447712840}
   - component: {fileID: -3729665504771849936}
+  - component: {fileID: 2699815198828387330}
   m_Layer: 10
   m_Name: LightningBall
   m_TagString: Untagged
@@ -76,11 +77,11 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -1837387899
-  m_SortingLayer: 7
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
-  m_Color: {r: 0.13333334, g: 0.74509805, b: 0.9803922, a: 1}
+  m_Sprite: {fileID: 8288426215254106694, guid: 7053bd8beb94cc34b80c2b97f9432a6d, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -170,4 +171,33 @@ MonoBehaviour:
   tickInterval: 0.1
   duration: 5
   zapRadius: 1.5
-  zapVisual: {fileID: 6422944563533170519, guid: d0b854a5cf35a654ab4ddee0a7959da7, type: 3}
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  lightningVisual: {fileID: 6422944563533170519, guid: d0b854a5cf35a654ab4ddee0a7959da7, type: 3}
+  playTrigger: Play
+  stateName: Zap
+  widthScale: 1
+  animSpeed: 1
+--- !u!95 &2699815198828387330
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4804991577932546782}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 69bd46fe4b6922546ae9ad68b89cb508, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

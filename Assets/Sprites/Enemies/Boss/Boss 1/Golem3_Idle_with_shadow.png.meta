@@ -561,7 +561,23 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Golem3_Idle_with_shadow_0: -6315418877210265434
+      Golem3_Idle_with_shadow_1: 2352199114923563650
+      Golem3_Idle_with_shadow_10: -6869108608962269385
+      Golem3_Idle_with_shadow_11: 3459635194822544689
+      Golem3_Idle_with_shadow_12: -8271611156879978203
+      Golem3_Idle_with_shadow_13: 8945520738471874504
+      Golem3_Idle_with_shadow_14: -1382818717009335994
+      Golem3_Idle_with_shadow_15: 3339915814687256324
+      Golem3_Idle_with_shadow_2: -726417076043176824
+      Golem3_Idle_with_shadow_3: -6996676605667786158
+      Golem3_Idle_with_shadow_4: 3331267735079326784
+      Golem3_Idle_with_shadow_5: 485323391941103
+      Golem3_Idle_with_shadow_6: -8016828803368963150
+      Golem3_Idle_with_shadow_7: -3325144656592661471
+      Golem3_Idle_with_shadow_8: -5134888762245810343
+      Golem3_Idle_with_shadow_9: -8566475583841085733
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
