@@ -2,11 +2,10 @@ using UnityEngine;
 using UnityEngine.UI;
 using System;
 
-
 /// Simpel health-komponent med ekstra liv og helper-metoder
 public class PlayerHealth : MonoBehaviour
 {
-    public static PlayerHealth Instance;   // <-- NY singleton
+    public static PlayerHealth Instance;   // singleton
 
     [Header("Health")]
     public int maxHealth = 5;
@@ -15,7 +14,10 @@ public class PlayerHealth : MonoBehaviour
     [Header("Revive")]
     public int extraLives = 0;
 
-    public Action OnDeath; 
+    [Header("UI")]
+    [SerializeField] private Slider healthSlider; // drag your Slider here in Inspector
+
+    public Action OnDeath;
 
     void Awake()
     {
@@ -26,27 +28,49 @@ public class PlayerHealth : MonoBehaviour
     void Start()
     {
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+
+        if (healthSlider != null)
+        {
+            healthSlider.maxValue = maxHealth;
+            healthSlider.value = currentHealth;
+        }
     }
 
     public void TakeDamage(int amount)
     {
         if (amount <= 0) return;
+
         currentHealth -= amount;
+        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+
+        if (healthSlider != null)
+            healthSlider.value = currentHealth;
+
         if (currentHealth <= 0) Die();
     }
 
     public void Heal(int amount)
     {
         if (amount <= 0) return;
+
         currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
+
+        if (healthSlider != null)
+            healthSlider.value = currentHealth;
     }
 
-    // Kravet fra artifacts: s�t alt til 1 HP
+    // Kravet fra artifacts: sæt alt til 1 HP
     public void ForceSetToOneHP()
     {
         maxHealth = 1;
         if (currentHealth > 1) currentHealth = 1;
         Debug.Log("[PlayerHealth] ForceSetToOneHP");
+
+        if (healthSlider != null)
+        {
+            healthSlider.maxValue = maxHealth;
+            healthSlider.value = currentHealth;
+        }
     }
 
     // Ekstra liv (Spare Rib artifact)
@@ -62,13 +86,20 @@ public class PlayerHealth : MonoBehaviour
         {
             extraLives--;
             currentHealth = maxHealth;
+
+            if (healthSlider != null)
+            {
+                healthSlider.maxValue = maxHealth;
+                healthSlider.value = currentHealth;
+            }
+
             Debug.Log("[PlayerHealth] Extra life consumed. Lives left: " + extraLives);
             return true;
         }
         return false;
     }
 
-    // --- D�d + Game Over flow ---
+    // --- Død + Game Over flow ---
     public void Die()
     {
         if (TryConsumeExtraLife())
@@ -81,7 +112,7 @@ public class PlayerHealth : MonoBehaviour
         if (wavesCleared >= 10 && wavesCleared % 10 == 0)
             reward += 5;
 
-        // Tilf�j til MetaProgression
+        // Tilføj til MetaProgression
         if (MetaProgressionManager.Instance != null)
             MetaProgressionManager.Instance.AddShards(reward);
         else
@@ -95,6 +126,8 @@ public class PlayerHealth : MonoBehaviour
 
         Debug.Log($"[PlayerHealth] Dead - Game Over. Waves: {wavesCleared}, Shards: {reward}");
 
+        OnDeath?.Invoke();
+
         // Disable player
         gameObject.SetActive(false);
     }
@@ -104,11 +137,21 @@ public class PlayerHealth : MonoBehaviour
         maxHealth = Mathf.Max(1, newMax);
         if (clampCurrent)
             currentHealth = Mathf.Min(currentHealth, maxHealth);
+
+        if (healthSlider != null)
+        {
+            healthSlider.maxValue = maxHealth;
+            healthSlider.value = currentHealth;
+        }
     }
 
     public void SetCurrentHealth(int hp)
     {
         currentHealth = Mathf.Clamp(hp, 0, maxHealth);
-        if (currentHealth <= 0) OnDeath();
+
+        if (healthSlider != null)
+            healthSlider.value = currentHealth;
+
+        if (currentHealth <= 0) Die();
     }
 }
