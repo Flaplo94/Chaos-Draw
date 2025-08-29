@@ -119,6 +119,10 @@ public class ShopManager : MonoBehaviour
         OnClosed?.Invoke();
     }
 
+    // wrappers til bakkombat (ShopDebugKey.cs bruger disse navne)
+    public void OpenShop() => Open();
+    public void CloseShop() => Close();
+
     public bool TryBuy(ShopItem item, int price)
     {
         var wallet = Wallet.Instance;
@@ -130,16 +134,16 @@ public class ShopManager : MonoBehaviour
             case ShopItemType.Artifact:
                 if (item.artifactData && PlayerInventory.Instance != null)
                 {
-                    PlayerInventory.Instance.Add(item.artifactData);
-                    Debug.Log($"[Shop] Added Artifact: {item.artifactData.name}");
+                    PlayerInventory.Instance.AddArtifact(item.artifactData);
+                    Debug.Log($"[Shop] Bought Artifact: {item.artifactData.artifactName}");
                 }
                 break;
 
             case ShopItemType.Buff:
                 if (item.buffData && PlayerInventory.Instance != null)
                 {
-                    PlayerInventory.Instance.Add(item.buffData);
-                    Debug.Log($"[Shop] Added Buff: {item.buffData.name}");
+                    PlayerInventory.Instance.AddBuff(item.buffData);
+                    Debug.Log($"[Shop] Bought Buff: {item.buffData.buffName}");
                 }
                 break;
 
@@ -155,19 +159,13 @@ public class ShopManager : MonoBehaviour
     // ---------- intern UI opsætning ----------
     private void BuildSelectionUI()
     {
-        var inv = PlayerInventory.Instance;
-
         var allArts = catalog.items
             .Where(i => i && i.itemType == ShopItemType.Artifact && i.artifactData);
-        var artsSource = (inv != null) ? allArts.Where(i => !inv.Has(i.artifactData)) : allArts;
-        var arts = artsSource.OrderBy(_ => UnityEngine.Random.value).Take(3).ToList();
-        if (arts.Count < 3) arts = allArts.OrderBy(_ => UnityEngine.Random.value).Take(3).ToList();
+        var arts = allArts.OrderBy(_ => UnityEngine.Random.value).Take(3).ToList();
 
         var allBuffs = catalog.items
             .Where(i => i && i.itemType == ShopItemType.Buff && i.buffData);
-        var buffsSource = (inv != null) ? allBuffs.Where(i => !inv.Has(i.buffData)) : allBuffs;
-        var buffs = buffsSource.OrderBy(_ => UnityEngine.Random.value).Take(3).ToList();
-        if (buffs.Count < 3) buffs = allBuffs.OrderBy(_ => UnityEngine.Random.value).Take(3).ToList();
+        var buffs = allBuffs.OrderBy(_ => UnityEngine.Random.value).Take(3).ToList();
 
         for (int i = 0; i < 3 && i < arts.Count && i < artifactSlots.Length; i++)
             SpawnIntoSlot(arts[i], artifactSlots[i]);
@@ -217,56 +215,9 @@ public class ShopManager : MonoBehaviour
 
     private void AutoFindAllSlots()
     {
-        Transform root = windowGroup != null ? windowGroup.transform : transform;
-
-        if ((artifactSlots == null) || artifactSlots.Length < 3 ||
-            artifactSlots[0] == null || artifactSlots[1] == null || artifactSlots[2] == null)
-        {
-            var arts = new List<RectTransform>();
-            TryFindThreeSlots(root, "Artifacts", "ArtifactsContent", arts);
-            if (arts.Count == 3) artifactSlots = arts.ToArray();
-        }
-
-        if ((buffSlots == null) || buffSlots.Length < 3 ||
-            buffSlots[0] == null || buffSlots[1] == null || buffSlots[2] == null)
-        {
-            var buffs = new List<RectTransform>();
-            TryFindThreeSlots(root, "Buffs", "BuffsContent", buffs);
-            if (buffs.Count == 3) buffSlots = buffs.ToArray();
-        }
-
-        if (serviceSlot == null)
-        {
-            var t = FindDeepChildByLooseName(root, "Service");
-            if (t == null) t = FindDeepChildByLooseName(root, "Remove");
-            if (t != null) serviceSlot = t.GetComponent<RectTransform>();
-        }
-    }
-
-    private void TryFindThreeSlots(Transform root, string groupName, string contentName, List<RectTransform> outList)
-    {
-        var group = FindDeepChildByLooseName(root, groupName);
-        if (group == null) group = FindDeepChildByLooseName(root, contentName);
-        if (group == null) return;
-
-        outList.Clear();
-        for (int i = 0; i < group.childCount && outList.Count < 3; i++)
-        {
-            var rt = group.GetChild(i).GetComponent<RectTransform>();
-            if (rt != null) outList.Add(rt);
-        }
-    }
-
-    private Transform FindDeepChildByLooseName(Transform root, string contains)
-    {
-        if (root.name.IndexOf(contains, StringComparison.OrdinalIgnoreCase) >= 0)
-            return root;
-
-        for (int i = 0; i < root.childCount; i++)
-        {
-            var found = FindDeepChildByLooseName(root.GetChild(i), contains);
-            if (found != null) return found;
-        }
-        return null;
+        var slots = GetComponentsInChildren<RectTransform>();
+        artifactSlots = slots.Where(s => s.name.Contains("Artifact")).ToArray();
+        buffSlots = slots.Where(s => s.name.Contains("Buff")).ToArray();
+        serviceSlot = slots.FirstOrDefault(s => s.name.Contains("Service"));
     }
 }

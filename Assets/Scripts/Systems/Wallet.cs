@@ -1,4 +1,3 @@
-// Wallet.cs
 using System;
 using UnityEngine;
 
@@ -6,14 +5,13 @@ public class Wallet : MonoBehaviour
 {
     public static Wallet Instance;
 
-    [Header("Startvaerdi")]
+    [Header("Startværdi")]
     [SerializeField] private int startingGold = 0;
 
-    // Intern beholdning
-    [SerializeField] private int gold;
+    private int gold;
 
-    // UI/andre systemer forventer disse:
-    public int Gold { get { return gold; } }
+    // Properties til UI
+    public int CurrentGold => gold; //  til TopBarUI
     public event Action<int> OnGoldChanged;
 
     void Awake()
@@ -23,9 +21,10 @@ public class Wallet : MonoBehaviour
 
         gold = Mathf.Max(0, startingGold);
         RaiseChanged();
+
+        Debug.Log($"[Wallet] Awake -> StartingGold={startingGold}, CurrentGold={gold}");
     }
 
-    // Tilfoej guld med BUFF/ARTIFACT multiplikator (Golden Idol m.m.)
     public int Add(int baseAmount)
     {
         int add = Mathf.Max(0, ApplyGoldMultiplier(baseAmount));
@@ -37,7 +36,6 @@ public class Wallet : MonoBehaviour
         return add;
     }
 
-    // Ra tilfoejelse uden multiplikator (hvis noedvendigt i tests/tools)
     public int AddRaw(int amount)
     {
         int add = Mathf.Max(0, amount);
@@ -49,7 +47,6 @@ public class Wallet : MonoBehaviour
         return add;
     }
 
-    // Forsog at bruge guld. Returnerer true hvis succes.
     public bool TrySpend(int amount)
     {
         if (amount <= 0) return true;
@@ -60,33 +57,23 @@ public class Wallet : MonoBehaviour
         return true;
     }
 
-    public bool CanAfford(int amount)
-    {
-        return gold >= Mathf.Max(0, amount);
-    }
+    public bool CanAfford(int amount) => gold >= Mathf.Max(0, amount);
 
-    // Sæt direkte (bruges sjældent, men nogle UI kan kalde det)
     public void SetGold(int value)
     {
         gold = Mathf.Max(0, value);
         RaiseChanged();
     }
 
-    // Hjælpere
     private int ApplyGoldMultiplier(int baseAmount)
     {
         float mult = 1f;
         if (PlayerBuffManager.Instance != null)
-            mult = PlayerBuffManager.Instance.GetGoldGainMult(); // inkluderer Golden Idol runtime-bonus
+            mult = PlayerBuffManager.Instance.GetGoldGainMult();
 
         float f = baseAmount * mult;
-        int result = Mathf.RoundToInt(f);
-        return result < 0 ? 0 : result;
+        return Mathf.RoundToInt(f);
     }
 
-    private void RaiseChanged()
-    {
-        var handler = OnGoldChanged;
-        if (handler != null) handler(gold);
-    }
+    private void RaiseChanged() => OnGoldChanged?.Invoke(gold);
 }

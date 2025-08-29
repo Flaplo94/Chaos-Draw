@@ -3,8 +3,8 @@ using UnityEngine;
 public class BountySystem : MonoBehaviour
 {
     [Header("Refs (valgfri)")]
-    public Wallet walletRef;               // Hvis null -> bruger Wallet.Instance
-    public WaveManager waveManager;        // For skalering pr. wave (valgfri)
+    public Wallet walletRef;        // Hvis null -> bruger Wallet.Instance
+    public WaveManager waveManager; // For skalering pr. wave (valgfri)
 
     [Header("Fallback")]
     [Tooltip("Bruges hvis en enemy ikke har EnemyBounty-komponenten")]
@@ -19,7 +19,11 @@ public class BountySystem : MonoBehaviour
         if (waveManager != null)
         {
             waveManager.OnWaveStarted += HandleWaveStarted;
-            currentWave = Mathf.Max(1, waveManager.GetCurrentWaveNumber());
+            currentWave = Mathf.Max(1, waveManager.CurrentWave);
+        }
+        else
+        {
+            Debug.LogWarning("[Bounty] Ingen WaveManager reference sat – bounty skalerer ikke pr. wave.");
         }
     }
 
@@ -30,12 +34,12 @@ public class BountySystem : MonoBehaviour
             waveManager.OnWaveStarted -= HandleWaveStarted;
     }
 
-    void HandleWaveStarted(int waveNumber)
+    private void HandleWaveStarted(int waveNumber)
     {
         currentWave = Mathf.Max(1, waveNumber);
     }
 
-    void HandleEnemyDied(EnemyHealth eh)
+    private void HandleEnemyDied(EnemyHealth eh)
     {
         var wallet = walletRef != null ? walletRef : Wallet.Instance;
         if (wallet == null || eh == null) return;
@@ -46,6 +50,9 @@ public class BountySystem : MonoBehaviour
             amount = bounty.GetBounty(currentWave);
 
         if (amount > 0)
+        {
             wallet.Add(amount);
+            Debug.Log($"[Bounty] Enemy killed -> +{amount} gold (Wave {currentWave})");
+        }
     }
 }

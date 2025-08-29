@@ -21,14 +21,12 @@ public class RandomLightning : MonoBehaviour, IAbilityBehavior
             case Rarity.Rare: bonusStrikes = 2; damageMultiplier = 1.20f; break;
             case Rarity.Epic: bonusStrikes = 3; damageMultiplier = 1.30f; break;
             case Rarity.Legendary: bonusStrikes = 4; damageMultiplier = 1.40f; break;
-                // Common = baseline
         }
         return true;
     }
 
     private void Start()
     {
-        // Collect valid targets by component (works for both enemies and bosses)
         Collider2D[] inRange = Physics2D.OverlapCircleAll(transform.position, radius);
         List<Collider2D> valid = new List<Collider2D>(inRange.Length);
 
@@ -37,22 +35,19 @@ public class RandomLightning : MonoBehaviour, IAbilityBehavior
             var c = inRange[i];
             if (c == null) continue;
 
-            // Must have either EnemyHealth or BossHealth
             if (c.GetComponent<EnemyHealth>() != null || c.GetComponent<BossHealth>() != null)
-            {
                 valid.Add(c);
-            }
         }
 
         if (valid.Count == 0) { Destroy(gameObject); return; }
 
-        // Apply rarity bonuses
         int adjMin = Mathf.Max(0, minStrikes + bonusStrikes);
         int adjMax = Mathf.Max(adjMin, maxStrikes + bonusStrikes);
         int strikeCount = Mathf.Clamp(Random.Range(adjMin, adjMax + 1), 0, valid.Count);
-        int finalDamage = Mathf.Max(1, Mathf.RoundToInt(damage * damageMultiplier));
 
-        // Strike unique random targets
+        int baseAdj = Mathf.Max(1, Mathf.RoundToInt(damage * damageMultiplier));
+        int finalDamage = DamageCalculator.ComputeFinalDamage(baseAdj, DamageElement.Lightning);
+
         for (int i = 0; i < strikeCount; i++)
         {
             int idx = Random.Range(0, valid.Count);
@@ -62,19 +57,15 @@ public class RandomLightning : MonoBehaviour, IAbilityBehavior
             if (targetCol == null) continue;
             var t = targetCol.transform;
 
-            // Deal damage to either type
             var eh = targetCol.GetComponent<EnemyHealth>();
             if (eh != null) eh.TakeDamage(finalDamage);
 
             var bh = targetCol.GetComponent<BossHealth>();
             if (bh != null) bh.TakeDamage(finalDamage);
 
-            // Optional VFX
             if (lightningEffect != null)
             {
                 var vfx = Instantiate(lightningEffect);
-
-                
                 if (vfx.TryGetComponent<LineRenderer>(out var lr))
                 {
                     lr.useWorldSpace = true;
@@ -85,7 +76,6 @@ public class RandomLightning : MonoBehaviour, IAbilityBehavior
                 }
                 else
                 {
-                    // Otherwise spawn a burst at the target
                     vfx.transform.position = t.position;
                     Destroy(vfx, 0.25f);
                 }

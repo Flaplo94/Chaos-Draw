@@ -5,9 +5,11 @@ public class Fireball : MonoBehaviour, IAbilityBehavior
     public float speed = 10f;
     public int damage = 10;
     public float aoeRadius = 2f;
-    private Vector2 direction;
+
     [SerializeField] private GameObject aoeVisual;
     [SerializeField] private Color aoeColor = Color.red;
+
+    private Vector2 direction;
 
     public bool Initialize(Vector2 dir, Rarity rarity)
     {
@@ -15,14 +17,10 @@ public class Fireball : MonoBehaviour, IAbilityBehavior
 
         switch (rarity)
         {
-            case Rarity.Uncommon:
-                aoeRadius *= 1.2f; break;
-            case Rarity.Rare:
-                aoeRadius *= 1.4f; damage += 5; break;
-            case Rarity.Epic:
-                aoeRadius *= 1.6f; damage += 10; break;
-            case Rarity.Legendary:
-                aoeRadius *= 2f; damage += 20; break;
+            case Rarity.Uncommon: aoeRadius *= 1.2f; break;
+            case Rarity.Rare: aoeRadius *= 1.4f; damage += 5; break;
+            case Rarity.Epic: aoeRadius *= 1.6f; damage += 10; break;
+            case Rarity.Legendary: aoeRadius *= 2f; damage += 20; break;
         }
         return true;
     }
@@ -36,13 +34,14 @@ public class Fireball : MonoBehaviour, IAbilityBehavior
     {
         if (!other.CompareTag("Enemy") && !other.CompareTag("Boss")) return;
 
+        // Altid central beregning: Fire element
+        int finalDamage = DamageCalculator.ComputeFinalDamage(damage, DamageElement.Fire);
+
         Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, aoeRadius);
         foreach (var hit in hits)
         {
-            if (hit.TryGetComponent(out EnemyHealth eh))
-                eh.TakeDamage(damage);
-            if (hit.TryGetComponent(out BossHealth bh))
-                bh.TakeDamage(damage);
+            if (hit.TryGetComponent(out EnemyHealth eh)) eh.TakeDamage(finalDamage);
+            if (hit.TryGetComponent(out BossHealth bh)) bh.TakeDamage(finalDamage);
         }
 
         if (aoeVisual != null)
@@ -50,8 +49,7 @@ public class Fireball : MonoBehaviour, IAbilityBehavior
             GameObject vfx = Instantiate(aoeVisual, transform.position, Quaternion.identity);
             vfx.transform.localScale = Vector3.one * aoeRadius * 2f;
             var sr = vfx.GetComponent<SpriteRenderer>();
-            if (sr != null)
-                sr.color = aoeColor;
+            if (sr != null) sr.color = aoeColor;
             Destroy(vfx, 0.1f);
         }
 

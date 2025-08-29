@@ -17,14 +17,10 @@ public class FireOnGround : MonoBehaviour, IAbilityBehavior
     {
         switch (rarity)
         {
-            case Rarity.Uncommon:
-                radius *= 1.2f; break;
-            case Rarity.Rare:
-                radius *= 1.4f; damagePerTick += 1; break;
-            case Rarity.Epic:
-                radius *= 1.6f; damagePerTick += 2; break;
-            case Rarity.Legendary:
-                radius *= 2f; damagePerTick += 3; break;
+            case Rarity.Uncommon: radius *= 1.2f; break;
+            case Rarity.Rare: radius *= 1.4f; damagePerTick += 1; break;
+            case Rarity.Epic: radius *= 1.6f; damagePerTick += 2; break;
+            case Rarity.Legendary: radius *= 2f; damagePerTick += 3; break;
         }
         return true;
     }
@@ -39,8 +35,7 @@ public class FireOnGround : MonoBehaviour, IAbilityBehavior
             GameObject vfx = Instantiate(fireVisual, transform.position, Quaternion.identity, transform);
             vfx.transform.localScale = Vector3.one * radius * 2f;
             var sr = vfx.GetComponent<SpriteRenderer>();
-            if (sr != null)
-                sr.color = fireColor;
+            if (sr != null) sr.color = fireColor;
         }
     }
 
@@ -58,15 +53,14 @@ public class FireOnGround : MonoBehaviour, IAbilityBehavior
         if (tickTimer <= 0f)
         {
             tickTimer = tickInterval;
+
+            int tickDamage = DamageCalculator.ComputeFinalDamage(damagePerTick, DamageElement.Fire);
+
             Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, radius, enemyLayer);
             foreach (var hit in hits)
             {
-                var eh = hit.GetComponent<EnemyHealth>();
-                if (eh != null)
-                    eh.TakeDamage(damagePerTick);
-                var bh = hit.GetComponent<BossHealth>();
-                if (bh != null)
-                    bh.TakeDamage(damagePerTick);
+                if (hit.TryGetComponent(out EnemyHealth eh)) eh.TakeDamage(tickDamage);
+                if (hit.TryGetComponent(out BossHealth bh)) bh.TakeDamage(tickDamage);
             }
         }
     }

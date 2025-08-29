@@ -167,3 +167,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damage: 10
   lifetime: 5
+  logDamage: 1
+  debugBaseDamage: 0
+  debugGlobalMult: 1
+  debugElementMult: 1

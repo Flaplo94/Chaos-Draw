@@ -18,30 +18,24 @@ public class GodSpeed : MonoBehaviour, IAbilityBehavior
     [SerializeField] private GameObject zapVisual;
 
     private Transform player;
-    private PlayerMovement playerMove;
     private SpriteRenderer playerSR;
     private Color originalColor;
-    private float originalMoveSpeed;
     private float zapTimer;
+    private bool speedApplied;
 
-    // NOTE: now returns bool
     public bool Initialize(Vector2 _, Rarity rarity)
     {
-        // Block activation if another GodSpeed is active
         if (Active != null && Active != this)
         {
             UIMessage uiMessage = FindFirstObjectByType<UIMessage>();
             if (uiMessage != null)
-            {
                 uiMessage.ShowMessage("God Speed is already active");
-            }
-            Destroy(gameObject);   // Cancel this spawn
-            return false;          // Tell caller: do not consume card
+            Destroy(gameObject);
+            return false;
         }
 
         Active = this;
 
-        // Rarity scaling
         switch (rarity)
         {
             case Rarity.Uncommon: duration += 1f; speedMultiplier *= 1.10f; zapRadius *= 1.05f; break;
@@ -50,7 +44,9 @@ public class GodSpeed : MonoBehaviour, IAbilityBehavior
             case Rarity.Legendary: duration += 4f; speedMultiplier *= 1.40f; zapRadius *= 1.20f; zapDamagePerTick += 3; break;
         }
         if (duration < 0f) duration = 0f;
-        return true; // proceed
+        if (speedMultiplier < 1f) speedMultiplier = 1f; // ingen “langsommere” buff
+
+        return true;
     }
 
     private void Awake()
@@ -72,12 +68,15 @@ public class GodSpeed : MonoBehaviour, IAbilityBehavior
         if (!playerObj) { DestroySelf(); return; }
 
         player = playerObj.transform;
-        playerMove = playerObj.GetComponent<PlayerMovement>();
         playerSR = playerObj.GetComponent<SpriteRenderer>();
-        if (!playerMove) { DestroySelf(); return; }
 
-        originalMoveSpeed = playerMove.moveSpeed;
-        playerMove.moveSpeed = originalMoveSpeed * Mathf.Max(1f, speedMultiplier);
+        // Ny logik: tilføj bonus som +værdi (fx 1.5 multiplier -> +0.5 buff)
+        var mgr = PlayerBuffManager.Instance;
+        if (mgr != null)
+        {
+            mgr.AddRuntimeBonus(BuffData.BuffType.Speed, speedMultiplier - 1f);
+            speedApplied = true;
+        }
 
         if (playerSR != null)
         {
@@ -105,6 +104,8 @@ public class GodSpeed : MonoBehaviour, IAbilityBehavior
         var hits = Physics2D.OverlapCircleAll(player.position, zapRadius);
         if (hits == null || hits.Length == 0) return;
 
+        int finalTick = DamageCalculator.ComputeFinalDamage(zapDamagePerTick, DamageElement.Lightning);
+
         for (int i = 0; i < hits.Length; i++)
         {
             var h = hits[i];
@@ -115,8 +116,8 @@ public class GodSpeed : MonoBehaviour, IAbilityBehavior
             if (root == transform || root.IsChildOf(transform)) continue;
 
             bool didDamage = false;
-            if (h.TryGetComponent(out EnemyHealth eh)) { eh.TakeDamage(zapDamagePerTick); didDamage = true; }
-            if (h.TryGetComponent(out BossHealth bh)) { bh.TakeDamage(zapDamagePerTick); didDamage = true; }
+            if (h.TryGetComponent(out EnemyHealth eh)) { eh.TakeDamage(finalTick); didDamage = true; }
+            if (h.TryGetComponent(out BossHealth bh)) { bh.TakeDamage(finalTick); didDamage = true; }
             if (!didDamage) continue;
 
             if (zapVisual != null)
@@ -142,7 +143,14 @@ public class GodSpeed : MonoBehaviour, IAbilityBehavior
     private void OnDestroy()
     {
         if (playerSR != null) playerSR.color = originalColor;
-        if (playerMove != null) playerMove.moveSpeed = originalMoveSpeed;
+
+        if (speedApplied && PlayerBuffManager.Instance != null && speedMultiplier > 0f)
+        {
+            // Fjern bonus igen (fx 1.5 multiplier -> -0.5 buff)
+            PlayerBuffManager.Instance.AddRuntimeBonus(BuffData.BuffType.Speed, -(speedMultiplier - 1f));
+            speedApplied = false;
+        }
+
         if (Active == this) Active = null;
     }
 

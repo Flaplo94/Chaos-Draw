@@ -16,7 +16,7 @@ public class Dimmer : MonoBehaviour
 
     void Awake()
     {
-        cg = GetComponent<CanvasGroup>();
+        EnsureSetup();
 
         // Sikre at basefarven er 100% sort (styr alpha via CanvasGroup)
         var img = GetComponent<Image>();
@@ -27,20 +27,30 @@ public class Dimmer : MonoBehaviour
             cg.alpha = 0f;
             cg.blocksRaycasts = false;
             cg.interactable = false;
-            gameObject.SetActive(false);
         }
+    }
+
+    void EnsureSetup()
+    {
+        if (cg == null)
+            cg = GetComponent<CanvasGroup>();
     }
 
     public void Show()
     {
+        if (!gameObject.activeSelf) gameObject.SetActive(true); // auto-tænd GO
+
+        EnsureSetup();
         Debug.Log("[Dimmer] Show()");
-        gameObject.SetActive(true);
         if (current != null) StopCoroutine(current);
         current = StartCoroutine(FadeTo(targetAlpha, true));
     }
 
     public void Hide()
     {
+        if (!gameObject.activeSelf) gameObject.SetActive(true); // auto-tænd GO
+
+        EnsureSetup();
         Debug.Log("[Dimmer] Hide()");
         if (current != null) StopCoroutine(current);
         current = StartCoroutine(FadeTo(0f, false));
@@ -48,8 +58,10 @@ public class Dimmer : MonoBehaviour
 
     public void InstantOn()
     {
+        if (!gameObject.activeSelf) gameObject.SetActive(true);
+
+        EnsureSetup();
         Debug.Log("[Dimmer] InstantOn()");
-        gameObject.SetActive(true);
         cg.alpha = targetAlpha;
         cg.blocksRaycasts = blockClicks;
         cg.interactable = false;
@@ -57,15 +69,18 @@ public class Dimmer : MonoBehaviour
 
     public void InstantOff()
     {
+        if (!gameObject.activeSelf) gameObject.SetActive(true);
+
+        EnsureSetup();
         Debug.Log("[Dimmer] InstantOff()");
         cg.alpha = 0f;
         cg.blocksRaycasts = false;
         cg.interactable = false;
-        gameObject.SetActive(false);
     }
 
     IEnumerator FadeTo(float a, bool enableBlock)
     {
+        EnsureSetup();
         float start = cg.alpha;
         float t = 0f;
 
@@ -81,12 +96,13 @@ public class Dimmer : MonoBehaviour
             cg.alpha = Mathf.Lerp(start, a, t / fadeDuration);
             yield return null;
         }
+
         cg.alpha = a;
 
         if (a <= 0.001f)
         {
             cg.blocksRaycasts = false;
-            gameObject.SetActive(false);
+            //  ikke mere SetActive(false)
         }
     }
 }

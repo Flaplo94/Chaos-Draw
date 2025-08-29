@@ -13,7 +13,7 @@ public class WalletUI : MonoBehaviour
         if (Wallet.Instance != null)
             Wallet.Instance.OnGoldChanged += UpdateUI;
 
-        UpdateUI(Wallet.Instance != null ? Wallet.Instance.Gold : 0);
+        UpdateUI(Wallet.Instance != null ? Wallet.Instance.CurrentGold : 0);
     }
 
     void OnDisable()

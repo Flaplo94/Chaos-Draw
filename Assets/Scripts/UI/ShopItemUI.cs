@@ -187,7 +187,7 @@ public class ShopItemUI : MonoBehaviour
 
     private int GetGold()
     {
-        return (Wallet.Instance != null) ? Wallet.Instance.Gold : 0;
+        return (Wallet.Instance != null) ? Wallet.Instance.CurrentGold : 0;
     }
 
     // ---------- Wallet event subscription ----------
@@ -200,7 +200,7 @@ public class ShopItemUI : MonoBehaviour
         subscribedToWallet = true;
 
         // Synk UI med nuværende guld
-        RefreshInteractable(Wallet.Instance.Gold);
+        RefreshInteractable(Wallet.Instance.CurrentGold);
     }
 
     private void UnsubscribeWallet()

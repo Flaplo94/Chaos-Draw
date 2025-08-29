@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class LightningBall : MonoBehaviour, IAbilityBehavior
 {
@@ -37,23 +38,18 @@ public class LightningBall : MonoBehaviour, IAbilityBehavior
         rb = GetComponent<Rigidbody2D>();
         col = GetComponent<Collider2D>();
 
-        // Rigidbody2D setup (Unity 6)
         rb.gravityScale = 0f;
         rb.linearDamping = 0f;
         rb.freezeRotation = true;
         rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
 
-        // TEMP ignore collisions with player so we don't stick at spawn
         var player = GameObject.FindGameObjectWithTag("Player");
         if (player != null && col != null)
         {
             var playerCols = player.GetComponentsInChildren<Collider2D>(true);
-
-            // Ignore for a brief moment…
             for (int i = 0; i < playerCols.Length; i++)
                 Physics2D.IgnoreCollision(col, playerCols[i], true);
 
-            // If overlapping, nudge forward along shoot direction
             for (int i = 0; i < playerCols.Length; i++)
             {
                 var dist = Physics2D.Distance(col, playerCols[i]);
@@ -65,7 +61,6 @@ public class LightningBall : MonoBehaviour, IAbilityBehavior
                 }
             }
 
-            // …then re-enable so we CAN bounce off the player later
             StartCoroutine(ReenablePlayerCollisionSoon(playerCols));
         }
 
@@ -73,9 +68,8 @@ public class LightningBall : MonoBehaviour, IAbilityBehavior
         lastVelocity = rb.linearVelocity;
     }
 
-    private System.Collections.IEnumerator ReenablePlayerCollisionSoon(Collider2D[] playerCols)
+    private IEnumerator ReenablePlayerCollisionSoon(Collider2D[] playerCols)
     {
-        // wait a couple physics ticks to clear any initial overlap
         yield return new WaitForFixedUpdate();
         yield return new WaitForFixedUpdate();
 
@@ -88,7 +82,7 @@ public class LightningBall : MonoBehaviour, IAbilityBehavior
 
     private void FixedUpdate()
     {
-        lastVelocity = rb.linearVelocity; // cache pre-collision velocity
+        lastVelocity = rb.linearVelocity;
     }
 
     private void Update()
@@ -109,18 +103,19 @@ public class LightningBall : MonoBehaviour, IAbilityBehavior
         var hits = Physics2D.OverlapCircleAll(transform.position, zapRadius);
         if (hits == null || hits.Length == 0) return;
 
+        int finalTick = DamageCalculator.ComputeFinalDamage(damagePerTick, DamageElement.Lightning);
+
         foreach (var h in hits)
         {
             if (!h) continue;
 
-            // Never zap the player or this projectile
             var root = h.attachedRigidbody ? h.attachedRigidbody.transform : h.transform;
             if (root.CompareTag("Player")) continue;
             if (root == transform || root.IsChildOf(transform)) continue;
 
             bool didDamage = false;
-            if (h.TryGetComponent(out EnemyHealth eh)) { eh.TakeDamage(damagePerTick); didDamage = true; }
-            if (h.TryGetComponent(out BossHealth bh)) { bh.TakeDamage(damagePerTick); didDamage = true; }
+            if (h.TryGetComponent(out EnemyHealth eh)) { eh.TakeDamage(finalTick); didDamage = true; }
+            if (h.TryGetComponent(out BossHealth bh)) { bh.TakeDamage(finalTick); didDamage = true; }
             if (!didDamage) continue;
 
             if (zapVisual != null)
@@ -147,7 +142,6 @@ public class LightningBall : MonoBehaviour, IAbilityBehavior
     {
         if (rb == null) return;
 
-        // Use pre-collision velocity for a clean reflect
         Vector2 inVel = lastVelocity;
         if (inVel.sqrMagnitude < 0.0001f) inVel = rb.linearVelocity;
 

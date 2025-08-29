@@ -12,8 +12,10 @@ public class BuffUIManager : MonoBehaviour
             Destroy(child.gameObject);
 
         // Tilføj ikoner for aktive buffs
-        foreach (BuffData buff in PlayerBuffManager.Instance.activeBuffs)
+        foreach (var active in PlayerBuffManager.Instance.ActiveBuffs)
         {
+            BuffData buff = active.data;   //  vi tager BuffData ud af ActiveBuff
+
             GameObject iconGO = Instantiate(buffIconPrefab, buffBarParent);
             BuffIcon icon = iconGO.GetComponent<BuffIcon>();
             icon.Setup(buff);

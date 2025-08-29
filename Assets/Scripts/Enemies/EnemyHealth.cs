@@ -19,15 +19,21 @@ public class EnemyHealth : MonoBehaviour
 
     public void TakeDamage(int amount)
     {
+        if (amount <= 0) return;
+
         currentHealth -= amount;
+
+        // Damage numbers
+        if (DamageNumbers.Instance != null)
+            DamageNumbers.Instance.Show(transform.position + Vector3.up * 0.6f, amount);
+
         if (currentHealth <= 0)
-        {
             Die();
-        }
     }
 
     public void Heal(int amount)
     {
+        if (amount <= 0) return;
         currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
     }
 
@@ -37,7 +43,7 @@ public class EnemyHealth : MonoBehaviour
     void Die()
     {
         OnDeath?.Invoke();                 // lokale lyttere
-        OnAnyEnemyDied?.Invoke(this);      // globalt broadcast til fx BountySystem
+        OnAnyEnemyDied?.Invoke(this);      // globalt broadcast, fx BountySystem
         Destroy(gameObject);
     }
 }

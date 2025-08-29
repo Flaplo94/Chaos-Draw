@@ -7,7 +7,7 @@ public class LightningRod : MonoBehaviour, IAbilityBehavior
     [SerializeField] private float rodRange = 5f;
     [SerializeField] private float damage = 10f;
     [SerializeField] private float damageTickRate = 0.5f;
-    [SerializeField] private LayerMask enemyLayer;              // <- make sure this includes the Boss layer too
+    [SerializeField] private LayerMask enemyLayer;              // inkluder Boss-lag
     [SerializeField] private LineRenderer lightningLinePrefab;
 
     private float damageTimer = 0f;
@@ -19,14 +19,10 @@ public class LightningRod : MonoBehaviour, IAbilityBehavior
     {
         switch (rarity)
         {
-            case Rarity.Uncommon:
-                rodRange *= 1.10f; damage *= 1.10f; damageTickRate *= 0.90f; break;
-            case Rarity.Rare:
-                rodRange *= 1.20f; damage *= 1.20f; damageTickRate *= 0.85f; break;
-            case Rarity.Epic:
-                rodRange *= 1.30f; damage *= 1.30f; damageTickRate *= 0.80f; break;
-            case Rarity.Legendary:
-                rodRange *= 1.40f; damage *= 1.40f; damageTickRate *= 0.70f; break;
+            case Rarity.Uncommon: rodRange *= 1.10f; damage *= 1.10f; damageTickRate *= 0.90f; break;
+            case Rarity.Rare: rodRange *= 1.20f; damage *= 1.20f; damageTickRate *= 0.85f; break;
+            case Rarity.Epic: rodRange *= 1.30f; damage *= 1.30f; damageTickRate *= 0.80f; break;
+            case Rarity.Legendary: rodRange *= 1.40f; damage *= 1.40f; damageTickRate *= 0.70f; break;
         }
         if (damageTickRate < 0.05f) damageTickRate = 0.05f;
         return true;
@@ -46,11 +42,11 @@ public class LightningRod : MonoBehaviour, IAbilityBehavior
 
         ClearLines();
 
-        // Draw to player (if inside range)
+        // linje til spiller (hvis indenfor rækkevidde)
         if (player != null && Vector2.Distance(player.position, transform.position) <= rodRange)
             DrawLightning(transform.position, player.position);
 
-        // Draw to other rods in range
+        // linjer til andre rods i rækkevidde
         foreach (var other in activeRods)
         {
             if (other == this) continue;
@@ -69,27 +65,30 @@ public class LightningRod : MonoBehaviour, IAbilityBehavior
         line.SetPosition(1, to);
         lines.Add(line);
 
-        // Damage along the line on tick
+        // Damage på tick langs linjen
         if (damageTimer <= 0f)
         {
             var dir = (to - from).normalized;
             float len = Vector2.Distance(from, to);
-            RaycastHit2D[] hits = Physics2D.RaycastAll(from, dir, len, enemyLayer);
 
+            int finalTick = DamageCalculator.ComputeFinalDamage(Mathf.RoundToInt(damage), DamageElement.Lightning);
+
+            RaycastHit2D[] hits = Physics2D.RaycastAll(from, dir, len, enemyLayer);
             foreach (var hit in hits)
             {
+                if (hit.collider == null) continue;
+
                 var eh = hit.collider.GetComponent<EnemyHealth>();
-                if (eh != null) eh.TakeDamage(Mathf.RoundToInt(damage));
+                if (eh != null) eh.TakeDamage(finalTick);
 
                 var bh = hit.collider.GetComponent<BossHealth>();
-                if (bh != null) bh.TakeDamage(Mathf.RoundToInt(damage));   // <- boss damage
+                if (bh != null) bh.TakeDamage(finalTick);
             }
 
             damageTimer = damageTickRate;
         }
 
-        // Quick flicker
-        Destroy(line.gameObject, Time.deltaTime);
+        Destroy(line.gameObject, Time.deltaTime); // kort “flicker”
     }
 
     private void ClearLines()

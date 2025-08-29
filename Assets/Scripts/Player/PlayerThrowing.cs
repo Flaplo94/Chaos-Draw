@@ -1,29 +1,31 @@
+// PlayerThrowing.cs
 using UnityEngine;
 
 public class PlayerThrowing : MonoBehaviour
 {
     [Header("Projectile")]
-    public GameObject cardPrefab;   // din "Bullet"-prefab
+    public GameObject cardPrefab;   // din Bullet-prefab (knoppen)
     public Transform firePoint;
     public float cardSpeed = 10f;
 
     [Header("Fire")]
     public float baseCooldown = 0.30f;
-    [SerializeField] private float spreadDegrees = 0f; // 0 = lige ud; sæt >0 hvis du får ekstra projektiler senere
+    [SerializeField] private float spreadDegrees = 0f; // sæt >0 hvis du senere vil have ekstra projektiler
 
     [Header("Refs")]
-    public PlayerStats stats;   // DRAG PlayerStats fra Player ind her i Inspector
+    public PlayerStats stats;   // drag PlayerStats component fra Player
 
     // Artifact hooks (sættes af ArtifactSystem)
     [HideInInspector] public int extraProjectiles = 0;
-    [HideInInspector] public float fireRateMult = 1f;        // Gamers Cap kan øge denne
-    [HideInInspector] public float projectileSpeedMult = 1f; // Gamers Cap kan øge denne
+    [HideInInspector] public float fireRateMult = 1f;
+    [HideInInspector] public float projectileSpeedMult = 1f;
 
-    private float cooldown;
+    float cooldown;
 
     void Update()
     {
-        if (cooldown > 0f) cooldown -= Time.unscaledDeltaTime; // bruger unscaled hvis shoppen pauser Time.timeScale
+        // unscaled så input/cooldown fungerer selvom shoppen pauser timeScale
+        if (cooldown > 0f) cooldown -= Time.unscaledDeltaTime;
         if (cooldown < 0f) cooldown = 0f;
 
         if (Input.GetMouseButton(0) && cooldown <= 0f)
@@ -36,7 +38,7 @@ public class PlayerThrowing : MonoBehaviour
 
     void ThrowTowardMouse()
     {
-        if (!cardPrefab || !firePoint) return;
+        if (!cardPrefab || !firePoint || Camera.main == null) return;
 
         Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         mouseWorld.z = 0f;
@@ -61,17 +63,22 @@ public class PlayerThrowing : MonoBehaviour
     {
         var go = Instantiate(cardPrefab, pos, Quaternion.identity);
 
-        // ----- VIGTIG DEL: skaler Bullet.damage med global damage multiplier -----
+        // Skaler Bullet.damage med global multiplier (Gamers Cap / Glass Cannon)
         if (go.TryGetComponent<Bullet>(out var bullet))
         {
-            int baseDmg = bullet.damage; // værdi fra prefab
-            float mult = (stats != null) ? stats.damageMult : 1f;
-            bullet.damage = Mathf.Max(1, Mathf.RoundToInt(baseDmg * mult));
+            int baseDmg = bullet.damage;                          // værdi fra prefab
+            float globalMult = (stats != null) ? stats.damageMult : 1f;
+            float elemMult = 1f;                                  // basic = ikke-elemental
+
+            // debugfelter til konsol-loggen i Bullet
+            bullet.debugBaseDamage = baseDmg;
+            bullet.debugGlobalMult = globalMult;
+            bullet.debugElementMult = elemMult;
+
+            bullet.damage = Mathf.Max(1, Mathf.RoundToInt(baseDmg * globalMult));
         }
 
         if (go.TryGetComponent<Rigidbody2D>(out var rb))
-        {
             rb.linearVelocity = dir * (cardSpeed * Mathf.Max(0.01f, projectileSpeedMult));
-        }
     }
 }

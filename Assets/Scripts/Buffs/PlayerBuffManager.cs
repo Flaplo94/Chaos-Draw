@@ -5,91 +5,127 @@ public class PlayerBuffManager : MonoBehaviour
 {
     public static PlayerBuffManager Instance;
 
-    [Header("Active Buff Assets (from cards/shop)")]
-    public List<BuffData> activeBuffs = new List<BuffData>();
+    [Header("Damage")]
+    [SerializeField] private float genericDamageMult = 1f;
+    [SerializeField] private float fireDamageMult = 1f;
+    [SerializeField] private float thunderDamageMult = 1f;
+    [SerializeField] private float burnDamageMult = 1f;
+    [SerializeField] private float scalingDamageMult = 1f;
 
-    // Runtime additive bonuses per BuffType (used by artifacts)
-    private readonly Dictionary<BuffData.BuffType, float> runtimeAdd =
-        new Dictionary<BuffData.BuffType, float>();
+    [Header("Core Stats")]
+    [SerializeField] private float maxHpMult = 1f;
+    [SerializeField] private float shieldRegenMult = 1f;
+    [SerializeField] private float manaRegenMult = 1f;
+    [SerializeField] private float manaCostReductionMult = 1f;
 
-    void Awake()
+    [Header("Combat")]
+    [SerializeField] private float attackSpeedMult = 1f;
+    [SerializeField] private int extraProjectiles = 0;
+    [SerializeField] private float lifestealMult = 0f;
+
+    [Header("Utility")]
+    [SerializeField] private float moveSpeedMult = 1f;
+    [SerializeField] private float goldGainMult = 1f;
+    [SerializeField] private float chaosShardGainMult = 1f;
+
+    private readonly List<ActiveBuff> activeBuffs = new();
+    public IReadOnlyList<ActiveBuff> ActiveBuffs => activeBuffs;
+
+    private void Awake()
     {
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
     }
 
-    // ----- Mutations -----
-
-    public void AddBuff(BuffData buff)
+    private void Update()
     {
-        if (buff == null) return;
-        activeBuffs.Add(buff);
-        Debug.Log($"Buff added: {buff.buffName}");
+        for (int i = activeBuffs.Count - 1; i >= 0; i--)
+        {
+            activeBuffs[i].timeLeft -= Time.deltaTime;
+            if (activeBuffs[i].timeLeft <= 0)
+            {
+                RemoveBuff(activeBuffs[i].data);
+                activeBuffs.RemoveAt(i);
+            }
+        }
+    }
 
-        var ui = FindFirstObjectByType<BuffUIManager>();
-        if (ui != null) ui.UpdateBuffUI();
+    public void ApplyBuff(BuffData data)
+    {
+        ModifyBuffValue(data, add: true);
+
+        if (data.duration > 0)
+            activeBuffs.Add(new ActiveBuff(data, data.duration));
+    }
+
+    public void RemoveBuff(BuffData data)
+    {
+        ModifyBuffValue(data, add: false);
     }
 
     public void AddRuntimeBonus(BuffData.BuffType type, float value)
     {
-        if (!runtimeAdd.ContainsKey(type)) runtimeAdd[type] = 0f;
-        runtimeAdd[type] += value;
+        BuffData temp = ScriptableObject.CreateInstance<BuffData>();
+        temp.type = type;
+        temp.value = value;
+        temp.duration = 0f;
+        ApplyBuff(temp);
     }
 
-    // ----- Queries -----
-
-    public float GetTotalValue(BuffData.BuffType type)
+    private void ModifyBuffValue(BuffData data, bool add)
     {
-        float total = 0f;
-        for (int i = 0; i < activeBuffs.Count; i++)
+        float sign = add ? 1f : -1f;
+        switch (data.type)
         {
-            var b = activeBuffs[i];
-            if (b != null && b.type == type) total += b.value;
+            case BuffData.BuffType.Damage: genericDamageMult += sign * data.value; break;
+            case BuffData.BuffType.FireDamage: fireDamageMult += sign * data.value; break;
+            case BuffData.BuffType.ThunderDamage: thunderDamageMult += sign * data.value; break;
+            case BuffData.BuffType.BurnDamage: burnDamageMult += sign * data.value; break;
+            case BuffData.BuffType.ScalingDamage: scalingDamageMult += sign * data.value; break;
+
+            case BuffData.BuffType.MaxHP: maxHpMult += sign * data.value; break;
+            case BuffData.BuffType.ShieldRegen: shieldRegenMult += sign * data.value; break;
+            case BuffData.BuffType.ManaRegen: manaRegenMult += sign * data.value; break;
+            case BuffData.BuffType.ManaCostReduction: manaCostReductionMult += sign * data.value; break;
+
+            case BuffData.BuffType.AttackSpeed: attackSpeedMult += sign * data.value; break;
+            case BuffData.BuffType.ExtraProjectile: extraProjectiles += Mathf.RoundToInt(sign * data.value); break;
+            case BuffData.BuffType.Lifesteal: lifestealMult += sign * data.value; break;
+
+            case BuffData.BuffType.Speed: moveSpeedMult += sign * data.value; break;
+            case BuffData.BuffType.GoldGain: goldGainMult += sign * data.value; break;
+            case BuffData.BuffType.ChaosShardGain: chaosShardGainMult += sign * data.value; break;
         }
-        float r;
-        if (runtimeAdd.TryGetValue(type, out r)) total += r;
-        return total;
     }
 
-    public bool HasBuff(BuffData.BuffType type)
+    // --- Getters (til andre systemer) ---
+    public float GetGenericDamageMult() => genericDamageMult;
+    public float GetFireDamageMult() => fireDamageMult;
+    public float GetThunderDamageMult() => thunderDamageMult;
+    public float GetBurnDamageMult() => burnDamageMult;
+    public float GetScalingDamageMult() => scalingDamageMult;
+
+    public float GetMoveSpeedMult() => moveSpeedMult;
+    public float GetAttackSpeedMult() => attackSpeedMult;
+    public float GetGoldGainMult() => goldGainMult;
+    public float GetChaosShardGainMult() => chaosShardGainMult;
+
+    public int GetExtraProjectiles() => extraProjectiles;
+    public float GetLifestealMult() => lifestealMult;
+    public float GetMaxHpMult() => maxHpMult;
+    public float GetShieldRegenMult() => shieldRegenMult;
+    public float GetManaRegenMult() => manaRegenMult;
+    public float GetManaCostReductionMult() => manaCostReductionMult;
+
+    public class ActiveBuff
     {
-        if (GetTotalValue(type) != 0f) return true;
-        for (int i = 0; i < activeBuffs.Count; i++)
-            if (activeBuffs[i] != null && activeBuffs[i].type == type) return true;
-        return false;
-    }
+        public BuffData data;
+        public float timeLeft;
 
-    // ----- Convenience getters -----
-
-    // Movement
-    public float GetMoveSpeedMult() => 1f + GetTotalValue(BuffData.BuffType.Speed);
-
-    // Attack rate
-    public float GetAttackSpeedMult() => 1f + GetTotalValue(BuffData.BuffType.AttackSpeed);
-
-    // Projectiles
-    public int GetExtraProjectiles() => Mathf.RoundToInt(GetTotalValue(BuffData.BuffType.ExtraProjectile));
-
-    // HP
-    public float GetMaxHpMult() => 1f + GetTotalValue(BuffData.BuffType.MaxHP);
-    public float GetLifestealFraction() => Mathf.Max(0f, GetTotalValue(BuffData.BuffType.Lifesteal));
-
-    // Resources
-    public int GetManaCostReduction() => Mathf.RoundToInt(GetTotalValue(BuffData.BuffType.ManaCostReduction));
-    public float GetGoldGainMult() => 1f + GetTotalValue(BuffData.BuffType.GoldGain);
-
-    // Elements/status
-    public float GetFireDamageMult() => 1f + GetTotalValue(BuffData.BuffType.FireDamage);
-    public float GetLightningDamageMult() => 1f + GetTotalValue(BuffData.BuffType.ThunderDamage);
-    public float GetBurnDamageMult() => 1f + GetTotalValue(BuffData.BuffType.BurnDamage);
-
-    // Generic damage including ScalingDamage (Adaptive Power)
-    public float GetGenericDamageMult()
-    {
-        float generic = 1f + GetTotalValue(BuffData.BuffType.Damage);
-        float perBuff = GetTotalValue(BuffData.BuffType.ScalingDamage);
-        int buffCount = activeBuffs.Count; // only ScriptableObject buffs count here
-        float scaling = 1f + Mathf.Max(0f, perBuff) * Mathf.Max(0, buffCount);
-        return generic * scaling;
+        public ActiveBuff(BuffData data, float duration)
+        {
+            this.data = data;
+            this.timeLeft = duration;
+        }
     }
 }

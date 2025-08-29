@@ -20,12 +20,16 @@ public class PlayerArtifactManager : MonoBehaviour
         if (!ownedArtifacts.Contains(artifact))
         {
             ownedArtifacts.Add(artifact);
-            Debug.Log("Artifact added: " + artifact.artifactName);
+            Debug.Log($"[Artifact] Added: {artifact.artifactName} (ID={artifact.internalID})");
 
             ApplyArtifactEffect(artifact);
 
             var ui = FindFirstObjectByType<ArtifactUIManager>();
             if (ui != null) ui.UpdateArtifactUI();
+        }
+        else
+        {
+            Debug.Log($"[Artifact] Already owned: {artifact.artifactName}");
         }
     }
 
@@ -34,57 +38,59 @@ public class PlayerArtifactManager : MonoBehaviour
         return ownedArtifacts.Exists(a => a != null && a.internalID == id);
     }
 
-    void ApplyArtifactEffect(ArtifactData a)
+    private void ApplyArtifactEffect(ArtifactData a)
     {
         var buffs = PlayerBuffManager.Instance;
-        var hp = FindFirstObjectByType<PlayerHealth>(); // replace with your own health script
+        var hp = FindFirstObjectByType<PlayerHealth>();
+
+        if (buffs == null)
+        {
+            Debug.LogError("[Artifact] PlayerBuffManager not found!");
+            return;
+        }
 
         switch (a.internalID)
         {
-            // Economy / multipliers
+            // Economy
             case "GoldenIdol":
-                // +50% gold
-                buffs.AddRuntimeBonus(BuffData.BuffType.GoldGain, 0.50f);
+                buffs.AddRuntimeBonus(BuffData.BuffType.GoldGain, 0.50f); // +50% gold
                 break;
 
-            // Elements
+            //  Charcoal = +40% fire damage
             case "Charcoal":
-                // +40% fire damage
                 buffs.AddRuntimeBonus(BuffData.BuffType.FireDamage, 0.40f);
                 break;
 
-            // Global stat bump
+            //  GamersCap = +10% på alt
             case "GamersCap":
-                {
-                    float v = 0.10f;
-                    buffs.AddRuntimeBonus(BuffData.BuffType.Damage, v);
-                    buffs.AddRuntimeBonus(BuffData.BuffType.FireDamage, v);
-                    buffs.AddRuntimeBonus(BuffData.BuffType.ThunderDamage, v);
-                    buffs.AddRuntimeBonus(BuffData.BuffType.BurnDamage, v);
-                    buffs.AddRuntimeBonus(BuffData.BuffType.MaxHP, v);
-                    buffs.AddRuntimeBonus(BuffData.BuffType.Speed, v);
-                    buffs.AddRuntimeBonus(BuffData.BuffType.AttackSpeed, v);
-                    buffs.AddRuntimeBonus(BuffData.BuffType.GoldGain, v);
-                    break;
-                }
+                float v = 0.10f;
+                buffs.AddRuntimeBonus(BuffData.BuffType.Damage, v);
+                buffs.AddRuntimeBonus(BuffData.BuffType.FireDamage, v);
+                buffs.AddRuntimeBonus(BuffData.BuffType.ThunderDamage, v);
+                buffs.AddRuntimeBonus(BuffData.BuffType.BurnDamage, v);
+                buffs.AddRuntimeBonus(BuffData.BuffType.MaxHP, v);
+                buffs.AddRuntimeBonus(BuffData.BuffType.Speed, v);
+                buffs.AddRuntimeBonus(BuffData.BuffType.AttackSpeed, v);
+                buffs.AddRuntimeBonus(BuffData.BuffType.GoldGain, v);
+                break;
 
-            // Glass cannon
+            //  GlassCannon = triple damage men 1 HP
             case "GlassCannon":
-                buffs.AddRuntimeBonus(BuffData.BuffType.Damage, 3.00f); // +300%
+                buffs.AddRuntimeBonus(BuffData.BuffType.Damage, 3.00f);
                 if (hp != null) hp.ForceSetToOneHP();
                 break;
 
-            // Lucky Shot (every 5th cast double-casts)
+            //  LuckyShot = double cast hver 5.
             case "LuckyShot":
                 LuckyShotSystem.Enable(this);
                 break;
 
-            // Extra life
+            //  SpareRib = +1 liv
             case "SpareRib":
                 if (hp != null) hp.AddExtraLife(1);
                 break;
 
-            // Orbiters / pets / procs (stubs)
+            //  Orbiters / pets
             case "HolyCheese":
                 OrbiterSystem.SpawnCheese(transform);
                 break;
@@ -101,26 +107,29 @@ public class PlayerArtifactManager : MonoBehaviour
                 Error404ProcSystem.Enable();
                 break;
 
-            // Deck / wave hooks
+            //  Deckless = speciel effekt
             case "Deckless":
                 DecklessSystem.Enable();
                 break;
 
-            // Mana cost and input shuffle
+            //  BrainDamage = næsten gratis spells + shuffle keys
             case "BrainDamage":
-                // Force near free spells. Use a large reduction to clamp at >= 0 later.
                 buffs.AddRuntimeBonus(BuffData.BuffType.ManaCostReduction, 999f);
                 InputShuffleSystem.ShuffleKeys();
                 break;
 
-            // Random wave start events
+            //  YeetCube = random wave events
             case "YeetCube":
                 YeetCubeSystem.Enable();
+                break;
+
+            default:
+                Debug.LogWarning($"[Artifact] No effect defined for {a.internalID}");
                 break;
         }
     }
 
-    IEnumerator BananaRoutine()
+    private IEnumerator BananaRoutine()
     {
         while (HasArtifact("KamikazeBanana"))
         {
