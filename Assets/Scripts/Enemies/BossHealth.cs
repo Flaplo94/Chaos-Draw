@@ -6,7 +6,16 @@ public class BossHealth : MonoBehaviour
     [SerializeField] public int maxHealth = 100;
     private int currentHealth;
     private Slider healthSlider;
+    private HitFlash flash;
+    [SerializeField] private bool flashOnLethalHit = true;
+    private EnemyAnimator enemyAnimator;
 
+    void Awake()
+    {
+        flash = GetComponent<HitFlash>() ?? GetComponent<HitFlash>();
+        if (enemyAnimator == null)
+            enemyAnimator = GetComponent<EnemyAnimator>();
+    }
     void Start()
     {
         currentHealth = maxHealth;
@@ -34,27 +43,19 @@ public class BossHealth : MonoBehaviour
 
         currentHealth -= amount;
 
-        // Damage numbers (boss offset lidt større)
-        if (DamageNumbers.Instance != null)
-            DamageNumbers.Instance.Show(transform.position + Vector3.up * 0.8f, amount);
-
-        if (healthSlider != null)
-            healthSlider.value = Mathf.Max(0, currentHealth);
-
-        if (currentHealth <= 0)
-            Die();
-    }
-
-    public void Heal(int amount)
-    {
-        if (amount <= 0) return;
-        currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
+        if (flashOnLethalHit || currentHealth > 0)
+            flash?.PlayFlash();
 
         if (healthSlider != null)
             healthSlider.value = currentHealth;
+
+        if (currentHealth <= 0)
+        {
+            enemyAnimator.PlayDie();
+        }
     }
 
-    void Die()
+    void FinishDeath()
     {
         Destroy(gameObject);
     }

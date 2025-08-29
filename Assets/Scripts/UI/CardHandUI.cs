@@ -147,8 +147,13 @@ public class CardHandUI : MonoBehaviour
 
         if (drawPile.Count == 0)
         {
+            // Make sure this slot is logically empty AND looks empty
+            hand[slotIndex] = null;                                 // <-- add this
+            if (cardSlots != null && slotIndex < cardSlots.Length && cardSlots[slotIndex] != null)
+                cardSlots[slotIndex].Clear();                       // shows Face_Empty (no frame)
+
             UpdateDeckText();
-            UpdatePileUIs(); // (will show emptyBack if provided)
+            UpdatePileUIs();
             return;
         }
 
@@ -315,14 +320,21 @@ public class CardHandUI : MonoBehaviour
 
         if (skipButton != null)
         {
+            skipButton.gameObject.SetActive(true);
             skipButton.onClick.RemoveAllListeners();
-            skipButton.onClick.AddListener(CloseRewardUI);
+            skipButton.onClick.AddListener(() =>
+            {
+                rewardUI.SetActive(false);
+                skipButton.gameObject.SetActive(false);
+                Time.timeScale = 1f;
+            });
         }
     }
 
     private void CloseRewardUI()
     {
         rewardUI.SetActive(false);
+        skipButton.gameObject.SetActive(false);
         ClearRewardCardsParent();
         Time.timeScale = 1f;
     }

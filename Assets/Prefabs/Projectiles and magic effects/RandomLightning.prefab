@@ -75,10 +75,10 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  m_SortingLayerID: -1837387899
+  m_SortingLayer: 7
+  m_SortingOrder: 1
+  m_Sprite: {fileID: -4430060266147063419, guid: e3c77e8c71e4b3c4883cfdaa59d3e04f, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -131,5 +131,9 @@ MonoBehaviour:
   radius: 10
   minStrikes: 1
   maxStrikes: 2
-  damage: 2
-  lightningEffect: {fileID: 6422944563533170519, guid: ecab06e113dceeb49853d98e15bcc636, type: 3}
+  damage: 1
+  lightningVisual: {fileID: 6422944563533170519, guid: ecab06e113dceeb49853d98e15bcc636, type: 3}
+  playTrigger: Play
+  stateName: Strike
+  animSpeed: 1
+  strikeOffset: {x: 0, y: 0}

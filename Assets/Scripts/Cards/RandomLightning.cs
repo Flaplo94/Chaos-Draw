@@ -3,11 +3,25 @@ using System.Collections.Generic;
 
 public class RandomLightning : MonoBehaviour, IAbilityBehavior
 {
+    [Header("Targeting")]
     [SerializeField] private float radius = 6f;
+
+    [Header("Strikes")]
     [SerializeField] private int minStrikes = 1;
     [SerializeField] private int maxStrikes = 2;
     [SerializeField] private int damage = 2;
-    [SerializeField] private GameObject lightningEffect;
+
+    [Header("Visual (Animator + SpriteRenderer)")]
+    [Tooltip("Your LightningStrikeVisual prefab (has SpriteRenderer + Animator).")]
+    [SerializeField] private GameObject lightningVisual;
+    [Tooltip("Animator trigger to play on the strike (leave empty to use a state name).")]
+    [SerializeField] private string playTrigger = "Play";
+    [Tooltip("Fallback state to play if no trigger is used (e.g., 'Strike').")]
+    [SerializeField] private string stateName = "Strike";
+    [Tooltip("Animation speed multiplier for the strike.")]
+    [SerializeField] private float animSpeed = 1.0f;
+    [Tooltip("Optional local offset to place strike slightly above/around target.")]
+    [SerializeField] private Vector2 strikeOffset = new Vector2(0f, 0.0f);
 
     // rarity scaling
     private int bonusStrikes = 0;
@@ -27,14 +41,14 @@ public class RandomLightning : MonoBehaviour, IAbilityBehavior
 
     private void Start()
     {
+        // Collect valid targets (works for enemies AND bosses by component)
         Collider2D[] inRange = Physics2D.OverlapCircleAll(transform.position, radius);
         List<Collider2D> valid = new List<Collider2D>(inRange.Length);
 
         for (int i = 0; i < inRange.Length; i++)
         {
             var c = inRange[i];
-            if (c == null) continue;
-
+            if (!c) continue;
             if (c.GetComponent<EnemyHealth>() != null || c.GetComponent<BossHealth>() != null)
                 valid.Add(c);
         }
@@ -53,41 +67,61 @@ public class RandomLightning : MonoBehaviour, IAbilityBehavior
             int idx = Random.Range(0, valid.Count);
             var targetCol = valid[idx];
             valid.RemoveAt(idx);
+            if (!targetCol) continue;
 
-            if (targetCol == null) continue;
-            var t = targetCol.transform;
+            Transform t = targetCol.attachedRigidbody ? targetCol.attachedRigidbody.transform : targetCol.transform;
 
+            // Deal damage (enemy or boss)
             var eh = targetCol.GetComponent<EnemyHealth>();
             if (eh != null) eh.TakeDamage(finalDamage);
-
             var bh = targetCol.GetComponent<BossHealth>();
             if (bh != null) bh.TakeDamage(finalDamage);
 
-            if (lightningEffect != null)
-            {
-                var vfx = Instantiate(lightningEffect);
-                if (vfx.TryGetComponent<LineRenderer>(out var lr))
-                {
-                    lr.useWorldSpace = true;
-                    if (lr.positionCount < 2) lr.positionCount = 2;
-                    lr.SetPosition(0, transform.position);
-                    lr.SetPosition(1, t.position);
-                    Destroy(vfx, 0.12f);
-                }
-                else
-                {
-                    vfx.transform.position = t.position;
-                    Destroy(vfx, 0.25f);
-                }
-            }
+            // Spawn strike visual at target (no LineRenderer)
+            if (lightningVisual != null)
+                SpawnStrikeAt(t.position + (Vector3)strikeOffset);
         }
 
         Destroy(gameObject);
     }
 
+    private void SpawnStrikeAt(Vector3 pos)
+    {
+        var go = Instantiate(lightningVisual, pos, Quaternion.identity);
+        go.name = "RandomLightning_Strike";
+
+        // Play animation
+        float ttl = 0.2f; // fallback
+        var anim = go.GetComponentInChildren<Animator>();
+        if (anim)
+        {
+            anim.speed = Mathf.Max(0.01f, animSpeed);
+            anim.Rebind();
+            anim.Update(0f);
+
+            if (!string.IsNullOrEmpty(playTrigger))
+            {
+                anim.ResetTrigger(playTrigger);
+                anim.SetTrigger(playTrigger);
+            }
+            else if (!string.IsNullOrEmpty(stateName))
+            {
+                anim.Play(stateName, 0, 0f);
+            }
+
+            // Try to destroy after current state's length / speed
+            var st = anim.GetCurrentAnimatorStateInfo(0);
+            ttl = st.length > 0f ? st.length / anim.speed : 0.25f;
+        }
+
+        Destroy(go, ttl);
+    }
+
+#if UNITY_EDITOR
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = new Color(0.6f, 0.9f, 1f, 0.25f);
         Gizmos.DrawWireSphere(transform.position, radius);
     }
+#endif
 }

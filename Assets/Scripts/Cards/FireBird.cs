@@ -8,22 +8,27 @@ public class FireBird : MonoBehaviour, IAbilityBehavior
     [SerializeField] private int damage = 10;
 
     [Header("Piercing")]
-    [SerializeField] private int basePierces = 1;
-    [SerializeField] private float maxLifetime = 6f;
+    [SerializeField] private int basePierces = 1;    // how many targets it can pass through at Common
+    [SerializeField] private float maxLifetime = 6f; // safety cap
 
     [Header("Visual")]
-    [SerializeField] private float baseScale = 1f;
+    [SerializeField] private float baseScale = 1f;   // visual size at Common (multiplies localScale)
 
     private Vector2 direction;
     private int remainingPierces;
     private float lifeTimer;
+
+    // Track roots so multi-collider enemies don't get double-hit
     private readonly HashSet<Transform> hitRoots = new HashSet<Transform>();
 
     public bool Initialize(Vector2 dir, Rarity rarity)
     {
         direction = dir.normalized;
+        FaceDirection(direction);
+
         remainingPierces = basePierces;
 
+        // Rarity scaling: size, damage, pierces
         float scaleMul = 1f;
         switch (rarity)
         {
@@ -31,13 +36,14 @@ public class FireBird : MonoBehaviour, IAbilityBehavior
             case Rarity.Rare: scaleMul = 1.2f; damage += 5; remainingPierces += 2; break;
             case Rarity.Epic: scaleMul = 1.35f; damage += 8; remainingPierces += 3; break;
             case Rarity.Legendary: scaleMul = 1.5f; damage += 12; remainingPierces += 5; break;
+                // Common: baseline
         }
 
         transform.localScale *= baseScale * scaleMul;
         return true;
     }
 
-    void Update()
+    private void Update()
     {
         transform.position += (Vector3)direction * speed * Time.deltaTime;
 
@@ -46,22 +52,41 @@ public class FireBird : MonoBehaviour, IAbilityBehavior
             Destroy(gameObject);
     }
 
-    void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
+        // Only react to enemies/bosses
         if (!other.CompareTag("Enemy") && !other.CompareTag("Boss"))
             return;
 
         Transform root = other.attachedRigidbody ? other.attachedRigidbody.transform : other.transform;
-        if (hitRoots.Contains(root)) return;
-        hitRoots.Add(root);
+        if (!hitRoots.Add(root))
+            return; // already damaged this target once
 
-        int finalDamage = DamageCalculator.ComputeFinalDamage(damage, DamageElement.Fire);
-
-        if (root.TryGetComponent(out EnemyHealth eh)) eh.TakeDamage(finalDamage);
-        if (root.TryGetComponent(out BossHealth bh)) bh.TakeDamage(finalDamage);
+        // Deal damage
+        if (root.TryGetComponent(out EnemyHealth eh)) eh.TakeDamage(damage);
+        if (root.TryGetComponent(out BossHealth bh)) bh.TakeDamage(damage);
 
         remainingPierces--;
         if (remainingPierces < 0)
             Destroy(gameObject);
     }
+
+    private void FaceDirection(Vector2 dir)
+    {
+        if (dir.sqrMagnitude > 0.0001f)
+        {
+            float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+            transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+        }
+    }
+
+#if UNITY_EDITOR
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = new Color(1f, 0.5f, 0f, 0.8f);
+        Vector3 p = transform.position;
+        Vector3 fwd = transform.right * 0.5f;
+        Gizmos.DrawLine(p, p + fwd);
+    }
+#endif
 }

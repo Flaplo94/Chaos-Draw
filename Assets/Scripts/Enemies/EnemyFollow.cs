@@ -8,8 +8,10 @@ public class EnemyFollow : MonoBehaviour
     [SerializeField] private float separationStrength = 2f;
     [SerializeField] private bool isHealer = false;
 
+    public Vector2 FacingDir { get; private set; } = Vector2.right; // <-- NEW
+
     private Transform player;
-    private static readonly List<EnemyFollow> allEnemies = new List<EnemyFollow>();
+    private readonly List<EnemyFollow> allEnemies = new List<EnemyFollow>();
     private RangedEnemyAttack rangedAttack;
     private float attackRange = 0f;
     private Rigidbody2D rb;
@@ -29,10 +31,7 @@ public class EnemyFollow : MonoBehaviour
         allEnemies.Add(this);
     }
 
-    void OnDestroy()
-    {
-        allEnemies.Remove(this);
-    }
+    void OnDestroy() => allEnemies.Remove(this);
 
     void FixedUpdate()
     {
@@ -66,13 +65,19 @@ public class EnemyFollow : MonoBehaviour
             target = player;
             if (target == null) { rb.linearVelocity = Vector2.zero; return; }
 
-            // Stop if in attack range
+            // Stop if in attack range, but keep facing the player
             if (attackRange > 0f)
             {
                 float distance = Vector2.Distance(transform.position, target.position);
                 if (distance <= attackRange)
                 {
                     rb.linearVelocity = Vector2.zero;
+
+                    // <-- NEW: keep facing target while idle/attacking
+                    Vector2 toTargetFace = ((Vector2)target.position - rb.position);
+                    if (toTargetFace.sqrMagnitude > 0.0001f)
+                        FacingDir = toTargetFace.normalized;
+
                     return;
                 }
             }
@@ -100,7 +105,11 @@ public class EnemyFollow : MonoBehaviour
 
         Vector2 finalDir = (toTarget + separation * separationStrength).normalized;
 
-        // Drive with velocity (physics-friendly, consistent speed)
+        // Drive
         rb.linearVelocity = finalDir * speed;
+
+        // <-- NEW: expose where we're heading so the animator can pick a set
+        if (finalDir.sqrMagnitude > 0.0001f)
+            FacingDir = finalDir;
     }
 }

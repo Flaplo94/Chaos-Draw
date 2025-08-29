@@ -2,18 +2,28 @@ using UnityEngine;
 
 public class Fireball : MonoBehaviour, IAbilityBehavior
 {
+    [Header("Tuning")]
     public float speed = 10f;
     public int damage = 10;
     public float aoeRadius = 2f;
 
-    [SerializeField] private GameObject aoeVisual;
-    [SerializeField] private Color aoeColor = Color.red;
+    private Vector2 direction;
+    private bool impacted;
+
+    private Animator anim;
+    private Collider2D col;
+
+    [Header("Audio")]
+    [SerializeField] private AudioClip impactSound;
+    private AudioSource audioSource;
 
     private Vector2 direction;
 
     public bool Initialize(Vector2 dir, Rarity rarity)
     {
         direction = dir.normalized;
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
 
         switch (rarity)
         {
@@ -25,34 +35,84 @@ public class Fireball : MonoBehaviour, IAbilityBehavior
         return true;
     }
 
+    void Awake()
+    {
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+        }
+
+        audioSource.playOnAwake = false;
+        audioSource.loop = false;
+        audioSource.spatialBlend = 0f; // 2D sound (set to 1f for 3D positional)
+        audioSource.clip = impactSound;
+        anim = GetComponent<Animator>();
+        col = GetComponent<Collider2D>();
+    }
+
     void Update()
     {
+        if (impacted) return;
         transform.position += (Vector3)direction * speed * Time.deltaTime;
     }
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (!other.CompareTag("Enemy") && !other.CompareTag("Boss")) return;
+        if (impacted) return;
 
-        // Altid central beregning: Fire element
-        int finalDamage = DamageCalculator.ComputeFinalDamage(damage, DamageElement.Fire);
+        if (!other.CompareTag("Enemy") && !other.CompareTag("Boss"))
+            return;
 
-        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, aoeRadius);
-        foreach (var hit in hits)
+        DoImpact();
+    }
+
+    private void DoImpact()
+    {
+        if (impacted) return;
+        impacted = true;
+
+        speed = 0f;
+        if (col) col.enabled = false;
+
+        // Damage enemies in radius
+        var hits = Physics2D.OverlapCircleAll(transform.position, aoeRadius);
+        foreach (var h in hits)
         {
-            if (hit.TryGetComponent(out EnemyHealth eh)) eh.TakeDamage(finalDamage);
-            if (hit.TryGetComponent(out BossHealth bh)) bh.TakeDamage(finalDamage);
+            if (h.TryGetComponent(out EnemyHealth eh)) eh.TakeDamage(damage);
+            if (h.TryGetComponent(out BossHealth bh)) bh.TakeDamage(damage);
         }
 
-        if (aoeVisual != null)
-        {
-            GameObject vfx = Instantiate(aoeVisual, transform.position, Quaternion.identity);
-            vfx.transform.localScale = Vector3.one * aoeRadius * 2f;
-            var sr = vfx.GetComponent<SpriteRenderer>();
-            if (sr != null) sr.color = aoeColor;
-            Destroy(vfx, 0.1f);
-        }
+        // Auto-scale sprite to match AOE radius
+        float baseSpriteSize = 32f;  // pixels
+        float ppu = 32f;             // pixels per unit
+        float worldSize = baseSpriteSize / ppu;
+        float targetDiameter = aoeRadius * 2f;
+        float scaleFactor = targetDiameter / worldSize;
 
+        transform.localScale = new Vector3(scaleFactor, scaleFactor, 1f);
+
+        // Trigger impact animation
+        if (anim) anim.SetTrigger("Impact");
+    }
+
+    // Called by Animation Event at end of impact
+    public void OnImpactFinished()
+    {
         Destroy(gameObject);
+    }
+    public void PlayImpactSound()
+    {
+        if (audioSource != null && impactSound != null)
+        {
+            // play instantly, no object creation
+            audioSource.Play();
+        }
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        Gizmos.color = new Color(1f, 0.3f, 0f, 0.35f);
+        Gizmos.DrawWireSphere(transform.position, aoeRadius);
     }
 }

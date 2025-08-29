@@ -83,6 +83,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damageAmount: 1
   attackCooldown: 1
+  attackRange: 1
 --- !u!1 &7502241114002446682
 GameObject:
   m_ObjectHideFlags: 0
@@ -99,7 +100,9 @@ GameObject:
   - component: {fileID: 76683931486816045}
   - component: {fileID: -3969978128227254662}
   - component: {fileID: -6007808778835646131}
-  - component: {fileID: -5935290034336339593}
+  - component: {fileID: 3380281956299672159}
+  - component: {fileID: 8856416947508852704}
+  - component: {fileID: 9025832996168125021}
   m_Layer: 9
   m_Name: EnemyHealer
   m_TagString: Enemy
@@ -117,7 +120,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -2.98, y: -0.05, z: 0}
-  m_LocalScale: {x: 0.7, y: 0.7, z: 0.7}
+  m_LocalScale: {x: 3, y: 3, z: 0.7}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7462072501215291531}
@@ -146,7 +149,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: 5fd388d368d93314991d1293d2f31f19, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -167,8 +170,8 @@ SpriteRenderer:
   m_SortingLayerID: -957766307
   m_SortingLayer: 3
   m_SortingOrder: 0
-  m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
-  m_Color: {r: 0.23219788, g: 1, b: 0, a: 1}
+  m_Sprite: {fileID: 5783766721535396729, guid: c7c21851b5d318d41b6ca12fcd49eded, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -239,8 +242,8 @@ CircleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
-  m_Radius: 0.5
+  m_Offset: {x: 0.005139967, y: 0.023551783}
+  m_Radius: 0.14525871
 --- !u!114 &1849891846209710151
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -270,6 +273,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 1
+  flashOnLethalHit: 1
 --- !u!114 &-3969978128227254662
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -394,7 +398,7 @@ LineRenderer:
   m_UseWorldSpace: 0
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
---- !u!114 &-5935290034336339593
+--- !u!114 &3380281956299672159
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -403,8 +407,48 @@ MonoBehaviour:
   m_GameObject: {fileID: 7502241114002446682}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ebfeac23010ef7b44b5d2f0f2555698c, type: 3}
+  m_Script: {fileID: 11500000, guid: 624296d15d55e334d8a67eab54e9dad2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  baseGold: 1
-  perWaveScale: 0.1
+  spriteRenderers: []
+  flashUpTime: 0.03
+  flashHoldTime: 0.04
+  flashDownTime: 0.1
+--- !u!114 &8856416947508852704
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7502241114002446682}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fbea5c31188093d4a9056a8f162e3cd1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  walkStateName: WalkBT
+  attackStateName: AttackBT
+  dieStateName: DieBT
+  movingThreshold: 0.01
+--- !u!95 &9025832996168125021
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7502241114002446682}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: d0c716d050baec6419931a6cd7dcc3c0, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

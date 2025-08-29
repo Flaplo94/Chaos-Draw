@@ -2,18 +2,13 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-/// ONE prefab per slot. Inside the prefab, create 3 face parents:
-///  - Face_Fire
-///  - Face_Lightning
-///  - Face_Other
-/// Each face contains: Background (Image), AbilityName (TMP), RarityText (TMP), AbilityArt (Image)
-/// The script toggles which face is active and binds text/icon.
 public class CardSlotUI : MonoBehaviour
 {
     [Header("Per-type face containers (parents)")]
-    [SerializeField] private RectTransform faceFire;      // child named "Face_Fire"
-    [SerializeField] private RectTransform faceLightning; // child named "Face_Lightning"
-    [SerializeField] private RectTransform faceOther;     // child named "Face_Other"
+    [SerializeField] private RectTransform faceFire;       // child: "Face_Fire"
+    [SerializeField] private RectTransform faceLightning;  // child: "Face_Lightning"
+    [SerializeField] private RectTransform faceOther;      // child: "Face_Other"
+    [SerializeField] private RectTransform faceEmpty;      // child: "Face_Empty" (no visuals)
 
     private RectTransform activeFace;
 
@@ -23,28 +18,26 @@ public class CardSlotUI : MonoBehaviour
         if (!faceFire) faceFire = transform.Find("Face_Fire") as RectTransform;
         if (!faceLightning) faceLightning = transform.Find("Face_Lightning") as RectTransform;
         if (!faceOther) faceOther = transform.Find("Face_Other") as RectTransform;
+        if (!faceEmpty) faceEmpty = transform.Find("Face_Empty") as RectTransform;
 
-        // Ensure exactly one face is active initially
-        if (faceFire) faceFire.gameObject.SetActive(faceFire.gameObject.activeSelf);
-        if (faceLightning) faceLightning.gameObject.SetActive(faceLightning.gameObject.activeSelf);
-        if (faceOther) faceOther.gameObject.SetActive(faceOther.gameObject.activeSelf);
-
-        // Fallback: if none active, default to Other
-        if ((faceFire == null || !faceFire.gameObject.activeSelf) &&
-            (faceLightning == null || !faceLightning.gameObject.activeSelf) &&
-            (faceOther != null))
-        {
-            faceOther.gameObject.SetActive(true);
-        }
-
-        activeFace = (faceFire && faceFire.gameObject.activeSelf) ? faceFire
-                   : (faceLightning && faceLightning.gameObject.activeSelf) ? faceLightning
-                   : faceOther;
+        // Ensure exactly one face is active initially (default to empty if nothing is active)
+        DeactivateAllFaces();
+        if (faceOther) SetActive(faceOther); // default prefab look
+        else if (faceEmpty) SetActive(faceEmpty);
     }
 
     public void Show(Ability a)
     {
-        SwitchToFace(a.magicType);
+        // Switch to the right type face
+        var next = a.magicType switch
+        {
+            MagicType.Fire => faceFire ? faceFire : faceOther,
+            MagicType.Lightning => faceLightning ? faceLightning : faceOther,
+            _ => faceOther
+        };
+
+        if (!next && faceEmpty) next = faceEmpty; // absolute fallback
+        SetActive(next);
 
         // Bind inside ACTIVE face
         var nameText = activeFace.Find("AbilityName")?.GetComponent<TextMeshProUGUI>();
@@ -61,38 +54,38 @@ public class CardSlotUI : MonoBehaviour
             artImage.preserveAspect = true;
         }
 
-        // If this slot sits in a LayoutGroup, force a rebuild
-        Canvas.ForceUpdateCanvases();
-        var rt = GetComponent<RectTransform>();
-        if (rt) LayoutRebuilder.ForceRebuildLayoutImmediate(rt);
+        ForceLayout();
     }
 
     public void Clear()
     {
-        if (!activeFace) return;
-
-        var nameText = activeFace.Find("AbilityName")?.GetComponent<TextMeshProUGUI>();
-        var rarityText = activeFace.Find("RarityText")?.GetComponent<TextMeshProUGUI>();
-        var artImage = activeFace.Find("AbilityArt")?.GetComponent<Image>();
-
-        if (nameText) nameText.text = "";
-        if (rarityText) rarityText.text = "";
-        if (artImage) { artImage.sprite = null; artImage.color = Color.clear; }
+        // Show the empty face (no frame), or hide all faces if you didn't add one
+        if (faceEmpty) SetActive(faceEmpty);
+        else DeactivateAllFaces(); // this will show nothing; slot root stays in layout
     }
 
-    private void SwitchToFace(MagicType type)
+    private void SetActive(RectTransform face)
+    {
+        if (face == activeFace) return;
+
+        DeactivateAllFaces();
+        activeFace = face;
+        if (activeFace) activeFace.gameObject.SetActive(true);
+    }
+
+    private void DeactivateAllFaces()
     {
         if (faceFire) faceFire.gameObject.SetActive(false);
         if (faceLightning) faceLightning.gameObject.SetActive(false);
         if (faceOther) faceOther.gameObject.SetActive(false);
+        if (faceEmpty) faceEmpty.gameObject.SetActive(false);
+        activeFace = null;
+    }
 
-        activeFace = type switch
-        {
-            MagicType.Fire => faceFire ? faceFire : faceOther,
-            MagicType.Lightning => faceLightning ? faceLightning : faceOther,
-            _ => faceOther
-        };
-
-        if (activeFace) activeFace.gameObject.SetActive(true);
+    private void ForceLayout()
+    {
+        Canvas.ForceUpdateCanvases();
+        var rt = GetComponent<RectTransform>();
+        if (rt) LayoutRebuilder.ForceRebuildLayoutImmediate(rt);
     }
 }

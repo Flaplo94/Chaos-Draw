@@ -1,4 +1,7 @@
 using UnityEngine;
+using UnityEngine.UI;
+using System;
+
 
 /// Simpel health-komponent med ekstra liv og helper-metoder
 public class PlayerHealth : MonoBehaviour
@@ -36,7 +39,7 @@ public class PlayerHealth : MonoBehaviour
         currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
     }
 
-    // Kravet fra artifacts: sæt alt til 1 HP
+    // Kravet fra artifacts: sï¿½t alt til 1 HP
     public void ForceSetToOneHP()
     {
         maxHealth = 1;
@@ -63,7 +66,7 @@ public class PlayerHealth : MonoBehaviour
         return false;
     }
 
-    // --- Død + Game Over flow ---
+    // --- Dï¿½d + Game Over flow ---
     public void OnDeath()
     {
         if (TryConsumeExtraLife())
@@ -76,7 +79,7 @@ public class PlayerHealth : MonoBehaviour
         if (wavesCleared >= 10 && wavesCleared % 10 == 0)
             reward += 5;
 
-        // Tilføj til MetaProgression
+        // Tilfï¿½j til MetaProgression
         if (MetaProgressionManager.Instance != null)
             MetaProgressionManager.Instance.AddShards(reward);
         else

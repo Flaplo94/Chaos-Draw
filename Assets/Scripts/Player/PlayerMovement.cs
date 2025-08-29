@@ -5,27 +5,67 @@ public class PlayerMovement : MonoBehaviour
     [Header("Base speed (uden buffs)")]
     [SerializeField] private float moveSpeed = 5f;
 
-    private float baseSpeed;          // gemmer original værdi
+    private float baseSpeed;          // gemmer original vï¿½rdi
     private Rigidbody2D rb;
     private Vector2 moveDir;
 
     // Kun read?only adgang udefra (som du havde)
     public Vector2 MoveDir { get { return moveDir; } }
+    // reference to CC lock state
+    private PlayerCrowdControlReceiver crowdControlReceiver;
+
+    [Header("Rooted Visual")]
+    [SerializeField] private GameObject rootedIcon; // assign in inspector
 
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        baseSpeed = moveSpeed; // lås “grundfart” til det, du har sat i Inspector
+        if (rb != null)
+        {
+            rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+            rb.angularVelocity = 0f;
+            rb.rotation = 0f;
+        }
+
+        crowdControlReceiver = GetComponent<PlayerCrowdControlReceiver>();
+        if (crowdControlReceiver == null)
+        {
+            crowdControlReceiver = FindFirstObjectByType<PlayerCrowdControlReceiver>();
+        }
+
+        if (rootedIcon != null) rootedIcon.SetActive(false);
+        baseSpeed = moveSpeed; // lï¿½s ï¿½grundfartï¿½ til det, du har sat i Inspector
     }
 
     void Update()
     {
+        bool locked = (crowdControlReceiver != null && crowdControlReceiver.IsMovementLocked());
+
+        // toggle the visual
+        if (rootedIcon != null)
+            rootedIcon.SetActive(locked);
+
+        if (locked)
+        {
+            moveDir = Vector2.zero;
+            return;
+        }
+
         HandleInput();
     }
 
     void FixedUpdate()
     {
         Move();
+    }
+
+    void LateUpdate()
+    {
+        if (!rb) return;
+
+        rb.angularVelocity = 0f;
+        rb.rotation = 0f;
+        transform.rotation = Quaternion.identity;
     }
 
     void HandleInput()
@@ -45,18 +85,18 @@ public class PlayerMovement : MonoBehaviour
         // 2) Regn den endelige fart
         float finalSpeed = baseSpeed * mult;
 
-        // 3) Sæt velocity (og nul når ingen input, for at undgå drift)
+        // 3) Sï¿½t velocity (og nul nï¿½r ingen input, for at undgï¿½ drift)
         if (moveDir.sqrMagnitude > 0f)
         {
             rb.linearVelocity = moveDir * finalSpeed;   // brug rb.velocity hvis du bruger den klassiske 2D API
         }
         else
         {
-            rb.linearVelocity = Vector2.zero;           // stop hårdt når ingen input
+            rb.linearVelocity = Vector2.zero;           // stop hï¿½rdt nï¿½r ingen input
         }
     }
 
-    // (Valgfrit) hvis du senere vil ændre grundfart fra andre systemer:
+    // (Valgfrit) hvis du senere vil ï¿½ndre grundfart fra andre systemer:
     public void SetBaseSpeed(float newBaseSpeed)
     {
         baseSpeed = Mathf.Max(0f, newBaseSpeed);

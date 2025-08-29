@@ -1,13 +1,17 @@
-using UnityEngine;
 using System;
+using UnityEngine;
 
+[RequireComponent(typeof(HitFlash))]
 public class EnemyHealth : MonoBehaviour
 {
     [SerializeField] private int maxHealth = 3;
-    private int currentHealth;
+    [SerializeField] private bool flashOnLethalHit = true;
 
-    // Lokalt event (kun denne enemy)
+    private int currentHealth;
+    private HitFlash flash;
+    private EnemyAnimator enemyAnimator;
     public Action OnDeath;
+    private CircleCollider2D hitbox;
 
     // Globalt event (for alle enemies)
     public static event Action<EnemyHealth> OnAnyEnemyDied;
@@ -15,6 +19,10 @@ public class EnemyHealth : MonoBehaviour
     void Awake()
     {
         currentHealth = maxHealth;
+        flash = GetComponent<HitFlash>() ?? GetComponent<HitFlash>();
+        if (enemyAnimator == null)
+            enemyAnimator = GetComponent<EnemyAnimator>();
+        hitbox = GetComponent<CircleCollider2D>();
     }
 
     public void TakeDamage(int amount)
@@ -23,9 +31,8 @@ public class EnemyHealth : MonoBehaviour
 
         currentHealth -= amount;
 
-        // Damage numbers
-        if (DamageNumbers.Instance != null)
-            DamageNumbers.Instance.Show(transform.position + Vector3.up * 0.6f, amount);
+        if (flashOnLethalHit || currentHealth > 0)
+            flash?.PlayFlash();
 
         if (currentHealth <= 0)
             Die();
@@ -42,8 +49,14 @@ public class EnemyHealth : MonoBehaviour
 
     void Die()
     {
-        OnDeath?.Invoke();                 // lokale lyttere
-        OnAnyEnemyDied?.Invoke(this);      // globalt broadcast, fx BountySystem
+        hitbox.enabled = false;
+        OnDeath?.Invoke();
+        enemyAnimator.PlayDie();
+    }
+
+    // Called by animation event at the end of the death animation
+    public void FinishDeath()
+    {
         Destroy(gameObject);
     }
 }

@@ -76,10 +76,10 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1837387899
+  m_SortingLayer: 7
   m_SortingOrder: 0
-  m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  m_Sprite: {fileID: -829725906, guid: 7fadadeaeaf9632429a00b36307641a6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -173,3 +173,6 @@ MonoBehaviour:
     m_Bits: 640
   castVisual: {fileID: 6048468125241799698, guid: 1733c84b0b80c214e835fb3cc0e757b3, type: 3}
   lightningVisual: {fileID: 6422944563533170519, guid: d0b854a5cf35a654ab4ddee0a7959da7, type: 3}
+  playTrigger: Play
+  stateName: Zap
+  widthScale: 1
