@@ -46,15 +46,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3308837611534964102, guid: af535699c9caddd418ddb82d17593458, type: 3}
       propertyPath: m_Radius
-      value: 0.17351218
+      value: 0.18248945
       objectReference: {fileID: 0}
     - target: {fileID: 3308837611534964102, guid: af535699c9caddd418ddb82d17593458, type: 3}
       propertyPath: m_Offset.x
-      value: -0.001609533
+      value: -0.00032707455
       objectReference: {fileID: 0}
     - target: {fileID: 3308837611534964102, guid: af535699c9caddd418ddb82d17593458, type: 3}
       propertyPath: m_Offset.y
-      value: -0.000000033378605
+      value: -0.00000003576279
       objectReference: {fileID: 0}
     - target: {fileID: 4774877285035006597, guid: af535699c9caddd418ddb82d17593458, type: 3}
       propertyPath: m_LocalScale.x
@@ -104,6 +104,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5376697926235901993, guid: af535699c9caddd418ddb82d17593458, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 76cf65d26c65bc7418ea812fe149a0e8, type: 2}
     - target: {fileID: 6706808530034103868, guid: af535699c9caddd418ddb82d17593458, type: 3}
       propertyPath: m_Radius
       value: 0.24793532
@@ -123,6 +127,10 @@ PrefabInstance:
     - target: {fileID: 7502241114002446682, guid: af535699c9caddd418ddb82d17593458, type: 3}
       propertyPath: m_TagString
       value: Enemy
+      objectReference: {fileID: 0}
+    - target: {fileID: 7540859639785825885, guid: af535699c9caddd418ddb82d17593458, type: 3}
+      propertyPath: attackRange
+      value: 4
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 76683931486816045, guid: af535699c9caddd418ddb82d17593458, type: 3}
@@ -162,7 +170,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5679082729230498780}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 446eb85bfd6251d459644f6dcb4ec323, type: 3}
   m_Name: 

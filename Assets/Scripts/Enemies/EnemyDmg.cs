@@ -1,47 +1,114 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public class EnemyDamage : MonoBehaviour
+[RequireComponent(typeof(Collider2D))]
+public class EnemyDmg : MonoBehaviour
 {
+    [Header("Damage / Range / Cooldown")]
     [SerializeField] public int damageAmount = 1;
-    [SerializeField] public float attackCooldown = 1f;
-    private float lastAttackTime = -Mathf.Infinity;
+    [SerializeField] public float attackCooldown = 1.0f;
+    [SerializeField] public float attackRange = 1.0f;
 
-    private readonly List<PlayerHealth> playersInRange = new List<PlayerHealth>();
+    
+    private EnemyAnimator enemyAnimator;
+    private Transform enemyRoot;
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private Collider2D hitbox;
+    private Transform player;
+    private float lastAttackTime = -999f;
+    private bool isAttacking = false;
+    private bool hitboxActive = false;
+    private HashSet<PlayerHealth> hitThisSwing = new HashSet<PlayerHealth>();
+
+    void Awake()
     {
-        if (other.CompareTag("Player"))
+        hitbox = GetComponent<Collider2D>();
+        //if (hitbox != null) { hitbox.isTrigger = true; hitbox.enabled = false; }
+
+        if (enemyAnimator == null)
+            enemyAnimator = GetComponentInParent<EnemyAnimator>();
+
+        if (enemyRoot == null)
         {
-            PlayerHealth player = other.GetComponent<PlayerHealth>();
-            if (player != null && !playersInRange.Contains(player))
-                playersInRange.Add(player);
+            enemyRoot = transform.root;
+            var follow = GetComponentInParent<EnemyFollow>();
+            enemyRoot = follow != null ? follow.transform : transform.root;
+        }
+
+        var pgo = GameObject.FindWithTag("Player");
+        if (pgo != null) player = pgo.transform;
+    }
+
+    void Update()
+    {
+        if (player == null) return;
+
+        float dist = Vector2.Distance(enemyRoot.position, player.position);
+
+        if (!isAttacking && dist <= attackRange && (Time.time - lastAttackTime) >= attackCooldown)
+        {
+            StartAttack();
         }
     }
 
-    private void OnTriggerExit2D(Collider2D other)
+    private void StartAttack()
     {
-        if (other.CompareTag("Player"))
-        {
-            PlayerHealth player = other.GetComponent<PlayerHealth>();
-            if (player != null && playersInRange.Contains(player))
-                playersInRange.Remove(player);
-        }
+        isAttacking = true;
+        hitThisSwing.Clear();
+        enemyAnimator.PlayAttack();
     }
 
-    private void Update()
+    // Animation Events
+    public void AE_HitboxOn()
     {
-        if (playersInRange.Count == 0)
-            return;
+        hitboxActive = true;
+        if (hitbox != null) hitbox.enabled = true;
+    }
 
-        if (Time.time - lastAttackTime >= attackCooldown)
+    public void AE_HitboxOff()
+    {
+        hitboxActive = false;
+        if (hitbox != null) hitbox.enabled = false;
+    }
+
+    public void AE_AttackFinished()
+    {
+        isAttacking = false;
+        lastAttackTime = Time.time;
+        hitboxActive = false;
+        if (hitbox != null) hitbox.enabled = false;
+        hitThisSwing.Clear();
+    }
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (!hitboxActive) return;
+        if (!other.CompareTag("Player")) return;
+
+        var ph = other.GetComponentInParent<PlayerHealth>();
+                 
+        if (ph == null) return;
+
+        if (hitThisSwing.Contains(ph)) return;
+
+        ph.TakeDamage(damageAmount);
+        hitThisSwing.Add(ph);
+    }
+
+    void OnTriggerStay2D(Collider2D other)
+    {
+        // TEMPORARY: simple touch damage with cooldown
+        if (!other.CompareTag("Player")) return;
+
+        var ph = other.GetComponentInParent<PlayerHealth>();
+        if (ph == null) return;
+
+        if ((Time.time - lastAttackTime) >= attackCooldown)
         {
-            foreach (var player in new List<PlayerHealth>(playersInRange))
-            {
-                if (player != null)
-                    player.TakeDamage(damageAmount);
-            }
+            ph.TakeDamage(damageAmount);
             lastAttackTime = Time.time;
+            Debug.Log($"{name} TEMP damage tick to {ph.name}");
         }
     }
+
 }

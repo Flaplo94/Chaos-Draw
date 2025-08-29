@@ -9,13 +9,17 @@ public class EnemyHealth : MonoBehaviour
 
     private int currentHealth;
     private HitFlash flash;
-
+    private EnemyAnimator enemyAnimator;
     public Action OnDeath;
+    private CircleCollider2D hitbox;
 
     void Awake()
     {
         currentHealth = maxHealth;
-        flash = GetComponent<HitFlash>() ?? GetComponentInChildren<HitFlash>(true);
+        flash = GetComponent<HitFlash>() ?? GetComponent<HitFlash>();
+        if (enemyAnimator == null)
+            enemyAnimator = GetComponent<EnemyAnimator>();
+        hitbox = GetComponent<CircleCollider2D>();
     }
 
     public void TakeDamage(int amount)
@@ -39,7 +43,14 @@ public class EnemyHealth : MonoBehaviour
 
     void Die()
     {
+        hitbox.enabled = false;
         OnDeath?.Invoke();
+        enemyAnimator.PlayDie();
+    }
+
+    // Called by animation event at the end of the death animation
+    public void FinishDeath()
+    {
         Destroy(gameObject);
     }
 }

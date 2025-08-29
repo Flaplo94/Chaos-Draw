@@ -13,6 +13,9 @@ public class Fireball : MonoBehaviour, IAbilityBehavior
     private Animator anim;
     private Collider2D col;
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip impactSound;
+
     public bool Initialize(Vector2 dir, Rarity rarity)
     {
         direction = dir.normalized;
@@ -84,6 +87,13 @@ public class Fireball : MonoBehaviour, IAbilityBehavior
     public void OnImpactFinished()
     {
         Destroy(gameObject);
+    }
+    public void PlayImpactSound()
+    {
+        if (impactSound != null)
+        {
+            AudioSource.PlayClipAtPoint(impactSound, transform.position);
+        }
     }
 
     void OnDrawGizmosSelected()

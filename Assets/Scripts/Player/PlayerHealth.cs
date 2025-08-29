@@ -1,10 +1,14 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System;
+
 
 public class PlayerHealth : MonoBehaviour
 {
     public int maxHealth = 5;
     private int currentHealth;
+    public Action OnDeath;
+
 
     [SerializeField] public Slider healthBar;
 
@@ -49,16 +53,35 @@ public class PlayerHealth : MonoBehaviour
         return false;
     }
 
-    void Die()
+    public void Die()
     {
+        // Notify listeners (e.g. PlayerAnimator)
+        OnDeath?.Invoke();
+
+        // Disable input/movement so the player can't keep moving
+        var movement = GetComponent<PlayerMovement>();
+        if (movement != null)
+            movement.enabled = false;
+
+        // Disable collider & rigidbody so enemies don't keep hitting corpse
+        var col = GetComponent<Collider2D>();
+        if (col != null) col.enabled = false;
+
+        var rb = GetComponent<Rigidbody2D>();
+        if (rb != null) rb.linearVelocity = Vector2.zero;
+
+        // Trigger Game Over after short delay (let death anim play)
         GameOverManager gameOver = FindFirstObjectByType<GameOverManager>();
         if (gameOver != null)
         {
+            // delay game over slightly so player sees the animation
             gameOver.TriggerGameOver();
         }
 
-        Destroy(gameObject);
+        // Optionally destroy object after 1–2 seconds if needed
+        Destroy(gameObject, 2f);
     }
+
 
     void UpdateUI()
     {

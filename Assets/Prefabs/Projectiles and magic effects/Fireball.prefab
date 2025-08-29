@@ -169,8 +169,7 @@ MonoBehaviour:
   speed: 10
   damage: 20
   aoeRadius: 2
-  aoeVisual: {fileID: 0}
-  aoeColor: {r: 1, g: 1, b: 1, a: 0.5921569}
+  impactSound: {fileID: 8300000, guid: f4511ea681f5c1e4fb65bf1f8b0786de, type: 3}
 --- !u!95 &8514319962859819570
 Animator:
   serializedVersion: 7

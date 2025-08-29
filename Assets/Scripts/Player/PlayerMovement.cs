@@ -2,22 +2,52 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
+    [Header("Movement")]
     public float moveSpeed = 5f;
 
     private Rigidbody2D rb;
     private Vector2 moveDir;
     public Vector2 MoveDir => moveDir; // kun denne public adgang
 
-    void Start()
+    // reference to CC lock state
+    private PlayerCrowdControlReceiver crowdControlReceiver;
+
+    [Header("Rooted Visual")]
+    [SerializeField] private GameObject rootedIcon; // assign in inspector
+
+    void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-        rb.constraints = RigidbodyConstraints2D.FreezeRotation;  // Unity 6 friendly
-        rb.angularVelocity = 0f;  // clear any current spin
-        rb.rotation = 0f;         // snap upright
+        if (rb != null)
+        {
+            rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+            rb.angularVelocity = 0f;
+            rb.rotation = 0f;
+        }
+
+        crowdControlReceiver = GetComponent<PlayerCrowdControlReceiver>();
+        if (crowdControlReceiver == null)
+        {
+            crowdControlReceiver = FindFirstObjectByType<PlayerCrowdControlReceiver>();
+        }
+
+        if (rootedIcon != null) rootedIcon.SetActive(false);
     }
 
     void Update()
     {
+        bool locked = (crowdControlReceiver != null && crowdControlReceiver.IsMovementLocked());
+
+        // toggle the visual
+        if (rootedIcon != null)
+            rootedIcon.SetActive(locked);
+
+        if (locked)
+        {
+            moveDir = Vector2.zero;
+            return;
+        }
+
         HandleInput();
     }
 
@@ -25,13 +55,14 @@ public class PlayerMovement : MonoBehaviour
     {
         Move();
     }
+
     void LateUpdate()
     {
-        var rb = GetComponent<Rigidbody2D>();
         if (!rb) return;
-        rb.angularVelocity = 0f;   // stop physics spin
-        rb.rotation = 0f;          // keep facing upright
-        transform.rotation = Quaternion.identity; // ensure no parent/child drift
+
+        rb.angularVelocity = 0f;
+        rb.rotation = 0f;
+        transform.rotation = Quaternion.identity;
     }
 
     void HandleInput()
@@ -44,6 +75,7 @@ public class PlayerMovement : MonoBehaviour
 
     void Move()
     {
-        rb.linearVelocity = moveDir * moveSpeed;
+        if (rb != null)
+            rb.linearVelocity = moveDir * moveSpeed;
     }
 }

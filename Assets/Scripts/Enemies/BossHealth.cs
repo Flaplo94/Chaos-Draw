@@ -8,10 +8,13 @@ public class BossHealth : MonoBehaviour
     private Slider healthSlider;
     private HitFlash flash;
     [SerializeField] private bool flashOnLethalHit = true;
+    private EnemyAnimator enemyAnimator;
 
     void Awake()
     {
-        flash = GetComponent<HitFlash>() ?? GetComponentInChildren<HitFlash>(true);
+        flash = GetComponent<HitFlash>() ?? GetComponent<HitFlash>();
+        if (enemyAnimator == null)
+            enemyAnimator = GetComponent<EnemyAnimator>();
     }
     void Start()
     {
@@ -41,11 +44,11 @@ public class BossHealth : MonoBehaviour
 
         if (currentHealth <= 0)
         {
-            Die();
+            enemyAnimator.PlayDie();
         }
     }
 
-    void Die()
+    void FinishDeath()
     {
         Destroy(gameObject);
     }

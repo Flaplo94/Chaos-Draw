@@ -9,10 +9,13 @@ public class RangedEnemyAttack : MonoBehaviour
 
     private Transform player;
     private float fireCooldown;
+    private EnemyAnimator enemyAnimator;
 
     void Start()
     {
         player = GameObject.FindWithTag("Player").transform;
+        if (enemyAnimator == null)
+            enemyAnimator = GetComponent<EnemyAnimator>();
     }
 
     void Update()
@@ -24,7 +27,7 @@ public class RangedEnemyAttack : MonoBehaviour
 
         if (distance <= shootRange && fireCooldown <= 0f)
         {
-            Shoot();
+            enemyAnimator.PlayAttack();
             fireCooldown = 1f / fireRate;
         }
     }

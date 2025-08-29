@@ -18,5 +18,5 @@ MonoBehaviour:
   spawnAtMousePosition: 1
   manaCost: 10
   description: Place fire where you aim it.
-  rarity: 4
+  rarity: 0
   magicType: 0
