@@ -1161,7 +1161,47 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Unarmed_Idle_with_shadow_0: -6618273671536832972
+      Unarmed_Idle_with_shadow_1: 990591678689287503
+      Unarmed_Idle_with_shadow_10: 6757298495868384768
+      Unarmed_Idle_with_shadow_11: 154980997205477237
+      Unarmed_Idle_with_shadow_12: 7592980640432919336
+      Unarmed_Idle_with_shadow_13: 5906387340243571934
+      Unarmed_Idle_with_shadow_14: 1980011210447051667
+      Unarmed_Idle_with_shadow_15: -3793307367969425372
+      Unarmed_Idle_with_shadow_16: 7726994909088465750
+      Unarmed_Idle_with_shadow_17: 58996780691859104
+      Unarmed_Idle_with_shadow_18: 3005513897290708641
+      Unarmed_Idle_with_shadow_19: -9093017049802947588
+      Unarmed_Idle_with_shadow_2: -2221233414256249614
+      Unarmed_Idle_with_shadow_20: 8692619168106640631
+      Unarmed_Idle_with_shadow_21: -7062654409564016279
+      Unarmed_Idle_with_shadow_22: 2984243193931765733
+      Unarmed_Idle_with_shadow_23: -494198790899686271
+      Unarmed_Idle_with_shadow_24: -5813241165752256057
+      Unarmed_Idle_with_shadow_25: -8923678198942398840
+      Unarmed_Idle_with_shadow_26: 2653786969817977372
+      Unarmed_Idle_with_shadow_27: 999907706537075388
+      Unarmed_Idle_with_shadow_28: -6670221432498687271
+      Unarmed_Idle_with_shadow_29: 1665590242379204799
+      Unarmed_Idle_with_shadow_3: 577129909080321641
+      Unarmed_Idle_with_shadow_30: 1873006876712142140
+      Unarmed_Idle_with_shadow_31: 8384744680369239875
+      Unarmed_Idle_with_shadow_32: 1633057809681439299
+      Unarmed_Idle_with_shadow_33: -2785210007009077563
+      Unarmed_Idle_with_shadow_34: 2881987638401963420
+      Unarmed_Idle_with_shadow_35: 5986972656245781023
+      Unarmed_Idle_with_shadow_36: 4102228683642519614
+      Unarmed_Idle_with_shadow_37: -7711799894673684812
+      Unarmed_Idle_with_shadow_38: 1667176239157964678
+      Unarmed_Idle_with_shadow_39: 8126145237747294348
+      Unarmed_Idle_with_shadow_4: -5464707939046143289
+      Unarmed_Idle_with_shadow_5: -4478625737079326590
+      Unarmed_Idle_with_shadow_6: -7737088862835433576
+      Unarmed_Idle_with_shadow_7: 4564833766706923023
+      Unarmed_Idle_with_shadow_8: 1489990941734640142
+      Unarmed_Idle_with_shadow_9: 2707597804950942949
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

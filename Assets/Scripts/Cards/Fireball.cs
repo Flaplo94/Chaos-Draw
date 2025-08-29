@@ -15,6 +15,7 @@ public class Fireball : MonoBehaviour, IAbilityBehavior
 
     [Header("Audio")]
     [SerializeField] private AudioClip impactSound;
+    private AudioSource audioSource;
 
     public bool Initialize(Vector2 dir, Rarity rarity)
     {
@@ -34,6 +35,12 @@ public class Fireball : MonoBehaviour, IAbilityBehavior
 
     void Awake()
     {
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+            audioSource.playOnAwake = false;
+        }
         anim = GetComponent<Animator>();
         col = GetComponent<Collider2D>();
     }
@@ -92,7 +99,7 @@ public class Fireball : MonoBehaviour, IAbilityBehavior
     {
         if (impactSound != null)
         {
-            AudioSource.PlayClipAtPoint(impactSound, transform.position);
+            audioSource.PlayOneShot(impactSound);
         }
     }
 

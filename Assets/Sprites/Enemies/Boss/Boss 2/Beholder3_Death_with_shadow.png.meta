@@ -1061,7 +1061,43 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Beholder3_Death_with_shadow_0: 5763817301715228742
+      Beholder3_Death_with_shadow_1: -6379299983700325687
+      Beholder3_Death_with_shadow_10: -6523185822602473943
+      Beholder3_Death_with_shadow_11: 5681548928674493313
+      Beholder3_Death_with_shadow_12: -6242474850809594338
+      Beholder3_Death_with_shadow_13: 5499756668197821360
+      Beholder3_Death_with_shadow_14: 460454247699795112
+      Beholder3_Death_with_shadow_15: 7854772475586441581
+      Beholder3_Death_with_shadow_16: 3392539882020160783
+      Beholder3_Death_with_shadow_17: 6569659945909776665
+      Beholder3_Death_with_shadow_18: 2527139190106176914
+      Beholder3_Death_with_shadow_19: 961887316509144670
+      Beholder3_Death_with_shadow_2: -1348483065198880824
+      Beholder3_Death_with_shadow_20: 4417623212692151699
+      Beholder3_Death_with_shadow_21: -4398965588019589393
+      Beholder3_Death_with_shadow_22: 443913068198056615
+      Beholder3_Death_with_shadow_23: -7825065586886535209
+      Beholder3_Death_with_shadow_24: 2041070070004716406
+      Beholder3_Death_with_shadow_25: -1140531812601301851
+      Beholder3_Death_with_shadow_26: -3203310482303144683
+      Beholder3_Death_with_shadow_27: 7999083908698253770
+      Beholder3_Death_with_shadow_28: 6761791004869295852
+      Beholder3_Death_with_shadow_29: -8812099520241895176
+      Beholder3_Death_with_shadow_3: 3111792616802003891
+      Beholder3_Death_with_shadow_30: -5420094011685523717
+      Beholder3_Death_with_shadow_31: -3921770567314222727
+      Beholder3_Death_with_shadow_32: 631848534327346728
+      Beholder3_Death_with_shadow_33: 7043602322952127269
+      Beholder3_Death_with_shadow_34: 2126584362096340825
+      Beholder3_Death_with_shadow_35: -2720334290166826214
+      Beholder3_Death_with_shadow_4: 6438277601775462671
+      Beholder3_Death_with_shadow_5: 3055695415754446608
+      Beholder3_Death_with_shadow_6: -5282079093550598658
+      Beholder3_Death_with_shadow_7: -2320512307782824048
+      Beholder3_Death_with_shadow_8: -3410559502544863492
+      Beholder3_Death_with_shadow_9: 4811234642689558848
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

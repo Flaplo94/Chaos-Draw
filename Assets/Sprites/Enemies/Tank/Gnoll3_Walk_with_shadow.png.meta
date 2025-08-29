@@ -761,7 +761,31 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Gnoll3_Walk_with_shadow_0: -6306561518229435155
+      Gnoll3_Walk_with_shadow_1: -5497097847263330699
+      Gnoll3_Walk_with_shadow_10: 7098699246795843831
+      Gnoll3_Walk_with_shadow_11: -694214837609370112
+      Gnoll3_Walk_with_shadow_12: -8528033585940492066
+      Gnoll3_Walk_with_shadow_13: 2137530149234411414
+      Gnoll3_Walk_with_shadow_14: -1747099188742151357
+      Gnoll3_Walk_with_shadow_15: 7830728345675590982
+      Gnoll3_Walk_with_shadow_16: 3228365556270135739
+      Gnoll3_Walk_with_shadow_17: -3517720769788186740
+      Gnoll3_Walk_with_shadow_18: -6088299389119052323
+      Gnoll3_Walk_with_shadow_19: -5168235379925124085
+      Gnoll3_Walk_with_shadow_2: 6411788446825550131
+      Gnoll3_Walk_with_shadow_20: -4998942970366189238
+      Gnoll3_Walk_with_shadow_21: -1577581248623092413
+      Gnoll3_Walk_with_shadow_22: -2584891220420047164
+      Gnoll3_Walk_with_shadow_23: 8081452124167738448
+      Gnoll3_Walk_with_shadow_3: 2411894465277728626
+      Gnoll3_Walk_with_shadow_4: -8469989711805264279
+      Gnoll3_Walk_with_shadow_5: -6753593938613834134
+      Gnoll3_Walk_with_shadow_6: -1663519758867159175
+      Gnoll3_Walk_with_shadow_7: -5063099506813081326
+      Gnoll3_Walk_with_shadow_8: -6809618243597166356
+      Gnoll3_Walk_with_shadow_9: 118854447658817452
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

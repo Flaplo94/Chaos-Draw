@@ -761,7 +761,31 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Lich3_Walk_with_shadow_0: 4817752129894341347
+      Lich3_Walk_with_shadow_1: 6997493083282720347
+      Lich3_Walk_with_shadow_10: -4715705968564748503
+      Lich3_Walk_with_shadow_11: 7914079799652956740
+      Lich3_Walk_with_shadow_12: 2618680033845008305
+      Lich3_Walk_with_shadow_13: -1414974222922535085
+      Lich3_Walk_with_shadow_14: -4751079537246738841
+      Lich3_Walk_with_shadow_15: -6208922237994529543
+      Lich3_Walk_with_shadow_16: -2147398756441480179
+      Lich3_Walk_with_shadow_17: 6050350457370780355
+      Lich3_Walk_with_shadow_18: 1630181090997682957
+      Lich3_Walk_with_shadow_19: 9041615836044453970
+      Lich3_Walk_with_shadow_2: -7914505950934558263
+      Lich3_Walk_with_shadow_20: -5440364113951400086
+      Lich3_Walk_with_shadow_21: -2378117920944344808
+      Lich3_Walk_with_shadow_22: 2961842867711702680
+      Lich3_Walk_with_shadow_23: -8594942548134219277
+      Lich3_Walk_with_shadow_3: -8189895740259180431
+      Lich3_Walk_with_shadow_4: 1694857109832310727
+      Lich3_Walk_with_shadow_5: -5768448152295576705
+      Lich3_Walk_with_shadow_6: 7268180389095236831
+      Lich3_Walk_with_shadow_7: -668853156272985364
+      Lich3_Walk_with_shadow_8: 6541520242098062266
+      Lich3_Walk_with_shadow_9: -8491418087031272581
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

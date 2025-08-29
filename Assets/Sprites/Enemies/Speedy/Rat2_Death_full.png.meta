@@ -661,7 +661,27 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Rat2_Death_full_0: 3968577913571591172
+      Rat2_Death_full_1: -7915358953499223929
+      Rat2_Death_full_10: -7793367313482554073
+      Rat2_Death_full_11: -8295015119807130844
+      Rat2_Death_full_12: -472073232561923722
+      Rat2_Death_full_13: -1408259967851508074
+      Rat2_Death_full_14: -7220658672021181997
+      Rat2_Death_full_15: 9136358944518601584
+      Rat2_Death_full_16: 4013287143435957404
+      Rat2_Death_full_17: -4243019783026801430
+      Rat2_Death_full_18: 9115528330352956747
+      Rat2_Death_full_19: 8037684001420791875
+      Rat2_Death_full_2: 8405158809564865547
+      Rat2_Death_full_3: -7029793822599510149
+      Rat2_Death_full_4: 3786293668545378018
+      Rat2_Death_full_5: 6725980653318025531
+      Rat2_Death_full_6: 6226219168676042533
+      Rat2_Death_full_7: 28280335078629426
+      Rat2_Death_full_8: 5156138201822542118
+      Rat2_Death_full_9: -4757918410604600734
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

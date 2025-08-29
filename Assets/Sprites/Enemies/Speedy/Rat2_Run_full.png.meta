@@ -761,7 +761,31 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Rat2_Run_full_0: -5683773990114356765
+      Rat2_Run_full_1: -375620414623726588
+      Rat2_Run_full_10: 4971877764959649771
+      Rat2_Run_full_11: 931305510294688172
+      Rat2_Run_full_12: 4285494087809969526
+      Rat2_Run_full_13: -3161510983260337348
+      Rat2_Run_full_14: 1185754371281256738
+      Rat2_Run_full_15: -820505438980070584
+      Rat2_Run_full_16: -4854526001242414239
+      Rat2_Run_full_17: -4462595517713582246
+      Rat2_Run_full_18: 8615698697932879246
+      Rat2_Run_full_19: -3122003230145049288
+      Rat2_Run_full_2: -6144988387041983532
+      Rat2_Run_full_20: -7590995440158946500
+      Rat2_Run_full_21: 465951360494687414
+      Rat2_Run_full_22: -8022635739151204823
+      Rat2_Run_full_23: -7424291080181685150
+      Rat2_Run_full_3: -6565580430747624191
+      Rat2_Run_full_4: 5153611569381710851
+      Rat2_Run_full_5: 1755405035660185214
+      Rat2_Run_full_6: 4568776105489864546
+      Rat2_Run_full_7: 8708434171185604413
+      Rat2_Run_full_8: 1016700825499839305
+      Rat2_Run_full_9: 4407735410190760783
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

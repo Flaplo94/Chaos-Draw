@@ -961,7 +961,39 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Lich1_Attack_with_shadow_0: -3189468882288577960
+      Lich1_Attack_with_shadow_1: 1647373827298432959
+      Lich1_Attack_with_shadow_10: -2967079858934464528
+      Lich1_Attack_with_shadow_11: -1593382382790699022
+      Lich1_Attack_with_shadow_12: -3639650710051712740
+      Lich1_Attack_with_shadow_13: -8122606648193918143
+      Lich1_Attack_with_shadow_14: -7795642061703472881
+      Lich1_Attack_with_shadow_15: 6238728819183497299
+      Lich1_Attack_with_shadow_16: 1777039965826797975
+      Lich1_Attack_with_shadow_17: 377174717631041829
+      Lich1_Attack_with_shadow_18: -1011946720528114491
+      Lich1_Attack_with_shadow_19: 3166159041237692412
+      Lich1_Attack_with_shadow_2: -4382742126767045933
+      Lich1_Attack_with_shadow_20: 1358459491582923941
+      Lich1_Attack_with_shadow_21: -274358307507851016
+      Lich1_Attack_with_shadow_22: -696744481515424275
+      Lich1_Attack_with_shadow_23: -8544547582211755608
+      Lich1_Attack_with_shadow_24: 3541351541894221972
+      Lich1_Attack_with_shadow_25: -9220561704088358197
+      Lich1_Attack_with_shadow_26: -5795376536652322294
+      Lich1_Attack_with_shadow_27: 230940761356421105
+      Lich1_Attack_with_shadow_28: 2826622500941496627
+      Lich1_Attack_with_shadow_29: 6764911983422017639
+      Lich1_Attack_with_shadow_3: 3777587926398757945
+      Lich1_Attack_with_shadow_30: 2689785276932528841
+      Lich1_Attack_with_shadow_31: 1830062912340085283
+      Lich1_Attack_with_shadow_4: 4691096998209784746
+      Lich1_Attack_with_shadow_5: -2466628185211384917
+      Lich1_Attack_with_shadow_6: 6123646534971139472
+      Lich1_Attack_with_shadow_7: -7803667588220357686
+      Lich1_Attack_with_shadow_8: -1073474859949297677
+      Lich1_Attack_with_shadow_9: -3735370604467642898
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

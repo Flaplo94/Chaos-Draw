@@ -169,7 +169,7 @@ MonoBehaviour:
   speed: 10
   damage: 20
   aoeRadius: 2
-  impactSound: {fileID: 8300000, guid: f4511ea681f5c1e4fb65bf1f8b0786de, type: 3}
+  impactSound: {fileID: 8300000, guid: 099302f5c0ce19b4c8c4895bca4d7c80, type: 3}
 --- !u!95 &8514319962859819570
 Animator:
   serializedVersion: 7

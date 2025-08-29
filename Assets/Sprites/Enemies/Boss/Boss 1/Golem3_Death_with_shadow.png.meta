@@ -961,7 +961,39 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Golem3_Death_with_shadow_0: 2006405397904357038
+      Golem3_Death_with_shadow_1: -6503284536275718383
+      Golem3_Death_with_shadow_10: 3228718302969799991
+      Golem3_Death_with_shadow_11: 5972980234583977169
+      Golem3_Death_with_shadow_12: 7041911178062791005
+      Golem3_Death_with_shadow_13: 3809985705339312340
+      Golem3_Death_with_shadow_14: 7663656977400341915
+      Golem3_Death_with_shadow_15: 268639457694758735
+      Golem3_Death_with_shadow_16: -4635170590354179877
+      Golem3_Death_with_shadow_17: -873561838446104865
+      Golem3_Death_with_shadow_18: 8979026807700737584
+      Golem3_Death_with_shadow_19: 4243284200573953223
+      Golem3_Death_with_shadow_2: -723354926715287785
+      Golem3_Death_with_shadow_20: -7425382672246864375
+      Golem3_Death_with_shadow_21: 7999343732782538311
+      Golem3_Death_with_shadow_22: 3167637504563824220
+      Golem3_Death_with_shadow_23: -7011583309629716578
+      Golem3_Death_with_shadow_24: -8127725796923289823
+      Golem3_Death_with_shadow_25: -3077801338607866915
+      Golem3_Death_with_shadow_26: 8365729657099152437
+      Golem3_Death_with_shadow_27: 6935873174763586211
+      Golem3_Death_with_shadow_28: 3761906924617660220
+      Golem3_Death_with_shadow_29: 398100531189731230
+      Golem3_Death_with_shadow_3: -3911258719479406004
+      Golem3_Death_with_shadow_30: 2086265493705942302
+      Golem3_Death_with_shadow_31: -5901143935644358858
+      Golem3_Death_with_shadow_4: -2809856365496780190
+      Golem3_Death_with_shadow_5: 4769431052133826614
+      Golem3_Death_with_shadow_6: -3206192196520253672
+      Golem3_Death_with_shadow_7: 5722867187819382892
+      Golem3_Death_with_shadow_8: -4421258324433946248
+      Golem3_Death_with_shadow_9: -1799453508854508514
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -1161,7 +1161,47 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Gnoll3_Attack_with_shadow_0: -88163747044903702
+      Gnoll3_Attack_with_shadow_1: -3781754991033396984
+      Gnoll3_Attack_with_shadow_10: -3052811114996110444
+      Gnoll3_Attack_with_shadow_11: 8759954179115765348
+      Gnoll3_Attack_with_shadow_12: -7981385471324109895
+      Gnoll3_Attack_with_shadow_13: -7041104483213669748
+      Gnoll3_Attack_with_shadow_14: 1997730009392586730
+      Gnoll3_Attack_with_shadow_15: -1546111406618316363
+      Gnoll3_Attack_with_shadow_16: -8051889229423992077
+      Gnoll3_Attack_with_shadow_17: 1527821599097976229
+      Gnoll3_Attack_with_shadow_18: 5674313407087768765
+      Gnoll3_Attack_with_shadow_19: 212689697054795985
+      Gnoll3_Attack_with_shadow_2: 642640273760660749
+      Gnoll3_Attack_with_shadow_20: -903697097104248054
+      Gnoll3_Attack_with_shadow_21: 5776606542676077775
+      Gnoll3_Attack_with_shadow_22: 7882144264505426061
+      Gnoll3_Attack_with_shadow_23: 7359961246608809299
+      Gnoll3_Attack_with_shadow_24: -6567093347477096225
+      Gnoll3_Attack_with_shadow_25: 2042055071318063168
+      Gnoll3_Attack_with_shadow_26: -8082012068193536462
+      Gnoll3_Attack_with_shadow_27: 2492347364117939983
+      Gnoll3_Attack_with_shadow_28: 8940211551135396996
+      Gnoll3_Attack_with_shadow_29: -3896832729366732821
+      Gnoll3_Attack_with_shadow_3: 337569414355755596
+      Gnoll3_Attack_with_shadow_30: 631823050229319887
+      Gnoll3_Attack_with_shadow_31: 5256567957135678777
+      Gnoll3_Attack_with_shadow_32: -5247583821268196103
+      Gnoll3_Attack_with_shadow_33: 798644042587507903
+      Gnoll3_Attack_with_shadow_34: -5317057596851407440
+      Gnoll3_Attack_with_shadow_35: 8349278381199117679
+      Gnoll3_Attack_with_shadow_36: -7555924008128012062
+      Gnoll3_Attack_with_shadow_37: -2443323602110380379
+      Gnoll3_Attack_with_shadow_38: -5722564366476182106
+      Gnoll3_Attack_with_shadow_39: -3416829444682315548
+      Gnoll3_Attack_with_shadow_4: 4265781588539802426
+      Gnoll3_Attack_with_shadow_5: -6000989110181614821
+      Gnoll3_Attack_with_shadow_6: -8811822804808105308
+      Gnoll3_Attack_with_shadow_7: -390764555863959149
+      Gnoll3_Attack_with_shadow_8: -4931891331244809158
+      Gnoll3_Attack_with_shadow_9: -2536603123028287126
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -761,7 +761,31 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Gnoll3_Death_with_shadow_0: 1879395554686096048
+      Gnoll3_Death_with_shadow_1: -3520944617301506126
+      Gnoll3_Death_with_shadow_10: 6794619490446896964
+      Gnoll3_Death_with_shadow_11: -6526211580989538490
+      Gnoll3_Death_with_shadow_12: -1349364529393262688
+      Gnoll3_Death_with_shadow_13: -2990421746455626873
+      Gnoll3_Death_with_shadow_14: -3418863371017867259
+      Gnoll3_Death_with_shadow_15: 4842627755356701240
+      Gnoll3_Death_with_shadow_16: 2892179046054665443
+      Gnoll3_Death_with_shadow_17: -715522303711582711
+      Gnoll3_Death_with_shadow_18: 3083744236964481200
+      Gnoll3_Death_with_shadow_19: -2440902184964143714
+      Gnoll3_Death_with_shadow_2: 8413673696858087677
+      Gnoll3_Death_with_shadow_20: -366089664279628011
+      Gnoll3_Death_with_shadow_21: -8340113962312330511
+      Gnoll3_Death_with_shadow_22: -259256685276389169
+      Gnoll3_Death_with_shadow_23: 4127667673532215761
+      Gnoll3_Death_with_shadow_3: 6633839818976449099
+      Gnoll3_Death_with_shadow_4: -2131236770500909929
+      Gnoll3_Death_with_shadow_5: -5270666630964461205
+      Gnoll3_Death_with_shadow_6: 7873532511059592657
+      Gnoll3_Death_with_shadow_7: -6312976038077693702
+      Gnoll3_Death_with_shadow_8: -5116800692070421589
+      Gnoll3_Death_with_shadow_9: -7548659098026562543
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
