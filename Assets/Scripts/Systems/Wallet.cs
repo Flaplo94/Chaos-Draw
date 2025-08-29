@@ -1,40 +1,79 @@
-using UnityEngine;
 using System;
+using UnityEngine;
 
-[DefaultExecutionOrder(-9000)]   // kør tidligt så andre kan bruge den i Start/Awake
 public class Wallet : MonoBehaviour
 {
-    public static Wallet Instance { get; private set; }
+    public static Wallet Instance;
 
-    [SerializeField] private int gold = 0;
-    public int Gold => gold;
+    [Header("Startværdi")]
+    [SerializeField] private int startingGold = 0;
 
+    private int gold;
+
+    // Properties til UI
+    public int CurrentGold => gold; //  til TopBarUI
     public event Action<int> OnGoldChanged;
 
     void Awake()
     {
-        if (Instance != null && Instance != this) { Destroy(gameObject); return; }
-        Instance = this;
-        // ingen DontDestroyOnLoad her
-        // Debug.Log("[Wallet] Awake, gold=" + gold);
+        if (Instance == null) Instance = this;
+        else { Destroy(gameObject); return; }
+
+        gold = Mathf.Max(0, startingGold);
+        RaiseChanged();
+
+        Debug.Log($"[Wallet] Awake -> StartingGold={startingGold}, CurrentGold={gold}");
     }
 
-    void OnDestroy()
+    public int Add(int baseAmount)
     {
-        if (Instance == this) Instance = null; // undgå “stale” static ref
+        int add = Mathf.Max(0, ApplyGoldMultiplier(baseAmount));
+        if (add == 0) return 0;
+
+        gold += add;
+        RaiseChanged();
+        Debug.Log("[Wallet] +" + add + " gold (base " + baseAmount + ")");
+        return add;
     }
 
-    public void Add(int amount)
+    public int AddRaw(int amount)
     {
-        gold += Mathf.Max(0, amount);
-        OnGoldChanged?.Invoke(gold);
+        int add = Mathf.Max(0, amount);
+        if (add == 0) return 0;
+
+        gold += add;
+        RaiseChanged();
+        Debug.Log("[Wallet] +RAW " + add + " gold");
+        return add;
     }
 
     public bool TrySpend(int amount)
     {
+        if (amount <= 0) return true;
         if (gold < amount) return false;
+
         gold -= amount;
-        OnGoldChanged?.Invoke(gold);
+        RaiseChanged();
         return true;
     }
+
+    public bool CanAfford(int amount) => gold >= Mathf.Max(0, amount);
+
+    public void SetGold(int value)
+    {
+        gold = Mathf.Max(0, value);
+        RaiseChanged();
+    }
+
+    private int ApplyGoldMultiplier(int baseAmount)
+    {
+        float mult = 1f;
+        if (PlayerBuffManager.Instance != null)
+            mult = PlayerBuffManager.Instance.GetGoldGainMult();
+
+        float f = baseAmount * mult;
+        return Mathf.RoundToInt(f);
+    }
+
+    private void RaiseChanged() => OnGoldChanged?.Invoke(gold);
 }

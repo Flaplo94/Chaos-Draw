@@ -19,12 +19,12 @@ public class Ability : ScriptableObject
     [Header("Rarity")]
     public Rarity rarity = Rarity.Common;
 
-    [Header("Magic Type")]
+    [Header("Magic Type (informativ – bruges i selve ability scripts)")]
     public MagicType magicType = MagicType.Other;
 
     public bool Activate()
     {
-        // Compute spawn & direction (mouse or player)
+        // Find player + udgangspunkt
         Vector3 spawnPos = Vector3.zero;
         Vector3 mouseWorld = Vector3.zero;
         Vector2 shootDir = Vector2.right;
@@ -32,6 +32,7 @@ public class Ability : ScriptableObject
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player != null) spawnPos = player.transform.position;
 
+        // Museretning, hvis tilgængelig
         if (UnityEngine.InputSystem.Mouse.current != null && Camera.main != null)
         {
             Vector2 mouseScreen = UnityEngine.InputSystem.Mouse.current.position.ReadValue();
@@ -43,9 +44,13 @@ public class Ability : ScriptableObject
         if (spawnAtMousePosition) spawnPos = mouseWorld;
         if (overrideDirection.HasValue) shootDir = overrideDirection.Value;
 
-        // Must have a prefab with IAbilityBehavior
-        if (effectPrefab == null) return false;
+        if (effectPrefab == null)
+        {
+            Debug.LogWarning($"Ability '{name}' has no effectPrefab assigned.");
+            return false;
+        }
 
+        // Spawn og init
         GameObject obj = Instantiate(effectPrefab, spawnPos, Quaternion.identity);
 
         var behavior = obj.GetComponent<IAbilityBehavior>();
@@ -53,26 +58,24 @@ public class Ability : ScriptableObject
         {
             Debug.LogWarning($"Ability prefab '{effectPrefab.name}' is missing IAbilityBehavior.");
             Destroy(obj);
-            return false; // don’t consume card
+            return false; // forbrug ikke mana
         }
 
-        // Ask the ability behavior if it wants to activate (e.g., GodSpeed may veto if already active)
+        // Lad ability’en selv håndtere element (f.eks. Fireball = DamageElement.Fire)
         bool ok = behavior.Initialize(shootDir, rarity);
         if (!ok)
         {
-            // Veto: kill the instance and keep the card in hand, do not spend mana
             Destroy(obj);
             return false;
         }
 
-        // Only now spend mana; if not enough, cancel and keep the card
+        // Brug mana efter vellykket init (samme adfærd som før)
         if (!PlayerMana.Instance.TrySpend(manaCost))
         {
             Destroy(obj);
             return false;
         }
 
-        // Success caller (CardHandUI) will discard the card
         return true;
     }
 }

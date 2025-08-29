@@ -3,91 +3,110 @@ using UnityEngine.UI;
 using System;
 
 
+/// Simpel health-komponent med ekstra liv og helper-metoder
 public class PlayerHealth : MonoBehaviour
 {
+    public static PlayerHealth Instance;   // <-- NY singleton
+
+    [Header("Health")]
     public int maxHealth = 5;
-    private int currentHealth;
-    public Action OnDeath;
+    public int currentHealth = 5;
 
-
-    [SerializeField] public Slider healthBar;
+    [Header("Revive")]
+    public int extraLives = 0;
 
     void Awake()
     {
-        currentHealth = maxHealth;
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
     }
 
     void Start()
     {
-        UpdateUI();
+        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
     }
 
     public void TakeDamage(int amount)
     {
-        // NEW: let an active Shield consume the hit BEFORE applying damage
-        if (ShieldActiveAndConsumed())
-        {
-            // Shield blocked this hit; do not reduce player HP
-            return;
-        }
-
+        if (amount <= 0) return;
         currentHealth -= amount;
-        UpdateUI();
-
-        if (currentHealth <= 0)
-        {
-            Die();
-        }
+        if (currentHealth <= 0) OnDeath();
     }
 
-    private bool ShieldActiveAndConsumed()
+    public void Heal(int amount)
     {
-        // Check if a Shield instance is active and consume one shield hit
-        // (Shield class manages its own internal HP and destroy logic)
-        if (Shield.Active != null)
+        if (amount <= 0) return;
+        currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
+    }
+
+    // Kravet fra artifacts: sï¿½t alt til 1 HP
+    public void ForceSetToOneHP()
+    {
+        maxHealth = 1;
+        if (currentHealth > 1) currentHealth = 1;
+        Debug.Log("[PlayerHealth] ForceSetToOneHP");
+    }
+
+    // Ekstra liv (Spare Rib artifact)
+    public void AddExtraLife(int n)
+    {
+        extraLives += Mathf.Max(0, n);
+        Debug.Log("[PlayerHealth] AddExtraLife: +" + n + " (total: " + extraLives + ")");
+    }
+
+    public bool TryConsumeExtraLife()
+    {
+        if (extraLives > 0)
         {
-            bool consumed = Shield.Active.ConsumeHit();
-            if (consumed)
-                return true;
+            extraLives--;
+            currentHealth = maxHealth;
+            Debug.Log("[PlayerHealth] Extra life consumed. Lives left: " + extraLives);
+            return true;
         }
         return false;
     }
 
-    public void Die()
+    // --- Dï¿½d + Game Over flow ---
+    public void OnDeath()
     {
-        // Notify listeners (e.g. PlayerAnimator)
-        OnDeath?.Invoke();
+        if (TryConsumeExtraLife())
+            return;
 
-        // Disable input/movement so the player can't keep moving
-        var movement = GetComponent<PlayerMovement>();
-        if (movement != null)
-            movement.enabled = false;
+        int wavesCleared = WaveManager.Instance != null ? WaveManager.Instance.CurrentWave : 0;
 
-        // Disable collider & rigidbody so enemies don't keep hitting corpse
-        var col = GetComponent<Collider2D>();
-        if (col != null) col.enabled = false;
+        // Beregn reward shards
+        int reward = wavesCleared / 5;
+        if (wavesCleared >= 10 && wavesCleared % 10 == 0)
+            reward += 5;
 
-        var rb = GetComponent<Rigidbody2D>();
-        if (rb != null) rb.linearVelocity = Vector2.zero;
+        // Tilfï¿½j til MetaProgression
+        if (MetaProgressionManager.Instance != null)
+            MetaProgressionManager.Instance.AddShards(reward);
+        else
+            Debug.LogWarning("[PlayerHealth] MetaProgressionManager mangler!");
 
-        // Trigger Game Over after short delay (let death anim play)
-        GameOverManager gameOver = FindFirstObjectByType<GameOverManager>();
-        if (gameOver != null)
-        {
-            // delay game over slightly so player sees the animation
-            gameOver.TriggerGameOver();
-        }
+        // Trigger Game Over UI
+        if (GameOverManager.Instance != null)
+            GameOverManager.Instance.TriggerGameOver(wavesCleared, reward);
+        else
+            Debug.LogWarning("[PlayerHealth] GameOverManager mangler!");
 
-        // Optionally destroy object after 1–2 seconds if needed
-        Destroy(gameObject, 2f);
+        Debug.Log($"[PlayerHealth] Dead - Game Over. Waves: {wavesCleared}, Shards: {reward}");
+
+        // Disable player
+        gameObject.SetActive(false);
     }
 
-
-    void UpdateUI()
+    public void SetMaxHealthTemporary(int newMax, bool clampCurrent = true)
     {
-        if (healthBar != null)
-        {
-            healthBar.value = (float)currentHealth / maxHealth;
-        }
+        maxHealth = Mathf.Max(1, newMax);
+        if (clampCurrent)
+            currentHealth = Mathf.Min(currentHealth, maxHealth);
+    }
+
+    public void SetCurrentHealth(int hp)
+    {
+        currentHealth = Mathf.Clamp(hp, 0, maxHealth);
+        if (currentHealth <= 0) OnDeath();
     }
 }

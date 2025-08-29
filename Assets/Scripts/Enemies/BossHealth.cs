@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public class BossHealth : MonoBehaviour
 {
-    public int maxHealth = 100;
+    [SerializeField] public int maxHealth = 100;
     private int currentHealth;
     private Slider healthSlider;
     private HitFlash flash;
@@ -30,10 +30,17 @@ public class BossHealth : MonoBehaviour
     public void AssignHealthBar(Slider slider)
     {
         healthSlider = slider;
+        if (healthSlider != null)
+        {
+            healthSlider.maxValue = maxHealth;
+            healthSlider.value = currentHealth;
+        }
     }
 
     public void TakeDamage(int amount)
     {
+        if (amount <= 0) return;
+
         currentHealth -= amount;
 
         if (flashOnLethalHit || currentHealth > 0)

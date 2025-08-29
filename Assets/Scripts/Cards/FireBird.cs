@@ -58,7 +58,6 @@ public class FireBird : MonoBehaviour, IAbilityBehavior
         if (!other.CompareTag("Enemy") && !other.CompareTag("Boss"))
             return;
 
-        // Use root to avoid multi-hit from child colliders
         Transform root = other.attachedRigidbody ? other.attachedRigidbody.transform : other.transform;
         if (!hitRoots.Add(root))
             return; // already damaged this target once
@@ -67,7 +66,6 @@ public class FireBird : MonoBehaviour, IAbilityBehavior
         if (root.TryGetComponent(out EnemyHealth eh)) eh.TakeDamage(damage);
         if (root.TryGetComponent(out BossHealth bh)) bh.TakeDamage(damage);
 
-        // Consume a pierce and continue flying until we run out
         remainingPierces--;
         if (remainingPierces < 0)
             Destroy(gameObject);

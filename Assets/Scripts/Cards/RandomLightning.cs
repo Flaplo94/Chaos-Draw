@@ -35,7 +35,6 @@ public class RandomLightning : MonoBehaviour, IAbilityBehavior
             case Rarity.Rare: bonusStrikes = 2; damageMultiplier = 1.20f; break;
             case Rarity.Epic: bonusStrikes = 3; damageMultiplier = 1.30f; break;
             case Rarity.Legendary: bonusStrikes = 4; damageMultiplier = 1.40f; break;
-                // Common = baseline
         }
         return true;
     }
@@ -56,13 +55,13 @@ public class RandomLightning : MonoBehaviour, IAbilityBehavior
 
         if (valid.Count == 0) { Destroy(gameObject); return; }
 
-        // Apply rarity bonuses
         int adjMin = Mathf.Max(0, minStrikes + bonusStrikes);
         int adjMax = Mathf.Max(adjMin, maxStrikes + bonusStrikes);
         int strikeCount = Mathf.Clamp(Random.Range(adjMin, adjMax + 1), 0, valid.Count);
-        int finalDamage = Mathf.Max(1, Mathf.RoundToInt(damage * damageMultiplier));
 
-        // Strike unique random targets
+        int baseAdj = Mathf.Max(1, Mathf.RoundToInt(damage * damageMultiplier));
+        int finalDamage = DamageCalculator.ComputeFinalDamage(baseAdj, DamageElement.Lightning);
+
         for (int i = 0; i < strikeCount; i++)
         {
             int idx = Random.Range(0, valid.Count);

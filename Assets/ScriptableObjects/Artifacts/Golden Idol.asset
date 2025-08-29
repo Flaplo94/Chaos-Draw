@@ -16,4 +16,4 @@ MonoBehaviour:
   description: Enemies drop 50% more gold. You absolute goblin.
   icon: {fileID: -4700475101835598344, guid: 3b19d34b09820f8439e73b5fc061b8c7, type: 3}
   rarity: 0
-  internalID: 
+  internalID: GoldenIdol

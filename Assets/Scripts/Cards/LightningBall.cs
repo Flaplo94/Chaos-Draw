@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class LightningBall : MonoBehaviour, IAbilityBehavior
 {
@@ -42,7 +43,6 @@ public class LightningBall : MonoBehaviour, IAbilityBehavior
         rb = GetComponent<Rigidbody2D>();
         col = GetComponent<Collider2D>();
 
-        // Rigidbody2D setup (Unity 6)
         rb.gravityScale = 0f;
         rb.linearDamping = 0f;
         rb.freezeRotation = true;
@@ -72,7 +72,7 @@ public class LightningBall : MonoBehaviour, IAbilityBehavior
         lastVelocity = rb.linearVelocity;
     }
 
-    private System.Collections.IEnumerator ReenablePlayerCollisionSoon(Collider2D[] playerCols)
+    private IEnumerator ReenablePlayerCollisionSoon(Collider2D[] playerCols)
     {
         yield return new WaitForFixedUpdate();
         yield return new WaitForFixedUpdate();
@@ -109,6 +109,8 @@ public class LightningBall : MonoBehaviour, IAbilityBehavior
 
         if (hits == null || hits.Length == 0) return;
 
+        int finalTick = DamageCalculator.ComputeFinalDamage(damagePerTick, DamageElement.Lightning);
+
         foreach (var h in hits)
         {
             if (!h) continue;
@@ -118,8 +120,8 @@ public class LightningBall : MonoBehaviour, IAbilityBehavior
             if (root == transform || root.IsChildOf(transform)) continue;
 
             bool didDamage = false;
-            if (h.TryGetComponent(out EnemyHealth eh)) { eh.TakeDamage(damagePerTick); didDamage = true; }
-            if (h.TryGetComponent(out BossHealth bh)) { bh.TakeDamage(damagePerTick); didDamage = true; }
+            if (h.TryGetComponent(out EnemyHealth eh)) { eh.TakeDamage(finalTick); didDamage = true; }
+            if (h.TryGetComponent(out BossHealth bh)) { bh.TakeDamage(finalTick); didDamage = true; }
             if (!didDamage) continue;
 
             if (lightningVisual != null)

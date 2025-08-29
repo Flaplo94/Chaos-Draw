@@ -16,5 +16,5 @@ MonoBehaviour:
   description: Enemies drop 20% more gold.
   icon: {fileID: -6350371357635554078, guid: 37c2be2adfacf5c4ca5b7b58cf46a075, type: 3}
   type: 8
-  value: 0
+  value: 0.2
   rarity: 3

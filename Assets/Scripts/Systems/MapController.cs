@@ -1,202 +1,117 @@
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class MapController : MonoBehaviour
 {
-    public List<GameObject> terrainChunks;
-    public GameObject player;
-    public float checkerRadius;
-    public LayerMask terrainMask;
-    public GameObject currentChunk;
-    Vector3 playerLastPosition;
+    [Header("Chunk Settings")]
+    public int chunkSize = 20;
+    public int loadRadiusChunks = 4;
+    public int unloadRadiusChunks = 5;
 
-    [Header("Optimization")]
-    public List<GameObject> spawnedChunks;
-    GameObject latestChunk;
-    public float maxOpDist; //Must be greater than the length and width of the tilemap
-    float opDist;
-    float optimizerCooldown;
-    public float optimizerCooldownDur;
+    [Header("Prefabs")]
+    public GameObject[] chunkPrefabs;   // Terræn-chunks
 
-    void Start()
+    [Header("Runtime")]
+    public Transform player;            // (drag Player her i Inspector)
+    [HideInInspector] public GameObject currentChunk;
+
+    private readonly Dictionary<Vector2Int, GameObject> loadedChunks = new();
+    private Vector2Int _lastCenter;
+
+    private void Start()
     {
-        playerLastPosition = player.transform.position;
+        // Preload omkring spilleren ved scene start
+        if (player == null)
+        {
+            var p = GameObject.FindGameObjectWithTag("Player");
+            if (p) player = p.transform;
+        }
+        if (player) UpdateLoadedChunks(player.position);
     }
 
-    void Update()
+    private void Update()
     {
-        ChunkChecker();
-        ChunkOptimzer();
-    }
+        // Fallback: hvis vi ikke har fået OnChunkChanged endnu, så tjek selv
+        if (!player) return;
 
-    void ChunkChecker()
-    {
-        if (!currentChunk)
+        var centerNow = WorldToChunk(player.position);
+        if (centerNow != _lastCenter || currentChunk == null)
         {
-            return;
-        }
-
-        Vector3 moveDir = player.transform.position - playerLastPosition;
-        playerLastPosition = player.transform.position;
-
-        string directionName = GetDirectionName(moveDir);
-
-        if (!Physics2D.OverlapCircle(currentChunk.transform.Find(directionName).position, checkerRadius, terrainMask))
-        {
-            SpawnChunk(currentChunk.transform.Find(directionName).position);
-
-            // Check additional adjacent directions for diagonal chunks
-            if (directionName.Contains("Up") && directionName.Contains("Right"))
-            {
-                if (!Physics2D.OverlapCircle(currentChunk.transform.Find("Up").position, checkerRadius, terrainMask))
-                {
-                    SpawnChunk(currentChunk.transform.Find("Up").position);
-                }
-                if (!Physics2D.OverlapCircle(currentChunk.transform.Find("Right").position, checkerRadius, terrainMask))
-                {
-                    SpawnChunk(currentChunk.transform.Find("Right").position);
-                }
-            }
-            else if (directionName.Contains("Up") && directionName.Contains("Left"))
-            {
-                if (!Physics2D.OverlapCircle(currentChunk.transform.Find("Up").position, checkerRadius, terrainMask))
-                {
-                    SpawnChunk(currentChunk.transform.Find("Up").position);
-                }
-                if (!Physics2D.OverlapCircle(currentChunk.transform.Find("Left").position, checkerRadius, terrainMask))
-                {
-                    SpawnChunk(currentChunk.transform.Find("Left").position);
-                }
-            }
-            else if (directionName.Contains("Down") && directionName.Contains("Right"))
-            {
-                if (!Physics2D.OverlapCircle(currentChunk.transform.Find("Down").position, checkerRadius, terrainMask))
-                {
-                    SpawnChunk(currentChunk.transform.Find("Down").position);
-                }
-                if (!Physics2D.OverlapCircle(currentChunk.transform.Find("Right").position, checkerRadius, terrainMask))
-                {
-                    SpawnChunk(currentChunk.transform.Find("Right").position);
-                }
-            }
-            else if (directionName.Contains("Down") && directionName.Contains("Left"))
-            {
-                if (!Physics2D.OverlapCircle(currentChunk.transform.Find("Down").position, checkerRadius, terrainMask))
-                {
-                    SpawnChunk(currentChunk.transform.Find("Down").position);
-                }
-                if (!Physics2D.OverlapCircle(currentChunk.transform.Find("Left").position, checkerRadius, terrainMask))
-                {
-                    SpawnChunk(currentChunk.transform.Find("Left").position);
-                }
-            }
-        }
-
-        CheckAndSpawnChunk(directionName);
-
-        // Check additional adjacent directions for diagonal chunks
-        if (directionName.Contains("Up"))
-        {
-            CheckAndSpawnChunk("Up");
-        }
-        if (directionName.Contains("Down"))
-        {
-            CheckAndSpawnChunk("Down");
-        }
-        if (directionName.Contains("Right"))
-        {
-            CheckAndSpawnChunk("Right");
-        }
-        if (directionName.Contains("Left"))
-        {
-            CheckAndSpawnChunk("Left");
+            UpdateLoadedChunks(player.position);
+            _lastCenter = centerNow;
         }
     }
 
-    void CheckAndSpawnChunk(string direction)
+    // Kaldt af ChunkTrigger når spilleren går ind i en chunk
+    public void OnChunkChanged(Vector3 playerPos)
     {
-        if (!Physics2D.OverlapCircle(currentChunk.transform.Find(direction).position, checkerRadius, terrainMask))
-        {
-            SpawnChunk(currentChunk.transform.Find(direction).position);
-        }
+        UpdateLoadedChunks(playerPos);
+        _lastCenter = WorldToChunk(playerPos);
     }
 
-    string GetDirectionName(Vector3 direction)
+    private Vector2Int WorldToChunk(Vector3 worldPos)
     {
-        direction = direction.normalized;
+        int cx = Mathf.FloorToInt(worldPos.x / chunkSize);
+        int cy = Mathf.FloorToInt(worldPos.y / chunkSize);
+        return new Vector2Int(cx, cy);
+    }
 
-        if (Mathf.Abs(direction.x) > Mathf.Abs(direction.y))
+    private void UpdateLoadedChunks(Vector3 playerPos)
+    {
+        var center = WorldToChunk(playerPos);
+
+        // Load indenfor R
+        for (int y = -loadRadiusChunks; y <= loadRadiusChunks; y++)
+            for (int x = -loadRadiusChunks; x <= loadRadiusChunks; x++)
+            {
+                var c = new Vector2Int(center.x + x, center.y + y);
+                EnsureChunkLoaded(c);
+            }
+
+        // Unload udenfor R+1
+        foreach (var kv in loadedChunks.ToList())
         {
-            // Moving horizontally more than vertically
-            if (direction.y > 0.5f)
+            var c = kv.Key;
+            if (Mathf.Abs(c.x - center.x) > unloadRadiusChunks ||
+                Mathf.Abs(c.y - center.y) > unloadRadiusChunks)
             {
-                // Also moving upwards
-                return direction.x > 0 ? "Right Up" : "Left Up";
-            }
-            else if (direction.y < -0.5f)
-            {
-                // Also moving downwards
-                return direction.x > 0 ? "Right Down" : "Left Down";
-            }
-            else
-            {
-                // Moving straight horizontally
-                return direction.x > 0 ? "Right" : "Left";
-            }
-        }
-        else
-        {
-            // Moving vertically more than horizontally
-            if (direction.x > 0.5f)
-            {
-                // Also moving right
-                return direction.y > 0 ? "Right Up" : "Right Down";
-            }
-            else if (direction.x < -0.5f)
-            {
-                // Also moving left
-                return direction.y > 0 ? "Left Up" : "Left Down";
-            }
-            else
-            {
-                // Moving straight vertically
-                return direction.y > 0 ? "Up" : "Down";
+                UnloadChunk(c);
             }
         }
     }
 
-    void SpawnChunk(Vector3 spawnPosition)
+    private void EnsureChunkLoaded(Vector2Int c)
     {
-        int rand = Random.Range(0, terrainChunks.Count);
-        latestChunk = Instantiate(terrainChunks[rand], spawnPosition, Quaternion.identity);
-        spawnedChunks.Add(latestChunk);
+        if (loadedChunks.ContainsKey(c)) return;
+
+        var prefab = chunkPrefabs[Random.Range(0, chunkPrefabs.Length)];
+        var pos = new Vector3(c.x * chunkSize, c.y * chunkSize, 0);
+
+        var chunk = Instantiate(prefab, pos, Quaternion.identity, transform);
+        loadedChunks[c] = chunk;
     }
 
-    void ChunkOptimzer()
+    private void UnloadChunk(Vector2Int c)
     {
-        optimizerCooldown -= Time.deltaTime;
-
-        if (optimizerCooldown <= 0f)
-        {
-            optimizerCooldown = optimizerCooldownDur;   //Check every 1 second to save cost, change this value to lower to check more times
-        }
-        else
-        {
-            return;
-        }
-
-        foreach (GameObject chunk in spawnedChunks)
-        {
-            opDist = Vector3.Distance(player.transform.position, chunk.transform.position);
-            if (opDist > maxOpDist)
-            {
-                chunk.SetActive(false);
-            }
-            else
-            {
-                chunk.SetActive(true);
-            }
-        }
+        if (!loadedChunks.TryGetValue(c, out var go)) return;
+        Destroy(go);
+        loadedChunks.Remove(c);
     }
+
+#if UNITY_EDITOR
+    // Hjælp til visuel verifikation i editor
+    private void OnDrawGizmosSelected()
+    {
+        if (!player) return;
+        var center = WorldToChunk(player.position);
+        Gizmos.matrix = Matrix4x4.identity;
+        for (int y = -loadRadiusChunks; y <= loadRadiusChunks; y++)
+            for (int x = -loadRadiusChunks; x <= loadRadiusChunks; x++)
+            {
+                var wp = new Vector3((center.x + x) * chunkSize, (center.y + y) * chunkSize, 0);
+                Gizmos.DrawWireCube(wp + new Vector3(chunkSize / 2f, chunkSize / 2f, 0), new Vector3(chunkSize, chunkSize, 0.1f));
+            }
+    }
+#endif
 }

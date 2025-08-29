@@ -8,6 +8,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: -484222330527664757, guid: af535699c9caddd418ddb82d17593458, type: 3}
+      propertyPath: baseGold
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: -484222330527664757, guid: af535699c9caddd418ddb82d17593458, type: 3}
+      propertyPath: perWaveScale
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 76683931486816045, guid: af535699c9caddd418ddb82d17593458, type: 3}
       propertyPath: health
       value: 3

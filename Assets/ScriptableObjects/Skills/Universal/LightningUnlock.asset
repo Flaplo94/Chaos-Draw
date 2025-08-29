@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65a6c4fbf5d15e24f84cc2a0231b456d, type: 3}
+  m_Name: LightningUnlock
+  m_EditorClassIdentifier: 
+  internalID: lightning_unlock
+  displayName: Storm's Awakening
+  description: Unlock the Lightning Deck and the Lightning Spiral
+  icon: {fileID: 6366217822906589684, guid: 191e8883626e45d489ad9f62388f229a, type: 3}
+  type: 1
+  prerequisites:
+  - {fileID: 11400000, guid: d18a175448637644da8a3b7259d3f1f0, type: 2}
+  cost: 250
+  value: 0
+  unlockKey: 

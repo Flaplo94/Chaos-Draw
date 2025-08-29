@@ -100,6 +100,7 @@ GameObject:
   - component: {fileID: 76683931486816045}
   - component: {fileID: -3969978128227254662}
   - component: {fileID: -6007808778835646131}
+  - component: {fileID: -5935290034336339593}
   - component: {fileID: 3380281956299672159}
   - component: {fileID: 8856416947508852704}
   - component: {fileID: 9025832996168125021}
@@ -407,6 +408,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 7502241114002446682}
   m_Enabled: 1
   m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ebfeac23010ef7b44b5d2f0f2555698c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  baseGold: 1
+  perWaveScale: 0.1
   m_Script: {fileID: 11500000, guid: 624296d15d55e334d8a67eab54e9dad2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

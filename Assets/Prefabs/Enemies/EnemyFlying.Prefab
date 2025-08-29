@@ -103,6 +103,7 @@ GameObject:
   - component: {fileID: 1918429773650605416}
   - component: {fileID: 8570292891657577899}
   - component: {fileID: 2630208393804298388}
+  - component: {fileID: 3864809163436221441}
   m_Layer: 7
   m_Name: EnemyFlying
   m_TagString: Enemy
@@ -280,6 +281,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 7502241114002446682}
   m_Enabled: 1
   m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ebfeac23010ef7b44b5d2f0f2555698c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  baseGold: 1
+  perWaveScale: 0.1
   m_Script: {fileID: 11500000, guid: 624296d15d55e334d8a67eab54e9dad2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

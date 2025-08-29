@@ -258,3 +258,8 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+  m_Script: {fileID: 11500000, guid: ebfeac23010ef7b44b5d2f0f2555698c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  baseGold: 1
+  perWaveScale: 0.1

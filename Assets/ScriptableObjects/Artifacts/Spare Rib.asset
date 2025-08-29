@@ -16,4 +16,4 @@ MonoBehaviour:
   description: "Grants one extra life. Don\u2019t ask where the rib came from."
   icon: {fileID: 8674547931993360600, guid: e1e58481de2ecb74d9f8669bd859e475, type: 3}
   rarity: 3
-  internalID: 
+  internalID: SpareRib

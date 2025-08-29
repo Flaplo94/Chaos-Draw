@@ -12,102 +12,202 @@ public class ShopItemUI : MonoBehaviour
     public Button buyButton;
 
     [Header("Layout options")]
-    [Tooltip("Hvis true skjules navn-tekstens GameObject helt for RemoveCard (bedre layout).")]
+    [Tooltip("Skjul hele nameText GameObject for RemoveCard.")]
     public bool disableNameObjectForRemoveCard = true;
+
+    [Tooltip("Tekst, der vises når varen er ejet (Artifact/Buff).")]
+    public string ownedLabel = "Owned";
 
     private ShopItem item;
     private ShopManager shop;
     private int cachedPrice;
 
+    // Tracker om vi er subscribet til Wallet-event
+    private bool subscribedToWallet = false;
+
+    // ---------- Lifecycle ----------
+    void Awake()
+    {
+        // Sikrer vi ikke dobbelte listeners hvis Bind kaldes igen
+        if (buyButton != null) buyButton.onClick.RemoveAllListeners();
+    }
+
+    void OnEnable()
+    {
+        SubscribeWallet();
+        // Init UI hvis item allerede er bundet
+        if (item != null)
+            RefreshAll();
+        else
+            RefreshInteractable(GetGold());
+    }
+
+    void OnDisable()
+    {
+        UnsubscribeWallet();
+        if (buyButton != null) buyButton.onClick.RemoveAllListeners();
+    }
+
+    void OnDestroy()
+    {
+        UnsubscribeWallet();
+    }
+
+    // ---------- Public API ----------
     public void Bind(ShopItem s, ShopManager manager)
     {
         item = s;
         shop = manager;
-        cachedPrice = item != null ? item.basePrice : 0;
+        cachedPrice = (item != null) ? item.basePrice : 0;
 
-        // --- Titel (skjul for RemoveCard) ---
+        // Titel (skjul for RemoveCard)
         if (nameText)
         {
             bool isRemoveCard = (item != null &&
                                  item.itemType == ShopItemType.Service &&
                                  item.serviceType == ShopServiceType.RemoveCard);
 
-            if (isRemoveCard)
+            if (isRemoveCard && disableNameObjectForRemoveCard)
             {
-                if (disableNameObjectForRemoveCard)
-                    nameText.gameObject.SetActive(false);   // skjul helt (bedst m. VerticalLayoutGroup)
-                else
-                    nameText.text = "";                      // behold pladsen, men tom tekst
+                nameText.gameObject.SetActive(false);
             }
             else
             {
-                nameText.gameObject.SetActive(true);
-                nameText.text = item != null ? item.GetTitle() : "";
+                if (!nameText.gameObject.activeSelf) nameText.gameObject.SetActive(true);
+                nameText.text = (item != null) ? item.GetTitle() : "";
             }
         }
 
-        // --- Beskrivelse ---
-        if (descText) descText.text = item != null ? item.GetDescription() : "";
+        // Beskrivelse
+        if (descText) descText.text = (item != null) ? item.GetDescription() : "";
 
-        // --- Ikon (Service har typisk ingen) ---
+        // Ikon (Service = typisk intet)
         if (icon)
         {
-            var sp = (item != null) ? item.GetIcon() : null;
+            Sprite sp = (item != null) ? item.GetIcon() : null;
+
+            // RemoveCard: intet ikon
+            bool hideIconForRemoveCard = (item != null &&
+                                          item.itemType == ShopItemType.Service &&
+                                          item.serviceType == ShopServiceType.RemoveCard);
+
+            if (hideIconForRemoveCard) sp = null;
+
             icon.sprite = sp;
-            icon.enabled = sp != null;       // Undgå hvid boks
+            icon.enabled = sp != null;
             if (sp != null) icon.preserveAspect = true;
         }
 
-        // --- Pris ---
+        // Pris
         if (priceText) priceText.text = cachedPrice.ToString();
 
-        // --- Knap ---
+        // Knap
         if (buyButton != null)
         {
             buyButton.onClick.RemoveAllListeners();
             buyButton.onClick.AddListener(OnBuy);
         }
 
-        RefreshInteractable(Wallet.Instance != null ? Wallet.Instance.Gold : 0);
+        // Starttilstand
+        RefreshAll();
+        SubscribeWallet(); // sikrer vi lytter, selv hvis Bind blev kaldt før OnEnable
     }
 
-    void OnEnable()
+    // ---------- Intern logik ----------
+    private void OnBuy()
     {
-        if (Wallet.Instance != null)
-            Wallet.Instance.OnGoldChanged += RefreshInteractable;
+        if (shop == null || item == null) return;
+
+        if (!shop.TryBuy(item, cachedPrice))
+            return;
+
+        // Hvis det er en engangsvare (Artifact/Buff), sæt solgt/owned
+        if (item.itemType != ShopItemType.Service)
+        {
+            MarkOwned();
+        }
+
+        // Opdater interaktion efter køb
+        RefreshAll();
     }
 
-    void OnDisable()
+    private void MarkOwned()
     {
-        if (Wallet.Instance != null)
-            Wallet.Instance.OnGoldChanged -= RefreshInteractable;
+        // Disable knap og vis "Owned"
+        if (buyButton) buyButton.interactable = false;
+        if (priceText) priceText.text = ownedLabel;
+
+        // Titel kan forblive, men vi markerer visuelt via prisText
+    }
+
+    private void RefreshAll()
+    {
+        // Ejet?
+        bool owned = IsOwned();
+
+        // Opdatér prislabel ved owned
+        if (priceText)
+            priceText.text = owned ? ownedLabel : cachedPrice.ToString();
+
+        // Interactable afhænger af guld og owned (services ser kun på guld)
+        RefreshInteractable(GetGold());
     }
 
     private void RefreshInteractable(int gold)
     {
+        if (buyButton == null) return;
+        if (item == null) { buyButton.interactable = false; return; }
+
         bool enough = gold >= cachedPrice;
 
-        bool owned = false;
-        var inv = PlayerInventory.Instance; // kan være null
-        if (inv != null && item != null)
+        if (item.itemType == ShopItemType.Service)
         {
-            if (item.itemType == ShopItemType.Artifact && item.artifactData != null)
-                owned = inv.Has(item.artifactData);
-            else if (item.itemType == ShopItemType.Buff && item.buffData != null)
-                owned = inv.Has(item.buffData);
+            buyButton.interactable = enough;
+            return;
         }
 
-        // Services kan altid købes, hvis der er penge nok
-        bool interactable = (item != null && item.itemType == ShopItemType.Service) ? enough : (enough && !owned);
-        if (buyButton) buyButton.interactable = interactable;
+        // Artifact/Buff: må ikke kunne købes hvis allerede ejet
+        bool owned = IsOwned();
+        buyButton.interactable = enough && !owned;
     }
 
-    private void OnBuy()
+    private bool IsOwned()
     {
-        if (shop == null || item == null) return;
-        if (!shop.TryBuy(item, cachedPrice)) return;
+        var inv = PlayerInventory.Instance;
+        if (inv == null || item == null) return false;
 
-        if (item.itemType != ShopItemType.Service && buyButton != null)
-            buyButton.interactable = false;
+        if (item.itemType == ShopItemType.Artifact && item.artifactData != null)
+            return inv.Has(item.artifactData);
+
+        if (item.itemType == ShopItemType.Buff && item.buffData != null)
+            return inv.Has(item.buffData);
+
+        return false; // Services kan ikke "ejes"
+    }
+
+    private int GetGold()
+    {
+        return (Wallet.Instance != null) ? Wallet.Instance.CurrentGold : 0;
+    }
+
+    // ---------- Wallet event subscription ----------
+    private void SubscribeWallet()
+    {
+        if (subscribedToWallet) return;
+        if (Wallet.Instance == null) return;
+
+        Wallet.Instance.OnGoldChanged += RefreshInteractable;
+        subscribedToWallet = true;
+
+        // Synk UI med nuværende guld
+        RefreshInteractable(Wallet.Instance.CurrentGold);
+    }
+
+    private void UnsubscribeWallet()
+    {
+        if (!subscribedToWallet) return;
+        if (Wallet.Instance != null)
+            Wallet.Instance.OnGoldChanged -= RefreshInteractable;
+        subscribedToWallet = false;
     }
 }

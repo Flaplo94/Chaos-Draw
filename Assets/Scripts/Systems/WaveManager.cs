@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -6,6 +7,8 @@ using UnityEngine.UI;
 
 public class WaveManager : MonoBehaviour
 {
+    public static WaveManager Instance;
+
     [SerializeField] private CardHandUI cardHandUI;
     [SerializeField] private Transform playerTransform;
     [SerializeField] private float minSpawnDistance = 3f;
@@ -26,7 +29,7 @@ public class WaveManager : MonoBehaviour
     public float timeBetweenWaves = 2f;
 
     private int singleTypeIndex = -1;
-    private int unlockedEnemyTypes = 2; 
+    private int unlockedEnemyTypes = 2;
 
     private int currentWave = 0;
     private readonly List<GameObject> enemiesInWave = new List<GameObject>();
@@ -34,28 +37,19 @@ public class WaveManager : MonoBehaviour
 
     public TextMeshProUGUI waveText;
 
-    private int GetWeightedRandomIndex(int maxIndex)
-    {
-        float totalWeight = 0f;
-        for (int i = 0; i < maxIndex; i++)
-            totalWeight += enemySpawnWeights[i];
+    public event Action<int> OnWaveStarted;
+    public event Action<int> OnWaveCompleted;
+    public event Action<int> OnWaveChanged;
 
-        float randomValue = Random.value * totalWeight;
-        float cumulative = 0f;
-        for (int i = 0; i < maxIndex; i++)
-        {
-            cumulative += enemySpawnWeights[i];
-            if (randomValue < cumulative)
-                return i;
-        }
-        return maxIndex - 1; 
-    }
-    
+    public int CurrentWave => currentWave;
 
     void Awake()
     {
+        if (Instance == null) Instance = this;
+        else { Destroy(gameObject); return; }
         Debug.Log("[Wave] Awake");
     }
+
     void Start()
     {
         StartCoroutine(NextWave());
@@ -63,7 +57,21 @@ public class WaveManager : MonoBehaviour
 
     void Update()
     {
-        // BOSSSPRING
+        // === TEST CHEATS ===
+        if (Input.GetKeyDown(KeyCode.L)) // L = jump to wave 10 boss
+        {
+            Debug.Log("[WaveManager] CHEAT: Skipping to wave 10 boss");
+            currentWave = 9; // næste wave bliver wave 10
+            StartCoroutine(NextWave());
+        }
+
+        if (Input.GetKeyDown(KeyCode.U)) // U = unlock Legacy Deck uden kamp
+        {
+            Debug.Log("[WaveManager] CHEAT: Force unlock Legacy Deck");
+            MetaProgressionManager.Instance.UnlockLegacy();
+        }
+
+        // Boss
         if (bossSpawned)
         {
             if (currentBoss == null)
@@ -73,16 +81,17 @@ public class WaveManager : MonoBehaviour
             if (currentBoss == null && enemiesInWave.Count == 0)
             {
                 bossSpawned = false;
-
                 if (cardHandUI != null) cardHandUI.OnWaveCompleted();
 
-                // SHOP-HOOK: �bn shop efter hver 5. afsluttet wave (inkl. boss)
+                OnWaveCompleted?.Invoke(currentWave);
+                OnWaveChanged?.Invoke(currentWave);
+
                 TryOpenShopOrStartNextWave();
             }
             return;
         }
 
-        // NORMAL WAVE SLUT
+        // Normal wave slut
         if (waveInProgress && enemiesInWave.Count == 0)
         {
             waveInProgress = false;
@@ -91,7 +100,9 @@ public class WaveManager : MonoBehaviour
             if (cardUI != null)
                 cardUI.OnWaveCompleted();
 
-            // SHOP-HOOK: �bn shop efter hver 5. afsluttet wave
+            OnWaveCompleted?.Invoke(currentWave);
+            OnWaveChanged?.Invoke(currentWave);
+
             TryOpenShopOrStartNextWave();
         }
     }
@@ -101,31 +112,27 @@ public class WaveManager : MonoBehaviour
         yield return new WaitForSeconds(timeBetweenWaves);
 
         currentWave++;
-        if (waveText != null) waveText.text = "Wave " + currentWave;
+        if (waveText != null) waveText.text = currentWave.ToString();
 
-        
+        OnWaveStarted?.Invoke(currentWave);
+        OnWaveChanged?.Invoke(currentWave);
+
         if (currentWave % 5 == 0 && unlockedEnemyTypes < enemyPrefabs.Length)
-        {
             unlockedEnemyTypes++;
-        }
+
         int maxIndex = Mathf.Min(unlockedEnemyTypes, enemyPrefabs.Length);
 
-        
+        // Boss hver 10. wave
         if (currentWave % 10 == 0)
         {
             bossHealthBarUI.SetActive(true);
             currentBoss = Instantiate(bossPrefab, bossSpawnPoint.position, Quaternion.identity);
 
-            
             BossSpawner spawner = currentBoss.GetComponent<BossSpawner>();
-            if (spawner != null)
-            {
-                spawner.waveManager = this;
-            }
+            if (spawner != null) spawner.waveManager = this;
 
             bossSpawned = true;
 
-            
             Slider bossSlider = bossHealthBarUI.GetComponent<Slider>();
             BossHealth bossHealth = currentBoss.GetComponent<BossHealth>();
             bossHealth.AssignHealthBar(bossSlider);
@@ -137,55 +144,57 @@ public class WaveManager : MonoBehaviour
 
         int enemyCount = startEnemyCount + currentWave * 2;
 
-       
         bool singleTypeWave = (currentWave % 5 == 0);
-
         if (singleTypeWave)
-        {
             singleTypeIndex = GetWeightedRandomIndex(maxIndex);
-        }
         else
-        {
             singleTypeIndex = -1;
-        }
+
+        enemiesInWave.Clear();
 
         for (int i = 0; i < enemyCount; i++)
         {
             Vector2 spawnOffset;
-            do
-            {
-                spawnOffset = Random.insideUnitCircle * spawnRadius;
-            }
+            do { spawnOffset = UnityEngine.Random.insideUnitCircle * spawnRadius; }
             while (spawnOffset.magnitude < minSpawnDistance);
 
             Vector2 spawnPos = (Vector2)playerTransform.position + spawnOffset;
 
-            GameObject chosenPrefab;
-            if (singleTypeIndex >= 0)
-                chosenPrefab = enemyPrefabs[singleTypeIndex];
-            else
-                chosenPrefab = enemyPrefabs[GetWeightedRandomIndex(maxIndex)];
+            GameObject chosenPrefab = (singleTypeIndex >= 0)
+                ? enemyPrefabs[singleTypeIndex]
+                : enemyPrefabs[GetWeightedRandomIndex(maxIndex)];
 
             GameObject enemy = Instantiate(chosenPrefab, spawnPos, Quaternion.identity);
             enemiesInWave.Add(enemy);
 
-            // Fjern fjenden fra listen n�r den d�r
             var eh = enemy.GetComponent<EnemyHealth>();
-            if (eh != null)
-                eh.OnDeath += () => enemiesInWave.Remove(enemy);
+            if (eh != null) eh.OnDeath += () => enemiesInWave.Remove(enemy);
         }
 
         waveInProgress = true;
     }
 
-    // SHOP: �bn shop hver 5. afsluttet wave, ellers start n�ste wave
+    private int GetWeightedRandomIndex(int maxIndex)
+    {
+        float totalWeight = 0f;
+        for (int i = 0; i < maxIndex; i++) totalWeight += enemySpawnWeights[i];
+
+        float randomValue = UnityEngine.Random.value * totalWeight;
+        float cumulative = 0f;
+        for (int i = 0; i < maxIndex; i++)
+        {
+            cumulative += enemySpawnWeights[i];
+            if (randomValue < cumulative) return i;
+        }
+        return maxIndex - 1;
+    }
+
     private void TryOpenShopOrStartNextWave()
     {
-        // currentWave er den wave, der netop er AFSLUTTET her
         if (currentWave > 0 && currentWave % 5 == 0 && ShopManager.Instance != null)
         {
-            // N�r shoppen lukkes, starter vi n�ste wave
-            ShopManager.Instance.OnClosed = () => StartCoroutine(NextWave());
+            ShopManager.Instance.OnClosed -= HandleShopClosedAfterWave;
+            ShopManager.Instance.OnClosed += HandleShopClosedAfterWave;
             ShopManager.Instance.Open();
         }
         else
@@ -194,15 +203,35 @@ public class WaveManager : MonoBehaviour
         }
     }
 
-    // === VIGTIGT: beholdt for BossSpawner ===
+    private void HandleShopClosedAfterWave()
+    {
+        if (ShopManager.Instance != null)
+            ShopManager.Instance.OnClosed -= HandleShopClosedAfterWave;
+
+        StartCoroutine(NextWave());
+    }
+
     public void RegisterMinion(GameObject minion)
     {
         if (minion == null) return;
-
         enemiesInWave.Add(minion);
 
         var eh = minion.GetComponent<EnemyHealth>();
-        if (eh != null)
-            eh.OnDeath += () => enemiesInWave.Remove(minion);
+        if (eh != null) eh.OnDeath += () => enemiesInWave.Remove(minion);
+    }
+
+    public void EndRun()
+    {
+        int wavesCleared = currentWave;
+
+        int reward = wavesCleared / 5;
+        if (wavesCleared >= 10 && wavesCleared % 10 == 0)
+            reward += 5;
+
+        if (reward > 0)
+            MetaProgressionManager.Instance.AddShards(reward);
+
+        // UI håndteres nu af GameOverManager
+        Debug.Log($"[WaveManager] Run ended after wave {wavesCleared}. Reward: {reward} Chaos Shards.");
     }
 }

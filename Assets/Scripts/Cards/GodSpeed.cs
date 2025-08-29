@@ -42,6 +42,7 @@ public class GodSpeed : MonoBehaviour, IAbilityBehavior
     private PlayerMovement playerMove;
     private float originalMoveSpeed;
     private float zapTimer;
+    private bool speedApplied;
 
     // Runtime-created visual host for the LightningBall controller
     private GameObject auraHost;
@@ -58,7 +59,6 @@ public class GodSpeed : MonoBehaviour, IAbilityBehavior
         }
         Active = this;
 
-        // Rarity scaling
         switch (rarity)
         {
             case Rarity.Uncommon: duration += 1f; speedMultiplier *= 1.10f; zapRadius *= 1.05f; break;
@@ -156,8 +156,8 @@ public class GodSpeed : MonoBehaviour, IAbilityBehavior
             if (root == transform || root.IsChildOf(transform)) continue;
 
             bool didDamage = false;
-            if (h.TryGetComponent(out EnemyHealth eh)) { eh.TakeDamage(zapDamagePerTick); didDamage = true; }
-            if (h.TryGetComponent(out BossHealth bh)) { bh.TakeDamage(zapDamagePerTick); didDamage = true; }
+            if (h.TryGetComponent(out EnemyHealth eh)) { eh.TakeDamage(finalTick); didDamage = true; }
+            if (h.TryGetComponent(out BossHealth bh)) { bh.TakeDamage(finalTick); didDamage = true; }
             if (!didDamage) continue;
 
             if (lightningVisual) SpawnBolt(player.position, root.position);

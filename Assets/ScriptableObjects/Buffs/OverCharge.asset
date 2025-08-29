@@ -16,5 +16,5 @@ MonoBehaviour:
   description: Auto-attacks shoot 1 extra projectile.
   icon: {fileID: 2869580775176698672, guid: 5496c5ca45cefa74eba0ba7a92a1d0da, type: 3}
   type: 13
-  value: 0
+  value: 1
   rarity: 1

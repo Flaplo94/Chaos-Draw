@@ -1,39 +1,84 @@
+// PlayerThrowing.cs
 using UnityEngine;
 
-public class PlayerShooting : MonoBehaviour
+public class PlayerThrowing : MonoBehaviour
 {
-    public GameObject bulletPrefab;
+    [Header("Projectile")]
+    public GameObject cardPrefab;   // din Bullet-prefab (knoppen)
     public Transform firePoint;
-    public float bulletSpeed = 10f;
-    public float fireRate = 3f;
+    public float cardSpeed = 10f;
 
-    private float fireCooldown = 0f;
+    [Header("Fire")]
+    public float baseCooldown = 0.30f;
+    [SerializeField] private float spreadDegrees = 0f; // sæt >0 hvis du senere vil have ekstra projektiler
+
+    [Header("Refs")]
+    public PlayerStats stats;   // drag PlayerStats component fra Player
+
+    // Artifact hooks (sættes af ArtifactSystem)
+    [HideInInspector] public int extraProjectiles = 0;
+    [HideInInspector] public float fireRateMult = 1f;
+    [HideInInspector] public float projectileSpeedMult = 1f;
+
+    float cooldown;
 
     void Update()
     {
-        fireCooldown -= Time.deltaTime;
+        // unscaled så input/cooldown fungerer selvom shoppen pauser timeScale
+        if (cooldown > 0f) cooldown -= Time.unscaledDeltaTime;
+        if (cooldown < 0f) cooldown = 0f;
 
-        if (fireCooldown < 0f)
-            fireCooldown = 0f;
-
-        
-        if (Input.GetMouseButton(0) && fireCooldown <= 0f)
+        if (Input.GetMouseButton(0) && cooldown <= 0f)
         {
-            Shoot();
-            fireCooldown = fireRate;
+            ThrowTowardMouse();
+            float effective = baseCooldown / Mathf.Max(0.01f, fireRateMult);
+            cooldown = effective;
         }
-
     }
 
-    void Shoot()
+    void ThrowTowardMouse()
     {
-        Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        mouseWorldPosition.z = 0f; // Fixes Z-depth distortion
+        if (!cardPrefab || !firePoint || Camera.main == null) return;
 
-        Vector2 direction = ((Vector2)(mouseWorldPosition - firePoint.position)).normalized;
+        Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        mouseWorld.z = 0f;
+        Vector2 dir = ((Vector2)(mouseWorld - firePoint.position)).normalized;
 
-        GameObject bullet = Instantiate(bulletPrefab, firePoint.position, Quaternion.identity);
-        Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
-        rb.linearVelocity = direction * bulletSpeed;
+        SpawnCard(firePoint.position, dir);
+
+        if (extraProjectiles > 0)
+        {
+            int half = extraProjectiles;
+            for (int i = -half; i <= half; i++)
+            {
+                if (i == 0) continue;
+                float angle = i * spreadDegrees;
+                Vector2 d = (Quaternion.Euler(0, 0, angle) * dir).normalized;
+                SpawnCard(firePoint.position, d);
+            }
+        }
+    }
+
+    void SpawnCard(Vector3 pos, Vector2 dir)
+    {
+        var go = Instantiate(cardPrefab, pos, Quaternion.identity);
+
+        // Skaler Bullet.damage med global multiplier (Gamers Cap / Glass Cannon)
+        if (go.TryGetComponent<Bullet>(out var bullet))
+        {
+            int baseDmg = bullet.damage;                          // værdi fra prefab
+            float globalMult = (stats != null) ? stats.damageMult : 1f;
+            float elemMult = 1f;                                  // basic = ikke-elemental
+
+            // debugfelter til konsol-loggen i Bullet
+            bullet.debugBaseDamage = baseDmg;
+            bullet.debugGlobalMult = globalMult;
+            bullet.debugElementMult = elemMult;
+
+            bullet.damage = Mathf.Max(1, Mathf.RoundToInt(baseDmg * globalMult));
+        }
+
+        if (go.TryGetComponent<Rigidbody2D>(out var rb))
+            rb.linearVelocity = dir * (cardSpeed * Mathf.Max(0.01f, projectileSpeedMult));
     }
 }

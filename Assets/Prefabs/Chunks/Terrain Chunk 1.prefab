@@ -279,8 +279,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4466206847439343774}
-  - component: {fileID: 6984941732253136853}
   - component: {fileID: 259991357706130126}
+  - component: {fileID: -4474677254886781691}
   m_Layer: 6
   m_Name: Terrain Chunk 1
   m_TagString: Untagged
@@ -314,37 +314,6 @@ Transform:
   - {fileID: 431895527632294623}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6984941732253136853
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5227129467491382116}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8f192ccfbbbeb8d458392bb2e97189a6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  propSpawnPoints:
-  - {fileID: 6095483010881827552}
-  - {fileID: 3614910863827797968}
-  - {fileID: 6729805046698907891}
-  - {fileID: 7283255779905144794}
-  - {fileID: 4905569164547193381}
-  - {fileID: 7545346612848532261}
-  - {fileID: 2271209667158312014}
-  - {fileID: 5813383066826695350}
-  propPrefabs:
-  - {fileID: 7653375678984314138, guid: 1eef7980f3eb04e46a86191e3202c064, type: 3}
-  - {fileID: 6809140955354718404, guid: 08846406adf389c48ab79f6ad6fbc2cd, type: 3}
-  - {fileID: 8928526212320202099, guid: 7578a7de6d73ee7459d6d52dbe004917, type: 3}
-  - {fileID: 1141216035709450627, guid: 907ce025be7a76f4c8faf0f1a7b5a302, type: 3}
-  - {fileID: 5192383146107079659, guid: 287e728ad7e653149bf209e2672a96da, type: 3}
-  - {fileID: 4444668872991068523, guid: 20abf207a32ed134486c0a2b5241e35c, type: 3}
-  - {fileID: 2127286552759827142, guid: 8bd08b2e1479e964cba7f890319b40c1, type: 3}
-  - {fileID: 7349428611817855051, guid: cb0ec4d2c8937bd4a8c2f1a52dfefc76, type: 3}
-  - {fileID: 1283753403168957056, guid: 3c5defe0e5001f848966b93ddab617eb, type: 3}
 --- !u!61 &259991357706130126
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -375,7 +344,7 @@ BoxCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
@@ -391,6 +360,25 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 20, y: 20}
   m_EdgeRadius: 0
+--- !u!114 &-4474677254886781691
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5227129467491382116}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f192ccfbbbeb8d458392bb2e97189a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  propPrefabs:
+  - {fileID: 7349428611817855051, guid: cb0ec4d2c8937bd4a8c2f1a52dfefc76, type: 3}
+  spawnParentName: Props
+  spawnPointNameContains: Prop Location
+  minSeparation: 1.25
+  jitterRadius: 0.4
+  maxAttemptsPerPoint: 10
 --- !u!1 &5296262073264392950
 GameObject:
   m_ObjectHideFlags: 0

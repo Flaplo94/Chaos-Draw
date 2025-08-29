@@ -7,7 +7,7 @@ public class ShopDebugKey : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(openKey)) ShopManager.Instance?.Open();
-        if (closeWithEscape && Input.GetKeyDown(KeyCode.Escape)) ShopManager.Instance?.Close();
+        if (Input.GetKeyDown(openKey)) ShopManager.Instance?.OpenShop();
+        if (closeWithEscape && Input.GetKeyDown(KeyCode.Escape)) ShopManager.Instance?.CloseShop();
     }
 }
