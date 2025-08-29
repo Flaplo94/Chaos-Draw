@@ -1,36 +1,50 @@
-// PlayerThrowing.cs
 using UnityEngine;
 
 public class PlayerThrowing : MonoBehaviour
 {
     [Header("Projectile")]
-    public GameObject cardPrefab;   // din Bullet-prefab (knoppen)
+    public GameObject cardPrefab;
     public Transform firePoint;
     public float cardSpeed = 10f;
 
     [Header("Fire")]
     public float baseCooldown = 0.30f;
-    [SerializeField] private float spreadDegrees = 0f; // sæt >0 hvis du senere vil have ekstra projektiler
+    [SerializeField] private float spreadDegrees = 0f;
 
     [Header("Refs")]
-    public PlayerStats stats;   // drag PlayerStats component fra Player
+    public PlayerStats stats;
 
-    // Artifact hooks (sættes af ArtifactSystem)
+    [Header("Audio")]
+    [SerializeField] private AudioClip attackSfx;  // <-- assign in Inspector
+    [SerializeField] private AudioSource audioSource; // <-- assign in Inspector (or GetComponent in Awake)
+
+    // Artifact hooks
     [HideInInspector] public int extraProjectiles = 0;
     [HideInInspector] public float fireRateMult = 1f;
     [HideInInspector] public float projectileSpeedMult = 1f;
 
     float cooldown;
 
+    void Awake()
+    {
+        // fallback if not assigned
+        if (audioSource == null)
+            audioSource = GetComponent<AudioSource>();
+    }
+
     void Update()
     {
-        // unscaled så input/cooldown fungerer selvom shoppen pauser timeScale
         if (cooldown > 0f) cooldown -= Time.unscaledDeltaTime;
         if (cooldown < 0f) cooldown = 0f;
 
         if (Input.GetMouseButton(0) && cooldown <= 0f)
         {
             ThrowTowardMouse();
+
+            // play attack sound
+            if (attackSfx != null && audioSource != null)
+                audioSource.PlayOneShot(attackSfx);
+
             float effective = baseCooldown / Mathf.Max(0.01f, fireRateMult);
             cooldown = effective;
         }
@@ -63,14 +77,12 @@ public class PlayerThrowing : MonoBehaviour
     {
         var go = Instantiate(cardPrefab, pos, Quaternion.identity);
 
-        // Skaler Bullet.damage med global multiplier (Gamers Cap / Glass Cannon)
         if (go.TryGetComponent<Bullet>(out var bullet))
         {
-            int baseDmg = bullet.damage;                          // værdi fra prefab
+            int baseDmg = bullet.damage;
             float globalMult = (stats != null) ? stats.damageMult : 1f;
-            float elemMult = 1f;                                  // basic = ikke-elemental
+            float elemMult = 1f;
 
-            // debugfelter til konsol-loggen i Bullet
             bullet.debugBaseDamage = baseDmg;
             bullet.debugGlobalMult = globalMult;
             bullet.debugElementMult = elemMult;

@@ -7,6 +7,7 @@ public class FlyingEnemy : MonoBehaviour
 
     private Transform player;
     private Rigidbody2D rb;
+    private bool isDead = false;
 
     void Start()
     {
@@ -24,6 +25,7 @@ public class FlyingEnemy : MonoBehaviour
 
     void Update()
     {
+        if (isDead) { rb.linearVelocity = Vector2.zero; return; }
         if (player == null)
         {
             GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
@@ -43,5 +45,10 @@ public class FlyingEnemy : MonoBehaviour
         rb.angularVelocity = 0f;   // stop physics spin
         rb.rotation = 0f;          // keep facing upright
         transform.rotation = Quaternion.identity; // ensure no parent/child drift
+    }
+    public void Kill() // <-- NEW
+    {
+        isDead = true;
+        rb.linearVelocity = Vector2.zero;
     }
 } 

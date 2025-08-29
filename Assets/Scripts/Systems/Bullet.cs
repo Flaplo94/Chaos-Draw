@@ -5,6 +5,11 @@ public class Bullet : MonoBehaviour
     public int baseDamage = 1;
     public float lifetime = 5f;
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip hitSfx;   // assign in Inspector
+    [SerializeField] private float hitVolume = 1f;
+
+    // --- Backwards compatibility ---
     public int damage
     {
         get => baseDamage;
@@ -42,7 +47,7 @@ public class Bullet : MonoBehaviour
 
         if (boss != null)
         {
-            boss.TakeDamage(baseDamage); // BossHealth skal evt. også have element
+            boss.TakeDamage(baseDamage); // BossHealth skal evt. ogsï¿½ have element
             LogDamage("Boss", boss.gameObject.name);
             Destroy(gameObject);
             return;
@@ -53,6 +58,24 @@ public class Bullet : MonoBehaviour
             string layerName = LayerMask.LayerToName(other.gameObject.layer);
             Debug.Log("[DMG?] Hit '" + other.gameObject.name + "' (layer=" + layerName + ") but no EnemyHealth/BossHealth found.");
         }
+    }
+
+    void PlayHitSound()
+    {
+        if (hitSfx == null) return;
+
+        // create temporary object to host AudioSource
+        GameObject temp = new GameObject("BulletHitSound");
+        temp.transform.position = transform.position;
+
+        AudioSource src = temp.AddComponent<AudioSource>();
+        src.clip = hitSfx;
+        src.volume = hitVolume;
+        src.spatialBlend = 0f; // 2D sound (instant, no distance delay)
+        src.Play();
+
+        // destroy temp object after sound is done
+        Destroy(temp, hitSfx.length);
     }
 
     void LogDamage(string targetType, string targetName)
