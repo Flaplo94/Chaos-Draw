@@ -63,7 +63,7 @@ public class FireBird : MonoBehaviour, IAbilityBehavior
             return; // already damaged this target once
 
         // Deal damage
-        if (root.TryGetComponent(out EnemyHealth eh)) eh.TakeDamage(damage);
+        if (root.TryGetComponent(out EnemyHealth eh)) eh.TakeDamage(damage, DamageElement.Fire);
         if (root.TryGetComponent(out BossHealth bh)) bh.TakeDamage(damage);
 
         remainingPierces--;

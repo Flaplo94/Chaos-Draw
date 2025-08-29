@@ -1094,7 +1094,6 @@ Transform:
   - {fileID: 1511693214}
   - {fileID: 638354522}
   - {fileID: 2131360380}
-  - {fileID: 1270932259}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &124232703
@@ -1204,21 +1203,23 @@ MonoBehaviour:
   minSpawnDistance: 3
   spawnRadius: 10
   enemyPrefabs:
-  - {fileID: 5679082729230498780, guid: c25de75b8a76d504aa0ed013b1634e16, type: 3}
-  - {fileID: 7502241114002446682, guid: af535699c9caddd418ddb82d17593458, type: 3}
-  - {fileID: 7502241114002446682, guid: 142aa5be84e910d4d9bf9b2a7d7e2612, type: 3}
   - {fileID: 7502241114002446682, guid: 04e8239b255693a4e8254ab6869f0802, type: 3}
   - {fileID: 7502241114002446682, guid: 368b5472c3ca5ac4eada3c3ad6cce4fc, type: 3}
+  - {fileID: 5679082729230498780, guid: c25de75b8a76d504aa0ed013b1634e16, type: 3}
+  - {fileID: 7502241114002446682, guid: 142aa5be84e910d4d9bf9b2a7d7e2612, type: 3}
+  - {fileID: 7502241114002446682, guid: af535699c9caddd418ddb82d17593458, type: 3}
+  - {fileID: 5679082729230498780, guid: 1025ba9c4858a9b43810ebe5cb37bf37, type: 3}
   enemySpawnWeights:
   - 1
   - 1
   - 0.3
-  - 0.3
+  - 0.1
+  - 0.1
   - 0.1
   bossPrefab: {fileID: 5679082729230498780, guid: 3e9e53c37f7e83c4aa21d73127584b19, type: 3}
   bossSpawnPoint: {fileID: 1487545839}
   bossHealthBarUI: {fileID: 1325004279}
-  startEnemyCount: 10
+  startEnemyCount: 3
   timeBetweenWaves: 2
   waveText: {fileID: 1625025862}
 --- !u!1 &144529151
@@ -3679,6 +3680,7 @@ GameObject:
   - component: {fileID: 838277007}
   - component: {fileID: 838277006}
   - component: {fileID: 838277008}
+  - component: {fileID: 838277009}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -3699,6 +3701,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 5
+  rootedIcon: {fileID: 0}
 --- !u!58 &838276996
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -3924,6 +3927,28 @@ MonoBehaviour:
   maxMana: 100
   regenRate: 5
   manaBar: {fileID: 1720527801}
+--- !u!95 &838277009
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 838276994}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &843644497
 GameObject:
   m_ObjectHideFlags: 0
@@ -4296,9 +4321,9 @@ RectTransform:
   - {fileID: 1074366049}
   m_Father: {fileID: 118609472}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 69, y: -138}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 381.13336, y: -133.84026}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &951907727
@@ -5886,52 +5911,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1264268513}
   m_CullTransparentMesh: 1
---- !u!1 &1270932258
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1270932259}
-  - component: {fileID: 1270932260}
-  m_Layer: 0
-  m_Name: DamageNumbersManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1270932259
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1270932258}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 124232702}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1270932260
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1270932258}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e760bf9f3fe1a5f4b970179e75c40464, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  container: {fileID: 1571787736}
-  numberPrefab: {fileID: 7835015005782582157, guid: 389be9c881adf3b49b4dcae296d49c5b, type: 3}
 --- !u!1 &1287249131
 GameObject:
   m_ObjectHideFlags: 0
@@ -7031,7 +7010,7 @@ MonoBehaviour:
   lifestealMult: 0
   moveSpeedMult: 1
   goldGainMult: 1
-  xpGainMult: 1
+  chaosShardGainMult: 1
 --- !u!114 &1484783533
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7195,6 +7174,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1571787736}
+  - component: {fileID: 1571787737}
   m_Layer: 5
   m_Name: DamageNumbers
   m_TagString: Untagged
@@ -7221,6 +7201,24 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1571787737
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1571787735}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e760bf9f3fe1a5f4b970179e75c40464, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  container: {fileID: 1571787736}
+  numberPrefab: {fileID: 7835015005782582157, guid: 389be9c881adf3b49b4dcae296d49c5b, type: 3}
+  defaultColor: {r: 1, g: 1, b: 1, a: 1}
+  fireColor: {r: 1, g: 0, b: 0, a: 1}
+  lightningColor: {r: 0, g: 1, b: 1, a: 1}
+  burnColor: {r: 1, g: 0.5, b: 0, a: 1}
 --- !u!1 &1611371612
 GameObject:
   m_ObjectHideFlags: 0

@@ -16,7 +16,6 @@ public class Bullet : MonoBehaviour
         set => baseDamage = value;
     }
 
-    // --- DEBUG ---
     [Header("Debug")]
     public bool logDamage = false;
     [HideInInspector] public int debugBaseDamage = 0;
@@ -36,8 +35,7 @@ public class Bullet : MonoBehaviour
 
         if (enemy != null)
         {
-            enemy.TakeDamage(baseDamage);
-            PlayHitSound();
+            enemy.TakeDamage(baseDamage, DamageElement.Physical);
             LogDamage("Enemy", enemy.gameObject.name);
             Destroy(gameObject);
             return;
@@ -49,8 +47,7 @@ public class Bullet : MonoBehaviour
 
         if (boss != null)
         {
-            boss.TakeDamage(baseDamage);
-            PlayHitSound();
+            boss.TakeDamage(baseDamage); // BossHealth skal evt. ogs� have element
             LogDamage("Boss", boss.gameObject.name);
             Destroy(gameObject);
             return;

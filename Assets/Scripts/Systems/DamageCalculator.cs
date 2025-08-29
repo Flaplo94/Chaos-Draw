@@ -8,11 +8,26 @@ public enum DamageElement
     Burn
 }
 
+public struct DamageResult
+{
+    public int amount;
+    public DamageElement element;
+
+    public DamageResult(int amount, DamageElement element)
+    {
+        this.amount = amount;
+        this.element = element;
+    }
+}
+
 public static class DamageCalculator
 {
     public static bool DEBUG_LOG = true; // slå fra når du er færdig
 
-    public static int ComputeFinalDamage(float baseDamage, DamageElement element)
+    /// <summary>
+    /// Udregner final damage og returnerer både tal og element-type
+    /// </summary>
+    public static DamageResult ComputeFinalDamage(float baseDamage, DamageElement element)
     {
         float mult = 1f;
 
@@ -44,6 +59,6 @@ public static class DamageCalculator
         if (DEBUG_LOG)
             Debug.Log($"[DMG] base={baseDamage} elem={element} mult={mult:F3} -> {intFinal}");
 
-        return intFinal;
+        return new DamageResult(intFinal, element);
     }
 }

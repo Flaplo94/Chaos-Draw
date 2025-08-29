@@ -14,10 +14,13 @@ public class WaveManager : MonoBehaviour
     [SerializeField] private float minSpawnDistance = 3f;
     [SerializeField] private float spawnRadius = 10f;
 
+    [Header("Enemies")]
     public GameObject[] enemyPrefabs;
 
     [Header("Spawn weights must match enemyPrefabs order!")]
     [SerializeField] private float[] enemySpawnWeights = new float[] { 1f, 1f, 0.3f, 0.1f };
+
+    [Header("Boss")]
     public GameObject bossPrefab;
     public Transform bossSpawnPoint;
     public GameObject bossHealthBarUI;
@@ -25,6 +28,7 @@ public class WaveManager : MonoBehaviour
     private bool bossSpawned = false;
     private GameObject currentBoss;
 
+    [Header("Waves")]
     public int startEnemyCount = 3;
     public float timeBetweenWaves = 2f;
 
@@ -35,6 +39,7 @@ public class WaveManager : MonoBehaviour
     private readonly List<GameObject> enemiesInWave = new List<GameObject>();
     private bool waveInProgress = false;
 
+    [Header("UI")]
     public TextMeshProUGUI waveText;
 
     public event Action<int> OnWaveStarted;
@@ -223,15 +228,18 @@ public class WaveManager : MonoBehaviour
     public void EndRun()
     {
         int wavesCleared = currentWave;
+        int reward = 0;
 
-        int reward = wavesCleared / 5;
-        if (wavesCleared >= 10 && wavesCleared % 10 == 0)
-            reward += 5;
+        // Ny shard-beregning: 1 pr. wave + 5 pr. boss-wave
+        reward += wavesCleared;
+        reward += (wavesCleared / 10) * 5;
 
         if (reward > 0)
             MetaProgressionManager.Instance.AddShards(reward);
 
-        // UI håndteres nu af GameOverManager
         Debug.Log($"[WaveManager] Run ended after wave {wavesCleared}. Reward: {reward} Chaos Shards.");
+
+        if (GameOverManager.Instance != null)
+            GameOverManager.Instance.TriggerGameOver(wavesCleared, reward);
     }
 }
