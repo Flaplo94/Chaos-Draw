@@ -49,6 +49,8 @@ public class EnemyHealth : MonoBehaviour
 
     void Die()
     {
+        GetComponent<EnemyFollow>()?.Kill();
+        GetComponent<FlyingEnemy>()?.Kill();
         hitbox.enabled = false;
         OnDeath?.Invoke();
         enemyAnimator.PlayDie();

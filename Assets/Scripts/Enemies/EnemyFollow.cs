@@ -15,7 +15,7 @@ public class EnemyFollow : MonoBehaviour
     private RangedEnemyAttack rangedAttack;
     private float attackRange = 0f;
     private Rigidbody2D rb;
-
+    private bool isDead = false;
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -35,6 +35,7 @@ public class EnemyFollow : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (isDead) { rb.linearVelocity = Vector2.zero; return; }
         // reacquire if needed
         if (player == null)
         {
@@ -111,5 +112,10 @@ public class EnemyFollow : MonoBehaviour
         // <-- NEW: expose where we're heading so the animator can pick a set
         if (finalDir.sqrMagnitude > 0.0001f)
             FacingDir = finalDir;
+    }
+    public void Kill() // <-- NEW
+    {
+        isDead = true;
+        rb.linearVelocity = Vector2.zero;
     }
 }
