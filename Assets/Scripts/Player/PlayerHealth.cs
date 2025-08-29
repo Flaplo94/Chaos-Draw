@@ -10,10 +10,12 @@ public class PlayerHealth : MonoBehaviour
 
     [Header("Health")]
     public int maxHealth = 5;
-    public int currentHealth = 5;
+    public int currentHealth;
 
     [Header("Revive")]
     public int extraLives = 0;
+
+    public Action OnDeath; 
 
     void Awake()
     {
@@ -30,7 +32,7 @@ public class PlayerHealth : MonoBehaviour
     {
         if (amount <= 0) return;
         currentHealth -= amount;
-        if (currentHealth <= 0) OnDeath();
+        if (currentHealth <= 0) Die();
     }
 
     public void Heal(int amount)
@@ -67,7 +69,7 @@ public class PlayerHealth : MonoBehaviour
     }
 
     // --- D�d + Game Over flow ---
-    public void OnDeath()
+    public void Die()
     {
         if (TryConsumeExtraLife())
             return;

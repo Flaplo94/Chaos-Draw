@@ -16,9 +16,6 @@ public class Fireball : MonoBehaviour, IAbilityBehavior
     [Header("Audio")]
     [SerializeField] private AudioClip impactSound;
     private AudioSource audioSource;
-
-    private Vector2 direction;
-
     public bool Initialize(Vector2 dir, Rarity rarity)
     {
         direction = dir.normalized;

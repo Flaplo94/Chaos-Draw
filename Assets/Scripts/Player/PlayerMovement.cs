@@ -3,7 +3,7 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Base speed (uden buffs)")]
-    [SerializeField] private float moveSpeed = 5f;
+    [SerializeField] public float moveSpeed = 5f;
 
     private float baseSpeed;          // gemmer original v�rdi
     private Rigidbody2D rb;

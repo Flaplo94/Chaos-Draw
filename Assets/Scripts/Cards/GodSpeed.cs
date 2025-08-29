@@ -147,6 +147,8 @@ public class GodSpeed : MonoBehaviour, IAbilityBehavior
 
         if (hits == null || hits.Length == 0) return;
 
+        int finalTick = DamageCalculator.ComputeFinalDamage(zapDamagePerTick, DamageElement.Lightning);
+
         foreach (var h in hits)
         {
             if (!h) continue;

@@ -399,6 +399,58 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: VisionOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: tvOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WindowsStoreApps
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
@@ -2659,7 +2711,109 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      FireSpiral_0: 8707651977191343114
+      FireSpiral_1: -2521662104891977226
+      FireSpiral_10: -3312357645818310651
+      FireSpiral_100: -6161462949147306711
+      FireSpiral_101: 7910710031803116194
+      FireSpiral_11: -2313253831368172100
+      FireSpiral_12: 4770045578046221794
+      FireSpiral_13: 7923563948527523455
+      FireSpiral_14: 8551258139992404390
+      FireSpiral_15: -8663329532284819122
+      FireSpiral_16: -8491534766949568504
+      FireSpiral_17: 123579649666738354
+      FireSpiral_18: -1756759487308050212
+      FireSpiral_19: 5149387147376707704
+      FireSpiral_2: 4842254291493080686
+      FireSpiral_20: 3158175220460234807
+      FireSpiral_21: -3712324770310127628
+      FireSpiral_22: -8599679632794625442
+      FireSpiral_23: 7835468950014910078
+      FireSpiral_24: 3345461409791799537
+      FireSpiral_25: -4532883227136125430
+      FireSpiral_26: 7596012446131304933
+      FireSpiral_27: -5074624794382023094
+      FireSpiral_28: 2758613519427775180
+      FireSpiral_29: -6348264383695926883
+      FireSpiral_3: -479401065368265952
+      FireSpiral_30: -8428958166503859800
+      FireSpiral_31: 3514814268234533863
+      FireSpiral_32: -1654907681734388369
+      FireSpiral_33: -1852945750586116370
+      FireSpiral_34: 105335607138092859
+      FireSpiral_35: 8333264623869031959
+      FireSpiral_36: 2934723567719499330
+      FireSpiral_37: -5672856445221464719
+      FireSpiral_38: 3338194592609994695
+      FireSpiral_39: -8390465320820729744
+      FireSpiral_4: -5112671888317218012
+      FireSpiral_40: -6477899801919738807
+      FireSpiral_41: 1631681106828448440
+      FireSpiral_42: -8998231799175949531
+      FireSpiral_43: -6353513805590145073
+      FireSpiral_44: 720905605224258854
+      FireSpiral_45: 1304579765336591587
+      FireSpiral_46: -1862986204447297012
+      FireSpiral_47: 8864584095005661944
+      FireSpiral_48: -715044013234941100
+      FireSpiral_49: -1469905102440876160
+      FireSpiral_5: 1084132809155762642
+      FireSpiral_50: 5894472343600944254
+      FireSpiral_51: 3104861053596900628
+      FireSpiral_52: -4724471726681094328
+      FireSpiral_53: 8424763733383480578
+      FireSpiral_54: -4796795347264104716
+      FireSpiral_55: 5242658604595540743
+      FireSpiral_56: 7614020410251111006
+      FireSpiral_57: -4241245816899245111
+      FireSpiral_58: 7589454414095512676
+      FireSpiral_59: 3562207565522340191
+      FireSpiral_6: -2136902079790693849
+      FireSpiral_60: 6249616466105541861
+      FireSpiral_61: 2824890462796062626
+      FireSpiral_62: 183639896364333698
+      FireSpiral_63: 4330392548879895125
+      FireSpiral_64: 190060404827608006
+      FireSpiral_65: 896726020712841798
+      FireSpiral_66: -7299516746893419498
+      FireSpiral_67: 659736699455573109
+      FireSpiral_68: 8807520379761636635
+      FireSpiral_69: 6317449903790450204
+      FireSpiral_7: -8365801249903173536
+      FireSpiral_70: -4080005216709258111
+      FireSpiral_71: -7089118178728168914
+      FireSpiral_72: -7489349555419236359
+      FireSpiral_73: -1880865127697649653
+      FireSpiral_74: 8520633737247277974
+      FireSpiral_75: 1840771598035344396
+      FireSpiral_76: 2702547219643062795
+      FireSpiral_77: 2649368765148692652
+      FireSpiral_78: -4315629024439608157
+      FireSpiral_79: 1649748991887234601
+      FireSpiral_8: 1767516322590124185
+      FireSpiral_80: -4346735113253585703
+      FireSpiral_81: 4859326737288428957
+      FireSpiral_82: -3371668209824761148
+      FireSpiral_83: 1230947262123079083
+      FireSpiral_84: -6128357401706807300
+      FireSpiral_85: -4142332815983789745
+      FireSpiral_86: 1450546480947830914
+      FireSpiral_87: -3867104870925379267
+      FireSpiral_88: -2580346952534604497
+      FireSpiral_89: -2362231292015323744
+      FireSpiral_9: 7919964561680605313
+      FireSpiral_90: -3156721482804725213
+      FireSpiral_91: -247433799929047442
+      FireSpiral_92: 2593567580391957970
+      FireSpiral_93: -4189254357319027714
+      FireSpiral_94: 5769938042257254158
+      FireSpiral_95: 9107693527873731961
+      FireSpiral_96: 5603323417188793295
+      FireSpiral_97: -4046533175353400142
+      FireSpiral_98: -4959537618826066251
+      FireSpiral_99: -167893142892061090
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
