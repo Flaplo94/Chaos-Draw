@@ -11,19 +11,13 @@ public class RandomLightning : MonoBehaviour, IAbilityBehavior
     [SerializeField] private int maxStrikes = 2;
     [SerializeField] private int damage = 2;
 
-    [Header("Visual (Animator + SpriteRenderer)")]
-    [Tooltip("Your LightningStrikeVisual prefab (has SpriteRenderer + Animator).")]
+    [Header("Visual")]
     [SerializeField] private GameObject lightningVisual;
-    [Tooltip("Animator trigger to play on the strike (leave empty to use a state name).")]
     [SerializeField] private string playTrigger = "Play";
-    [Tooltip("Fallback state to play if no trigger is used (e.g., 'Strike').")]
     [SerializeField] private string stateName = "Strike";
-    [Tooltip("Animation speed multiplier for the strike.")]
     [SerializeField] private float animSpeed = 1.0f;
-    [Tooltip("Optional local offset to place strike slightly above/around target.")]
     [SerializeField] private Vector2 strikeOffset = new Vector2(0f, 0.0f);
 
-    // rarity scaling
     private int bonusStrikes = 0;
     private float damageMultiplier = 1f;
 
@@ -41,10 +35,8 @@ public class RandomLightning : MonoBehaviour, IAbilityBehavior
 
     private void Start()
     {
-        // Collect valid targets (works for enemies AND bosses by component)
         Collider2D[] inRange = Physics2D.OverlapCircleAll(transform.position, radius);
         List<Collider2D> valid = new List<Collider2D>(inRange.Length);
-
         for (int i = 0; i < inRange.Length; i++)
         {
             var c = inRange[i];
@@ -60,7 +52,7 @@ public class RandomLightning : MonoBehaviour, IAbilityBehavior
         int strikeCount = Mathf.Clamp(Random.Range(adjMin, adjMax + 1), 0, valid.Count);
 
         int baseAdj = Mathf.Max(1, Mathf.RoundToInt(damage * damageMultiplier));
-        int finalDamage = DamageCalculator.ComputeFinalDamage(baseAdj, DamageElement.Lightning);
+        DamageResult result = DamageCalculator.ComputeFinalDamage(baseAdj, DamageElement.Lightning);
 
         for (int i = 0; i < strikeCount; i++)
         {
@@ -71,13 +63,11 @@ public class RandomLightning : MonoBehaviour, IAbilityBehavior
 
             Transform t = targetCol.attachedRigidbody ? targetCol.attachedRigidbody.transform : targetCol.transform;
 
-            // Deal damage (enemy or boss)
             var eh = targetCol.GetComponent<EnemyHealth>();
-            if (eh != null) eh.TakeDamage(finalDamage);
+            if (eh != null) eh.TakeDamage(result.amount, result.element);
             var bh = targetCol.GetComponent<BossHealth>();
-            if (bh != null) bh.TakeDamage(finalDamage);
+            if (bh != null) bh.TakeDamage(result.amount);
 
-            // Spawn strike visual at target (no LineRenderer)
             if (lightningVisual != null)
                 SpawnStrikeAt(t.position + (Vector3)strikeOffset);
         }
@@ -90,37 +80,25 @@ public class RandomLightning : MonoBehaviour, IAbilityBehavior
         var go = Instantiate(lightningVisual, pos, Quaternion.identity);
         go.name = "RandomLightning_Strike";
 
-        // Play animation
-        float ttl = 0.2f; // fallback
+        float ttl = 0.2f;
         var anim = go.GetComponentInChildren<Animator>();
         if (anim)
         {
-            anim.speed = Mathf.Max(0.01f, animSpeed);
+            anim.speed = animSpeed;
             anim.Rebind();
             anim.Update(0f);
-
-            if (!string.IsNullOrEmpty(playTrigger))
-            {
-                anim.ResetTrigger(playTrigger);
-                anim.SetTrigger(playTrigger);
-            }
-            else if (!string.IsNullOrEmpty(stateName))
-            {
-                anim.Play(stateName, 0, 0f);
-            }
-
-            // Try to destroy after current state's length / speed
+            if (!string.IsNullOrEmpty(playTrigger)) anim.SetTrigger(playTrigger);
+            else if (!string.IsNullOrEmpty(stateName)) anim.Play(stateName, 0, 0f);
             var st = anim.GetCurrentAnimatorStateInfo(0);
             ttl = st.length > 0f ? st.length / anim.speed : 0.25f;
         }
-
         Destroy(go, ttl);
     }
 
 #if UNITY_EDITOR
     private void OnDrawGizmosSelected()
     {
-        Gizmos.color = new Color(0.6f, 0.9f, 1f, 0.25f);
+        Gizmos.color = Color.cyan;
         Gizmos.DrawWireSphere(transform.position, radius);
     }
 #endif

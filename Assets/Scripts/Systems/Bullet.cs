@@ -2,19 +2,17 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
-    public int baseDamage = 1;   // tidligere 'damage'
+    public int baseDamage = 1;
     public float lifetime = 5f;
 
-    // --- Backwards compatibility ---
     public int damage
     {
         get => baseDamage;
         set => baseDamage = value;
     }
 
-    // --- DEBUG ---
     [Header("Debug")]
-    public bool logDamage = false;        // slå til på prefab når du vil se logs
+    public bool logDamage = false;
     [HideInInspector] public int debugBaseDamage = 0;
     [HideInInspector] public float debugGlobalMult = 1f;
     [HideInInspector] public float debugElementMult = 1f;
@@ -26,14 +24,13 @@ public class Bullet : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        // Find EnemyHealth/BossHealth robust (child/parent)
         var enemy = other.GetComponent<EnemyHealth>()
                  ?? other.GetComponentInParent<EnemyHealth>()
                  ?? other.GetComponentInChildren<EnemyHealth>();
 
         if (enemy != null)
         {
-            enemy.TakeDamage(baseDamage);
+            enemy.TakeDamage(baseDamage, DamageElement.Physical);
             LogDamage("Enemy", enemy.gameObject.name);
             Destroy(gameObject);
             return;
@@ -45,13 +42,12 @@ public class Bullet : MonoBehaviour
 
         if (boss != null)
         {
-            boss.TakeDamage(baseDamage);
+            boss.TakeDamage(baseDamage); // BossHealth skal evt. også have element
             LogDamage("Boss", boss.gameObject.name);
             Destroy(gameObject);
             return;
         }
 
-        // Debug-info hvis vi rammer noget uden health-script
         if (logDamage)
         {
             string layerName = LayerMask.LayerToName(other.gameObject.layer);

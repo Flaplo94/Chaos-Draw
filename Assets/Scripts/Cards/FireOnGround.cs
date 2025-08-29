@@ -10,21 +10,15 @@ public class FireOnGround : MonoBehaviour, IAbilityBehavior
     [SerializeField] private LayerMask enemyLayer;
 
     [Header("Tiled Fire VFX")]
-    [Tooltip("Small fire animation prefab (Animator + SpriteRenderer). This is stamped many times to fill the circle.")]
     [SerializeField] private GameObject tilePrefab;
-    [Tooltip("Distance between tiles in world units (lower = denser).")]
     [SerializeField] private float tileSpacing = 0.6f;
-    [Tooltip("Random position jitter to break the grid look.")]
     [SerializeField] private float positionJitter = 0.12f;
-    [Tooltip("Random Z-rotation for variety.")]
     [SerializeField] private bool randomizeRotation = true;
-    [Tooltip("Animator Trigger to start the tile's spawn animation (leave empty if not used).")]
     [SerializeField] private string spawnTrigger = "Spawn";
 
     private float tickTimer;
     private float lifeTimer;
 
-    // ---------- IAbilityBehavior ----------
     public bool Initialize(Vector2 dir, Rarity rarity)
     {
         switch (rarity)
@@ -33,7 +27,6 @@ public class FireOnGround : MonoBehaviour, IAbilityBehavior
             case Rarity.Rare: radius *= 1.4f; damagePerTick += 1; break;
             case Rarity.Epic: radius *= 1.6f; damagePerTick += 2; break;
             case Rarity.Legendary: radius *= 2.0f; damagePerTick += 3; break;
-                // Common = baseline
         }
         return true;
     }
@@ -42,7 +35,6 @@ public class FireOnGround : MonoBehaviour, IAbilityBehavior
     {
         tickTimer = 0f;
         lifeTimer = duration;
-
         SpawnTilesFillCircle();
     }
 
@@ -60,8 +52,6 @@ public class FireOnGround : MonoBehaviour, IAbilityBehavior
         if (tickTimer <= 0f)
         {
             tickTimer = tickInterval;
-
-            // 0 mask means "no filter", match your previous pattern.
             Collider2D[] hits = (enemyLayer.value == 0)
                 ? Physics2D.OverlapCircleAll(transform.position, radius)
                 : Physics2D.OverlapCircleAll(transform.position, radius, enemyLayer);
@@ -69,8 +59,7 @@ public class FireOnGround : MonoBehaviour, IAbilityBehavior
             foreach (var hit in hits)
             {
                 if (!hit) continue;
-
-                if (hit.TryGetComponent(out EnemyHealth eh)) eh.TakeDamage(damagePerTick);
+                if (hit.TryGetComponent(out EnemyHealth eh)) eh.TakeDamage(damagePerTick, DamageElement.Burn);
                 if (hit.TryGetComponent(out BossHealth bh)) bh.TakeDamage(damagePerTick);
             }
         }
@@ -78,31 +67,20 @@ public class FireOnGround : MonoBehaviour, IAbilityBehavior
 
     private void SpawnTilesFillCircle()
     {
-        if (!tilePrefab)
-        {
-            Debug.LogWarning("FireOnGround: tilePrefab not assigned. No visuals will spawn.");
-            return;
-        }
+        if (!tilePrefab) return;
 
-        // Simple square grid, culled by circle. You can tune tileSpacing in the inspector.
-        // Loop from -radius..radius in both axes with step = tileSpacing.
-        float r = radius * 0.98f; // slight inset to avoid edges poking out
+        float r = radius * 0.98f;
         for (float x = -r; x <= r; x += tileSpacing)
         {
             for (float y = -r; y <= r; y += tileSpacing)
             {
                 var offset = new Vector2(x, y);
-                if (offset.sqrMagnitude > r * r) continue; // outside circle
+                if (offset.sqrMagnitude > r * r) continue;
 
-                // Jitter to avoid obvious grid
-                Vector2 jitter = Vector2.zero;
-                if (positionJitter > 0f)
-                {
-                    jitter = new Vector2(
-                        Random.Range(-positionJitter, positionJitter),
-                        Random.Range(-positionJitter, positionJitter)
-                    );
-                }
+                Vector2 jitter = new Vector2(
+                    Random.Range(-positionJitter, positionJitter),
+                    Random.Range(-positionJitter, positionJitter)
+                );
 
                 Vector3 pos = transform.position + (Vector3)(offset + jitter);
                 var tile = Instantiate(tilePrefab, pos, Quaternion.identity, transform);
@@ -113,7 +91,6 @@ public class FireOnGround : MonoBehaviour, IAbilityBehavior
                     tile.transform.rotation = Quaternion.Euler(0f, 0f, z);
                 }
 
-                // Kick the tile's spawn animation if it has an Animator + trigger
                 if (!string.IsNullOrEmpty(spawnTrigger))
                 {
                     var anim = tile.GetComponentInChildren<Animator>();

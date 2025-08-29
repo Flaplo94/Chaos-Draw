@@ -6,6 +6,7 @@ public class EnemyHealth : MonoBehaviour
 {
     [SerializeField] private int maxHealth = 3;
     [SerializeField] private bool flashOnLethalHit = true;
+    [SerializeField] private int goldReward = 1; // hvor meget guld denne fjende giver
 
     private int currentHealth;
     private HitFlash flash;
@@ -25,17 +26,29 @@ public class EnemyHealth : MonoBehaviour
         hitbox = GetComponent<CircleCollider2D>();
     }
 
+    // Overload for backward compatibility
     public void TakeDamage(int amount)
+    {
+        TakeDamage(amount, DamageElement.Physical);
+    }
+
+    // Standard entrypoint
+    public void TakeDamage(int amount, DamageElement element)
     {
         if (amount <= 0) return;
 
         currentHealth -= amount;
+
+        // === Damage Numbers ===
+        if (DamageNumbers.Instance != null)
+            DamageNumbers.Instance.Show(transform.position, amount, element);
 
         if (flashOnLethalHit || currentHealth > 0)
             flash?.PlayFlash();
 
         if (currentHealth <= 0)
             Die();
+        Debug.Log($"EnemyHealth.TakeDamage: dmg={amount}, element={element}");
     }
 
     public void Heal(int amount)
@@ -50,7 +63,14 @@ public class EnemyHealth : MonoBehaviour
     void Die()
     {
         hitbox.enabled = false;
+
+        // === Gold Reward ===
+        if (Wallet.Instance != null)
+            Wallet.Instance.Add(goldReward);
+
         OnDeath?.Invoke();
+        OnAnyEnemyDied?.Invoke(this);
+
         enemyAnimator.PlayDie();
     }
 

@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class Fireball : MonoBehaviour, IAbilityBehavior
 {
-    [Header("Tuning")]
     public float speed = 10f;
     public int damage = 10;
     public float aoeRadius = 2f;
@@ -16,6 +15,7 @@ public class Fireball : MonoBehaviour, IAbilityBehavior
     [Header("Audio")]
     [SerializeField] private AudioClip impactSound;
     private AudioSource audioSource;
+
     public bool Initialize(Vector2 dir, Rarity rarity)
     {
         direction = dir.normalized;
@@ -34,15 +34,10 @@ public class Fireball : MonoBehaviour, IAbilityBehavior
 
     void Awake()
     {
-        audioSource = GetComponent<AudioSource>();
-        if (audioSource == null)
-        {
-            audioSource = gameObject.AddComponent<AudioSource>();
-        }
-
+        audioSource = GetComponent<AudioSource>() ?? gameObject.AddComponent<AudioSource>();
         audioSource.playOnAwake = false;
         audioSource.loop = false;
-        audioSource.spatialBlend = 0f; // 2D sound (set to 1f for 3D positional)
+        audioSource.spatialBlend = 0f;
         audioSource.clip = impactSound;
         anim = GetComponent<Animator>();
         col = GetComponent<Collider2D>();
@@ -57,7 +52,6 @@ public class Fireball : MonoBehaviour, IAbilityBehavior
     void OnTriggerEnter2D(Collider2D other)
     {
         if (impacted) return;
-
         if (!other.CompareTag("Enemy") && !other.CompareTag("Boss"))
             return;
 
@@ -72,39 +66,29 @@ public class Fireball : MonoBehaviour, IAbilityBehavior
         speed = 0f;
         if (col) col.enabled = false;
 
-        // Damage enemies in radius
         var hits = Physics2D.OverlapCircleAll(transform.position, aoeRadius);
         foreach (var h in hits)
         {
-            if (h.TryGetComponent(out EnemyHealth eh)) eh.TakeDamage(damage);
+            if (h.TryGetComponent(out EnemyHealth eh)) eh.TakeDamage(damage, DamageElement.Fire);
             if (h.TryGetComponent(out BossHealth bh)) bh.TakeDamage(damage);
         }
 
-        // Auto-scale sprite to match AOE radius
-        float baseSpriteSize = 32f;  // pixels
-        float ppu = 32f;             // pixels per unit
+        float baseSpriteSize = 32f;
+        float ppu = 32f;
         float worldSize = baseSpriteSize / ppu;
         float targetDiameter = aoeRadius * 2f;
         float scaleFactor = targetDiameter / worldSize;
 
         transform.localScale = new Vector3(scaleFactor, scaleFactor, 1f);
 
-        // Trigger impact animation
         if (anim) anim.SetTrigger("Impact");
     }
 
-    // Called by Animation Event at end of impact
-    public void OnImpactFinished()
-    {
-        Destroy(gameObject);
-    }
+    public void OnImpactFinished() => Destroy(gameObject);
+
     public void PlayImpactSound()
     {
-        if (audioSource != null && impactSound != null)
-        {
-            // play instantly, no object creation
-            audioSource.Play();
-        }
+        if (audioSource != null && impactSound != null) audioSource.Play();
     }
 
     void OnDrawGizmosSelected()
