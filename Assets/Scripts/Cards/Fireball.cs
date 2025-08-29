@@ -39,8 +39,12 @@ public class Fireball : MonoBehaviour, IAbilityBehavior
         if (audioSource == null)
         {
             audioSource = gameObject.AddComponent<AudioSource>();
-            audioSource.playOnAwake = false;
         }
+
+        audioSource.playOnAwake = false;
+        audioSource.loop = false;
+        audioSource.spatialBlend = 0f; // 2D sound (set to 1f for 3D positional)
+        audioSource.clip = impactSound;
         anim = GetComponent<Animator>();
         col = GetComponent<Collider2D>();
     }
@@ -97,9 +101,10 @@ public class Fireball : MonoBehaviour, IAbilityBehavior
     }
     public void PlayImpactSound()
     {
-        if (impactSound != null)
+        if (audioSource != null && impactSound != null)
         {
-            audioSource.PlayOneShot(impactSound);
+            // play instantly, no object creation
+            audioSource.Play();
         }
     }
 

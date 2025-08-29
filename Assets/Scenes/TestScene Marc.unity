@@ -3222,7 +3222,7 @@ MonoBehaviour:
   otherBack: {fileID: -8678478477245134283, guid: 6d4b27b0e0e21a74ca4a873b74eab1b9, type: 3}
   emptyBack: {fileID: 0}
   startingDeckList:
-  - abilityName: Fireball
+  - abilityName: FireBird
     count: 4
   rewardUI: {fileID: 1045093887}
   rewardCardsParent: {fileID: 1045093888}
