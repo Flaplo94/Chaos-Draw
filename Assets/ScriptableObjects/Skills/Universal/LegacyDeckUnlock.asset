@@ -18,7 +18,7 @@ MonoBehaviour:
   icon: {fileID: -570535711028372819, guid: 3ecf9bc7f38cf1a4d8c8bf0d92866c0e, type: 3}
   type: 1
   prerequisites:
-  - {fileID: 11400000, guid: 7553f446abdc6944d90a12ff43af1a15, type: 2}
-  cost: 100
+  - {fileID: 11400000, guid: 7a979365524879140bedfb509478bfd0, type: 2}
+  cost: 1000
   value: 0
   unlockKey: '"LegacyDeck"'
