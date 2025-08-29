@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEditor.Rendering.FilterWindow;
 
 public class BossHealth : MonoBehaviour
 {
@@ -37,11 +38,15 @@ public class BossHealth : MonoBehaviour
         }
     }
 
-    public void TakeDamage(int amount)
+    public void TakeDamage(int amount, DamageElement element)
     {
         if (amount <= 0) return;
 
         currentHealth -= amount;
+
+        // === Damage Numbers ===
+        if (DamageNumbers.Instance != null)
+            DamageNumbers.Instance.Show(transform.position, amount, element);
 
         if (flashOnLethalHit || currentHealth > 0)
             flash?.PlayFlash();

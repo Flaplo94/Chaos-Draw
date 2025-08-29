@@ -102,7 +102,7 @@ public class LightningRod : MonoBehaviour, IAbilityBehavior
                 var col = hits[i].collider;
                 if (!col) continue;
                 if (col.TryGetComponent(out EnemyHealth eh)) eh.TakeDamage(Mathf.RoundToInt(damage), DamageElement.Lightning);
-                if (col.TryGetComponent(out BossHealth bh)) bh.TakeDamage(Mathf.RoundToInt(damage));
+                if (col.TryGetComponent(out BossHealth bh)) bh.TakeDamage(Mathf.RoundToInt(damage), DamageElement.Lightning);
             }
             damageTimer = damageTickRate;
         }

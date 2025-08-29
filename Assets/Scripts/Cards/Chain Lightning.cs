@@ -65,7 +65,7 @@ public class ChainLightning : MonoBehaviour, IAbilityBehavior
                 SpawnBolt(prevPos, nearest.transform.position);
 
             if (nearest.TryGetComponent(out EnemyHealth eh)) eh.TakeDamage(damage, DamageElement.Lightning);
-            if (nearest.TryGetComponent(out BossHealth bh)) bh.TakeDamage(damage);
+            if (nearest.TryGetComponent(out BossHealth bh)) bh.TakeDamage(damage, DamageElement.Lightning);
 
             hitSet.Add(nearest);
             prevPos = nearest.transform.position;

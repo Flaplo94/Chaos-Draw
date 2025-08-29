@@ -63,7 +63,7 @@ public class PlaceWall : MonoBehaviour, IAbilityBehavior
         if (now >= next)
         {
             if (isEnemy) enemy.TakeDamage(thornsDamage, DamageElement.Physical);
-            if (isBoss) boss.TakeDamage(thornsDamage);
+            if (isBoss) boss.TakeDamage(thornsDamage, DamageElement.Physical);
             nextTickTime[target] = now + thornsInterval;
         }
     }

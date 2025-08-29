@@ -104,7 +104,7 @@ public class LightningBall : MonoBehaviour, IAbilityBehavior
             if (root.CompareTag("Player")) continue;
 
             if (h.TryGetComponent(out EnemyHealth eh)) eh.TakeDamage(result.amount, result.element);
-            if (h.TryGetComponent(out BossHealth bh)) bh.TakeDamage(result.amount);
+            if (h.TryGetComponent(out BossHealth bh)) bh.TakeDamage(result.amount, result.element);
 
             if (lightningVisual != null) SpawnBolt(transform.position, root.position);
         }

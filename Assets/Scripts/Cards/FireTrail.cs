@@ -161,8 +161,8 @@ public class FireTrail : MonoBehaviour, IAbilityBehavior
             if (!seen.Add(root)) continue;
             if (root.CompareTag("Player")) continue;
 
-            if (root.TryGetComponent(out EnemyHealth eh)) eh.TakeDamage(damagePerTick, DamageElement.Burn);
-            if (root.TryGetComponent(out BossHealth bh)) bh.TakeDamage(damagePerTick);
+            if (root.TryGetComponent(out EnemyHealth eh)) eh.TakeDamage(damagePerTick, DamageElement.Fire);
+            if (root.TryGetComponent(out BossHealth bh)) bh.TakeDamage(damagePerTick, DamageElement.Fire);
         }
     }
 

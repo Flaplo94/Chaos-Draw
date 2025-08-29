@@ -14,7 +14,7 @@ public class Fireball : MonoBehaviour, IAbilityBehavior
 
     [Header("Audio")]
     [SerializeField] private AudioClip impactSound;
-    private AudioSource audioSource;
+    [SerializeField] private AudioSource audioSource;
 
     public bool Initialize(Vector2 dir, Rarity rarity)
     {
@@ -34,7 +34,7 @@ public class Fireball : MonoBehaviour, IAbilityBehavior
 
     void Awake()
     {
-        audioSource = GetComponent<AudioSource>() ?? gameObject.AddComponent<AudioSource>();
+        audioSource = GetComponent<AudioSource>();
         audioSource.playOnAwake = false;
         audioSource.loop = false;
         audioSource.spatialBlend = 0f;
@@ -70,7 +70,7 @@ public class Fireball : MonoBehaviour, IAbilityBehavior
         foreach (var h in hits)
         {
             if (h.TryGetComponent(out EnemyHealth eh)) eh.TakeDamage(damage, DamageElement.Fire);
-            if (h.TryGetComponent(out BossHealth bh)) bh.TakeDamage(damage);
+            if (h.TryGetComponent(out BossHealth bh)) bh.TakeDamage(damage, DamageElement.Fire);
         }
 
         float baseSpriteSize = 32f;

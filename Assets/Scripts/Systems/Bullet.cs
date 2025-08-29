@@ -36,6 +36,7 @@ public class Bullet : MonoBehaviour
         if (enemy != null)
         {
             enemy.TakeDamage(baseDamage, DamageElement.Physical);
+            PlayHitSound();
             LogDamage("Enemy", enemy.gameObject.name);
             Destroy(gameObject);
             return;
@@ -47,7 +48,8 @@ public class Bullet : MonoBehaviour
 
         if (boss != null)
         {
-            boss.TakeDamage(baseDamage); // BossHealth skal evt. ogs� have element
+            boss.TakeDamage(baseDamage, DamageElement.Physical); // BossHealth skal evt. ogs� have element
+            PlayHitSound();
             LogDamage("Boss", boss.gameObject.name);
             Destroy(gameObject);
             return;

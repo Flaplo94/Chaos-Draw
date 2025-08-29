@@ -41,7 +41,7 @@ public class GodSpeed : MonoBehaviour, IAbilityBehavior
         {
             if (!h) continue;
             if (h.TryGetComponent(out EnemyHealth eh)) eh.TakeDamage(damage, DamageElement.Lightning);
-            if (h.TryGetComponent(out BossHealth bh)) bh.TakeDamage(damage);
+            if (h.TryGetComponent(out BossHealth bh)) bh.TakeDamage(damage, DamageElement.Lightning);
         }
     }
 

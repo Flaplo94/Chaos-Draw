@@ -29,8 +29,8 @@ public class AOEPulse : MonoBehaviour, IAbilityBehavior
         foreach (var h in hits)
         {
             if (!h) continue;
-            if (h.TryGetComponent(out EnemyHealth eh)) eh.TakeDamage(damage, DamageElement.Physical);
-            if (h.TryGetComponent(out BossHealth bh)) bh.TakeDamage(damage);
+            if (h.TryGetComponent(out EnemyHealth eh)) eh.TakeDamage(damage, DamageElement.Fire);
+            if (h.TryGetComponent(out BossHealth bh)) bh.TakeDamage(damage, DamageElement.Fire);
         }
 
         Destroy(gameObject, lifetime);

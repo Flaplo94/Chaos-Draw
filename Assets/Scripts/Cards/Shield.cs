@@ -132,7 +132,7 @@ public class Shield : MonoBehaviour, IAbilityBehavior
 
         if (closest == null) return;
         if (closest.TryGetComponent(out EnemyHealth eh)) eh.TakeDamage(reflectDamage, DamageElement.Physical);
-        else if (closest.TryGetComponent(out BossHealth bh)) bh.TakeDamage(reflectDamage);
+        else if (closest.TryGetComponent(out BossHealth bh)) bh.TakeDamage(reflectDamage, DamageElement.Physical);
     }
 
     void OnDestroy()

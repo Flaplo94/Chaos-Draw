@@ -66,7 +66,7 @@ public class RandomLightning : MonoBehaviour, IAbilityBehavior
             var eh = targetCol.GetComponent<EnemyHealth>();
             if (eh != null) eh.TakeDamage(result.amount, result.element);
             var bh = targetCol.GetComponent<BossHealth>();
-            if (bh != null) bh.TakeDamage(result.amount);
+            if (bh != null) bh.TakeDamage(result.amount, result.element);
 
             if (lightningVisual != null)
                 SpawnStrikeAt(t.position + (Vector3)strikeOffset);

@@ -59,8 +59,8 @@ public class FireOnGround : MonoBehaviour, IAbilityBehavior
             foreach (var hit in hits)
             {
                 if (!hit) continue;
-                if (hit.TryGetComponent(out EnemyHealth eh)) eh.TakeDamage(damagePerTick, DamageElement.Burn);
-                if (hit.TryGetComponent(out BossHealth bh)) bh.TakeDamage(damagePerTick);
+                if (hit.TryGetComponent(out EnemyHealth eh)) eh.TakeDamage(damagePerTick, DamageElement.Fire);
+                if (hit.TryGetComponent(out BossHealth bh)) bh.TakeDamage(damagePerTick, DamageElement.Fire);
             }
         }
     }

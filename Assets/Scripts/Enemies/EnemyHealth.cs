@@ -26,11 +26,6 @@ public class EnemyHealth : MonoBehaviour
         hitbox = GetComponent<CircleCollider2D>();
     }
 
-    // Overload for backward compatibility
-    public void TakeDamage(int amount)
-    {
-        TakeDamage(amount, DamageElement.Physical);
-    }
 
     // Standard entrypoint
     public void TakeDamage(int amount, DamageElement element)
