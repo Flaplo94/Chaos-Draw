@@ -179,7 +179,6 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1625025861}
   - {fileID: 1325839253}
   - {fileID: 1261500820}
   - {fileID: 725132486}
@@ -427,7 +426,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa2f8408707d59945a1efe7cd72c8f49, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gold: 0
+  startingGold: 0
 --- !u!114 &124232704
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -504,7 +503,7 @@ MonoBehaviour:
   bossHealthBarUI: {fileID: 1325004279}
   startEnemyCount: 10
   timeBetweenWaves: 2
-  waveText: {fileID: 1625025862}
+  waveText: {fileID: 0}
 --- !u!1 &144952538
 GameObject:
   m_ObjectHideFlags: 0
@@ -1168,7 +1167,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 6.3125
+  orthographic size: 7.109375
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -1226,6 +1225,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce3983dd3d135dd4b8f6ca2cf19d1c94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pixelsPerUnit: 32
+  referenceHeight: 1080
 --- !u!114 &519420035
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1625,7 +1626,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa2f8408707d59945a1efe7cd72c8f49, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gold: 200
+  startingGold: 0
 --- !u!1 &690562185
 GameObject:
   m_ObjectHideFlags: 0
@@ -2481,6 +2482,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 5
+  rootedIcon: {fileID: 0}
 --- !u!58 &838276996
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -2627,10 +2629,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50954f35a603e054689ddfa93a8b6628, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bulletPrefab: {fileID: 4804991577932546782, guid: 671979fe7bb24ac41a2c88dc542ec91f, type: 3}
+  cardPrefab: {fileID: 0}
   firePoint: {fileID: 2091777804}
-  bulletSpeed: 10
-  fireRate: 2
+  cardSpeed: 10
+  baseCooldown: 0.3
+  spreadDegrees: 0
+  stats: {fileID: 0}
+  attackSfx: {fileID: 0}
+  audioSource: {fileID: 0}
+  extraProjectiles: 0
+  fireRateMult: 1
+  projectileSpeedMult: 1
 --- !u!114 &838277003
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2644,7 +2653,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 100
-  healthBar: {fileID: 1325839254}
+  currentHealth: 0
+  extraLives: 0
+  healthSlider: {fileID: 0}
 --- !u!114 &838277004
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3603,19 +3614,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc11a098bb969a648b7c53384b9f7c9a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  terrainChunks:
-  - {fileID: 5227129467491382116, guid: 691d88ec6f6523440b8c6e730b193798, type: 3}
-  - {fileID: 5227129467491382116, guid: ce3bde62bcc214b418645c6a67e56234, type: 3}
-  - {fileID: 5227129467491382116, guid: 6d9c84aad9bebad4d8a76520c24e7bc0, type: 3}
+  chunkSize: 20
+  loadRadiusChunks: 4
+  unloadRadiusChunks: 5
+  chunkPrefabs: []
   player: {fileID: 838276994}
-  checkerRadius: 0.2
-  terrainMask:
-    serializedVersion: 2
-    m_Bits: 64
   currentChunk: {fileID: 0}
-  spawnedChunks: []
-  maxOpDist: 50
-  optimizerCooldownDur: 1
 --- !u!4 &1198563085
 Transform:
   m_ObjectHideFlags: 0
@@ -4930,8 +4934,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameOverUI: {fileID: 1765111940}
-  delayBeforeGameOverUI: 2
-  waveCounterUI: {fileID: 1625025860}
+  dimmer: {fileID: 0}
+  unlockMessage: {fileID: 0}
+  waveValue: {fileID: 0}
+  shardsValue: {fileID: 0}
+  timeValue: {fileID: 0}
+  waveCounterUI: {fileID: 0}
   healthBarUI: {fileID: 1325839252}
 --- !u!4 &1484783531
 Transform:
@@ -4960,7 +4968,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aafbc00e6cd941145b78578f62f2e977, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  activeBuffs: []
+  genericDamageMult: 1
+  fireDamageMult: 1
+  thunderDamageMult: 1
+  burnDamageMult: 1
+  scalingDamageMult: 1
+  maxHpMult: 1
+  shieldRegenMult: 1
+  manaRegenMult: 1
+  manaCostReductionMult: 1
+  attackSpeedMult: 1
+  extraProjectiles: 0
+  lifestealMult: 0
+  moveSpeedMult: 1
+  goldGainMult: 1
+  chaosShardGainMult: 1
 --- !u!114 &1484783533
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5102,142 +5124,6 @@ RectTransform:
   m_AnchoredPosition: {x: 620, y: -450}
   m_SizeDelta: {x: 280, y: 260}
   m_Pivot: {x: 0, y: 1}
---- !u!1 &1625025860
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1625025861}
-  - component: {fileID: 1625025863}
-  - component: {fileID: 1625025862}
-  m_Layer: 5
-  m_Name: WaveText
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &1625025861
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1625025860}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 27570723}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 1107.5, y: 379}
-  m_SizeDelta: {x: 268.141, y: 79.528}
-  m_Pivot: {x: 1, y: 1}
---- !u!114 &1625025862
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1625025860}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_text: Wave
-  m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_fontSharedMaterials: []
-  m_fontMaterial: {fileID: 0}
-  m_fontMaterials: []
-  m_fontColor32:
-    serializedVersion: 2
-    rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
-  m_enableVertexGradient: 0
-  m_colorMode: 3
-  m_fontColorGradient:
-    topLeft: {r: 1, g: 1, b: 1, a: 1}
-    topRight: {r: 1, g: 1, b: 1, a: 1}
-    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
-    bottomRight: {r: 1, g: 1, b: 1, a: 1}
-  m_fontColorGradientPreset: {fileID: 0}
-  m_spriteAsset: {fileID: 0}
-  m_tintAllSprites: 0
-  m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: -1183493901
-  m_overrideHtmlColors: 0
-  m_faceColor:
-    serializedVersion: 2
-    rgba: 4294967295
-  m_fontSize: 71.15
-  m_fontSizeBase: 36
-  m_fontWeight: 400
-  m_enableAutoSizing: 1
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
-  m_fontStyle: 0
-  m_HorizontalAlignment: 1
-  m_VerticalAlignment: 256
-  m_textAlignment: 65535
-  m_characterSpacing: 0
-  m_wordSpacing: 0
-  m_lineSpacing: 0
-  m_lineSpacingMax: 0
-  m_paragraphSpacing: 0
-  m_charWidthMaxAdj: 0
-  m_TextWrappingMode: 1
-  m_wordWrappingRatios: 0.4
-  m_overflowMode: 0
-  m_linkedTextComponent: {fileID: 0}
-  parentLinkedComponent: {fileID: 0}
-  m_enableKerning: 0
-  m_ActiveFontFeatures: 6e72656b
-  m_enableExtraPadding: 0
-  checkPaddingRequired: 0
-  m_isRichText: 1
-  m_EmojiFallbackSupport: 1
-  m_parseCtrlCharacters: 1
-  m_isOrthographic: 1
-  m_isCullingEnabled: 0
-  m_horizontalMapping: 0
-  m_verticalMapping: 0
-  m_uvLineOffset: 0
-  m_geometrySortingOrder: 0
-  m_IsTextObjectScaleStatic: 0
-  m_VertexBufferAutoSizeReduction: 0
-  m_useMaxVisibleDescender: 1
-  m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
-  m_isUsingLegacyAnimationComponent: 0
-  m_isVolumetricText: 0
-  m_hasFontAssetChanged: 0
-  m_baseMaterial: {fileID: 0}
-  m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!222 &1625025863
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1625025860}
-  m_CullTransparentMesh: 1
 --- !u!1 &1676055129
 GameObject:
   m_ObjectHideFlags: 0
@@ -7243,6 +7129,7 @@ MonoBehaviour:
   removeCardServiceItem: {fileID: 11400000, guid: 0e9a7c57906f5f4459ae39829924a121, type: 2}
   windowGroup: {fileID: 656648256}
   dimmer: {fileID: 2115240602}
+  dimmerGO: {fileID: 0}
   closeButton: {fileID: 2046630653}
   artifactSlots:
   - {fileID: 248852190}
