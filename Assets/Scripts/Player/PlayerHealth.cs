@@ -1,7 +1,8 @@
-using UnityEngine;
-using UnityEngine.UI;
 using System;
 using System.Collections;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 /// Simpel health-komponent med ekstra liv og helper-metoder
 public class PlayerHealth : MonoBehaviour
@@ -158,6 +159,12 @@ public class PlayerHealth : MonoBehaviour
         int reward = wavesCleared / 5;
         if (wavesCleared >= 10 && wavesCleared % 10 == 0)
             reward += 5;
+        if (WaveManager.Instance != null && WaveManager.Instance.CurrentWave >= 20)
+        {
+            Debug.Log("[PlayerHealth] Loading next scene after dying at wave 20...");
+            SceneManager.LoadScene(WaveManager.Instance.afterWave20Scene);
+            return;
+        }
 
         if (GameOverManager.Instance != null)
             GameOverManager.Instance.TriggerGameOver(wavesCleared, reward);

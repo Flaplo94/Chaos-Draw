@@ -109,6 +109,9 @@ public class BossHealth : MonoBehaviour
     // Called by animation event at the end of the death animation
     void FinishDeath()
     {
+        var wm = WaveManager.Instance;
+        if (wm != null)
+            wm.OnBossDied();
         Destroy(gameObject);
     }
 }

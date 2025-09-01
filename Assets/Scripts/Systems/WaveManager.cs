@@ -4,6 +4,8 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+
 
 public class WaveManager : MonoBehaviour
 {
@@ -53,6 +55,9 @@ public class WaveManager : MonoBehaviour
     public event Action<int> OnWaveCompleted;
     public event Action<int> OnWaveChanged;
 
+    [Header("Scene Transition")]
+    [SerializeField] public string afterWave20Scene = "TYscene"; // set in Inspector
+
     public int CurrentWave => currentWave;
 
     void Awake()
@@ -93,6 +98,11 @@ public class WaveManager : MonoBehaviour
             Debug.Log("[WaveManager] CHEAT: Force unlock Legacy Deck");
             MetaProgressionManager.Instance.UnlockLegacy();
         }
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            Debug.Log("FORCE LOADING TEST SCENE");
+            SceneManager.LoadScene(afterWave20Scene);
+        }
 
         // Boss wave handling
         if (bossSpawned)
@@ -122,13 +132,22 @@ public class WaveManager : MonoBehaviour
             if (currentBoss == null && enemiesInWave.Count == 0)
             {
                 bossSpawned = false;
+
                 if (cardHandUI != null) cardHandUI.OnWaveCompleted();
 
                 OnWaveCompleted?.Invoke(currentWave);
                 OnWaveChanged?.Invoke(currentWave);
 
-                TryOpenShopOrStartNextWave();
+                if (currentWave == 20)
+                {
+                    SceneManager.LoadScene("TYscene");
+                }
+                else
+                {
+                    TryOpenShopOrStartNextWave();
+                }
             }
+
             return;
         }
 
@@ -293,7 +312,30 @@ public class WaveManager : MonoBehaviour
 
         Debug.Log($"[WaveManager] Run ended after wave {wavesCleared}. Reward: {reward} Chaos Shards.");
 
+        if ((currentWave + 1) >= 20 && !string.IsNullOrEmpty(afterWave20Scene))
+        {
+            SceneManager.LoadScene(afterWave20Scene);
+            return;
+        }
+
         if (GameOverManager.Instance != null)
             GameOverManager.Instance.TriggerGameOver(wavesCleared, reward);
+    }
+    public void OnBossDied()
+    {
+        currentBoss = null;
+        bossSpawned = false;
+
+        if (currentWave == 20 && !string.IsNullOrEmpty(afterWave20Scene))
+        {
+            SceneManager.LoadScene(afterWave20Scene);
+        }
+        else
+        {
+            if (musicManager != null && normalMusic != null)
+                musicManager.PlayMusic(normalMusic);
+
+            TryOpenShopOrStartNextWave();
+        }
     }
 }
