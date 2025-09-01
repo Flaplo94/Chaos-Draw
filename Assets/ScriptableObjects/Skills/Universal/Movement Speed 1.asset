@@ -18,7 +18,7 @@ MonoBehaviour:
   icon: {fileID: 4797237810325606476, guid: 1a9851c033dafab4c989432dac40e760, type: 3}
   type: 0
   prerequisites:
-  - {fileID: 11400000, guid: 0625f467dc75c71478b00b011eae0f50, type: 2}
+  - {fileID: 11400000, guid: 7553f446abdc6944d90a12ff43af1a15, type: 2}
   cost: 45
   value: 0.05
   unlockKey: 

@@ -2238,7 +2238,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 7
+  orthographic size: 16.875
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -7421,7 +7421,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1571787736}
   - component: {fileID: 1571787737}
-  m_Layer: 5
+  m_Layer: 9
   m_Name: DamageNumbers
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7542,7 +7542,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
   m_AnchoredPosition: {x: 14, y: 401.75}
-  m_SizeDelta: {x: -2178, y: 92.288}
+  m_SizeDelta: {x: -2178, y: 222.48}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &1597212920
 MonoBehaviour:
@@ -10269,6 +10269,10 @@ PrefabInstance:
       propertyPath: m_LocalPosition.y
       value: -10.01
       objectReference: {fileID: 0}
+    - target: {fileID: 3614910863827797968, guid: 691d88ec6f6523440b8c6e730b193798, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4050722325687545613, guid: 691d88ec6f6523440b8c6e730b193798, type: 3}
       propertyPath: m_LocalPosition.x
       value: -7.05
@@ -10321,6 +10325,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Terrain Chunk
       objectReference: {fileID: 0}
+    - target: {fileID: 6095483010881827552, guid: 691d88ec6f6523440b8c6e730b193798, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6691712323678651700, guid: 691d88ec6f6523440b8c6e730b193798, type: 3}
       propertyPath: m_SortingLayer
       value: 1
@@ -10328,6 +10336,14 @@ PrefabInstance:
     - target: {fileID: 6691712323678651700, guid: 691d88ec6f6523440b8c6e730b193798, type: 3}
       propertyPath: m_SortingLayerID
       value: 1853276139
+      objectReference: {fileID: 0}
+    - target: {fileID: 6729805046698907891, guid: 691d88ec6f6523440b8c6e730b193798, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7283255779905144794, guid: 691d88ec6f6523440b8c6e730b193798, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8718323557875312595, guid: 691d88ec6f6523440b8c6e730b193798, type: 3}
       propertyPath: m_LocalPosition.x
