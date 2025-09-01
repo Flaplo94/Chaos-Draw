@@ -17,11 +17,13 @@ public class Shield : MonoBehaviour, IAbilityBehavior
     [SerializeField] private Animator shieldAnimator;
     [SerializeField] private string hitTriggerName = "Hit";
     [SerializeField] private SpriteRenderer shieldSR;
-    [SerializeField] private float fitPadding = 0.1f;
 
     [Header("Follow")]
     [SerializeField] private Transform followTarget;
     [SerializeField] private Vector3 followOffset = Vector3.zero;
+
+    [Header("Sizing")]
+    [SerializeField, Min(0f)] private float shieldRadius = 1f; // manual scale in inspector
 
     private int currentHealth;
 
@@ -72,9 +74,8 @@ public class Shield : MonoBehaviour, IAbilityBehavior
         transform.SetParent(followTarget, false);
         transform.localPosition = followOffset;
         transform.localRotation = Quaternion.identity;
-        transform.localScale = Vector3.one;
 
-        AutoScaleToFollowTarget();
+        ApplyManualScale();
 
         if (shieldSR != null)
         {
@@ -91,19 +92,21 @@ public class Shield : MonoBehaviour, IAbilityBehavior
         {
             transform.position = followTarget.position + followOffset;
             transform.rotation = followTarget.rotation;
+
+            // Keep radius applied
+            ApplyManualScale();
         }
     }
 
-    private void AutoScaleToFollowTarget()
+    private void ApplyManualScale()
     {
-        if (followTarget == null || shieldSR == null || shieldSR.sprite == null) return;
-        var pc = followTarget.GetComponentInChildren<Collider2D>();
-        if (pc == null) return;
-        float playerDiameter = Mathf.Max(pc.bounds.size.x, pc.bounds.size.y) + (fitPadding * 2f);
+        if (shieldSR == null || shieldSR.sprite == null) return;
+
         float baseDiameter = Mathf.Max(shieldSR.sprite.bounds.size.x, shieldSR.sprite.bounds.size.y);
-        float scale = (baseDiameter > 0f) ? (playerDiameter / baseDiameter) : 1f;
-        shieldSR.transform.localScale = new Vector3(scale, scale, 1f);
-        shieldSR.transform.localPosition = Vector3.zero;
+        if (baseDiameter <= 0f) return;
+
+        float scale = (shieldRadius * 2f) / baseDiameter; // radius diameter
+        transform.localScale = new Vector3(scale, scale, 1f);
     }
 
     public bool ConsumeHit()
@@ -147,7 +150,9 @@ public class Shield : MonoBehaviour, IAbilityBehavior
     {
         Gizmos.color = Color.white;
         var center = followTarget ? followTarget.position : transform.position;
-        Gizmos.DrawWireSphere(center, reflectRadius);
+        Gizmos.DrawWireSphere(center, shieldRadius); // show shield radius for clarity
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(center, reflectRadius); // show reflect radius separately
     }
 #endif
 }

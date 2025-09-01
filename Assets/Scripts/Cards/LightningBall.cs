@@ -101,14 +101,36 @@ public class LightningBall : MonoBehaviour, IAbilityBehavior
         {
             if (!h) continue;
             Transform root = h.attachedRigidbody ? h.attachedRigidbody.transform : h.transform;
+
+            // never hit the player
             if (root.CompareTag("Player")) continue;
 
-            if (h.TryGetComponent(out EnemyHealth eh)) eh.TakeDamage(result.amount, result.element);
-            if (h.TryGetComponent(out BossHealth bh)) bh.TakeDamage(result.amount, result.element);
+            bool isValidTarget = false;
 
-            if (lightningVisual != null) SpawnBolt(transform.position, root.position);
+            // enemy damage
+            if (h.TryGetComponent(out EnemyHealth eh))
+            {
+                eh.TakeDamage(result.amount, result.element);
+                isValidTarget = true;
+            }
+            else if (h.TryGetComponent(out BossHealth bh))
+            {
+                bh.TakeDamage(result.amount, result.element);
+                isValidTarget = true;
+            }
+            // rods are valid targets but not damaged
+            else if (h.TryGetComponent(out LightningRod rod))
+            {
+                isValidTarget = true;
+            }
+
+            if (isValidTarget && lightningVisual != null)
+            {
+                SpawnBolt(transform.position, root.position);
+            }
         }
     }
+
 
     private void SpawnBolt(Vector3 from, Vector3 to)
     {

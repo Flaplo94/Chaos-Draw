@@ -31,7 +31,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1.6160886, y: 0.22190613, z: 0.024003629}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalScale: {x: 3, y: 3, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -77,11 +77,11 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1837387899
+  m_SortingLayer: 7
   m_SortingOrder: 0
   m_Sprite: {fileID: -6926691236322396390, guid: 7053bd8beb94cc34b80c2b97f9432a6d, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.33333334}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -169,22 +169,21 @@ MonoBehaviour:
   duration: 5
   speedMultiplier: 1.5
   zapRadius: 1
-  zapDamagePerTick: 1
+  zapDamagePerTick: 2
   zapTickInterval: 0.12
   enemyLayer:
     serializedVersion: 2
     m_Bits: 0
   auraController: {fileID: 9100000, guid: 69bd46fe4b6922546ae9ad68b89cb508, type: 2}
-  auraTrigger: Play
   auraLoopState: Ball_Loop
   auraAnimSpeed: 1
+  auraUseSortingGroup: 1
+  auraAlpha: 0.5
   lightningVisual: {fileID: 6422944563533170519, guid: d0b854a5cf35a654ab4ddee0a7959da7, type: 3}
   boltTrigger: Play
   boltStateName: Zap
   boltWidthScale: 1
   boltAnimSpeed: 1
-  auraScale: 1.3
-  auraAlpha: 0.254
 --- !u!82 &3060587421766941002
 AudioSource:
   m_ObjectHideFlags: 0

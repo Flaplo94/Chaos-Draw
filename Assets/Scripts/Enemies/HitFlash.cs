@@ -14,6 +14,8 @@ public class HitFlash : MonoBehaviour
     private static readonly int BaseColorID = Shader.PropertyToID("_BaseColor");
 
     private MaterialPropertyBlock _mpb;
+    private float currentFlash = 0f;
+    private Sprite[] lastSprites; // track sprite swaps
 
     private void Awake()
     {
@@ -21,7 +23,24 @@ public class HitFlash : MonoBehaviour
             spriteRenderers = GetComponentsInChildren<SpriteRenderer>(includeInactive: true);
 
         _mpb = new MaterialPropertyBlock();
+        lastSprites = new Sprite[spriteRenderers.Length];
         SetFlash(0f);
+    }
+
+    private void LateUpdate()
+    {
+        // Only refresh when the sprite changes
+        for (int i = 0; i < spriteRenderers.Length; i++)
+        {
+            var sr = spriteRenderers[i];
+            if (!sr) continue;
+
+            if (sr.sprite != lastSprites[i])
+            {
+                lastSprites[i] = sr.sprite;
+                ApplyFlash(sr, currentFlash);
+            }
+        }
     }
 
     public void PlayFlash()
@@ -54,24 +73,28 @@ public class HitFlash : MonoBehaviour
 
     private void SetFlash(float v)
     {
-        foreach (var sr in spriteRenderers)
+        currentFlash = v;
+
+        for (int i = 0; i < spriteRenderers.Length; i++)
         {
-            if (!sr) continue;
-
-            // IMPORTANT: fully define the block so we don't lose per-renderer sprite data
-            _mpb.Clear();
-
-            // Preserve the sprite texture and tint per renderer
-            var sprite = sr.sprite;
-            if (sprite != null)
-                _mpb.SetTexture(MainTexID, sprite.texture);
-
-            _mpb.SetColor(BaseColorID, sr.color);
-
-            // Our flash value
-            _mpb.SetFloat(FlashID, v);
-
-            sr.SetPropertyBlock(_mpb);
+            ApplyFlash(spriteRenderers[i], v);
+            lastSprites[i] = spriteRenderers[i]?.sprite;
         }
+    }
+
+    private void ApplyFlash(SpriteRenderer sr, float v)
+    {
+        if (!sr) return;
+
+        _mpb.Clear();
+
+        var sprite = sr.sprite;
+        if (sprite != null)
+            _mpb.SetTexture(MainTexID, sprite.texture);
+
+        _mpb.SetColor(BaseColorID, sr.color);
+        _mpb.SetFloat(FlashID, v);
+
+        sr.SetPropertyBlock(_mpb);
     }
 }

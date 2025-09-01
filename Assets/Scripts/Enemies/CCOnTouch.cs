@@ -30,6 +30,7 @@ public class CCOnTouch : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+        Debug.Log("CC hit " + other.name);
         // quick layer mask gate
         if (((1 << other.gameObject.layer) & playerLayer) == 0)
         {

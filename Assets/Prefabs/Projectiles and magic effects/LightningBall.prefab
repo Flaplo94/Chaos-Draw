@@ -78,8 +78,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1837387899
+  m_SortingLayer: 7
   m_SortingOrder: 0
   m_Sprite: {fileID: 8288426215254106694, guid: 7053bd8beb94cc34b80c2b97f9432a6d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -171,7 +171,7 @@ MonoBehaviour:
   damagePerTick: 1
   tickInterval: 0.1
   duration: 5
-  zapRadius: 1.5
+  zapRadius: 2
   enemyLayer:
     serializedVersion: 2
     m_Bits: 0

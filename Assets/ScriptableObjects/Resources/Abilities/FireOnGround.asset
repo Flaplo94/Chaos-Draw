@@ -16,7 +16,7 @@ MonoBehaviour:
   icon: {fileID: 8288426215254106694, guid: da112e855d25f0245b13499b5eed90e3, type: 3}
   effectPrefab: {fileID: 4804991577932546782, guid: ad655e86463b36d4a9430b78a142e9aa, type: 3}
   spawnAtMousePosition: 1
-  manaCost: 10
+  manaCost: 15
   description: Place fire where you aim it.
   rarity: 0
   magicType: 0

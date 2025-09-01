@@ -169,7 +169,7 @@ MonoBehaviour:
   baseDamage: 1
   lifetime: 5
   hitSfx: {fileID: 8300000, guid: aa74dd2837f0da14ca6b917c8a8d6565, type: 3}
-  hitVolume: 1
+  hitVolume: 0.1
   logDamage: 1
   debugBaseDamage: 0
   debugGlobalMult: 1
@@ -187,7 +187,7 @@ AudioSource:
   m_audioClip: {fileID: 8300000, guid: 9b5655111c4131d4e873b49368f4e837, type: 3}
   m_Resource: {fileID: 8300000, guid: 9b5655111c4131d4e873b49368f4e837, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 0.5
+  m_Volume: 0.27
   m_Pitch: 1
   Loop: 0
   Mute: 0

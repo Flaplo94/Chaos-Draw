@@ -11,6 +11,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Stefan TestScene.unity
     guid: 9e219812cb8dfc64f83f9bd6f10475ec
+  - enabled: 1
+    path: Assets/Scenes/TYscene.unity
+    guid: 4388f47666e6f974b943d95a3894f275
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: be53b0a5970cbdb4c9a227c8966e8889, type: 3}
   m_UseUCBPForAssetBundles: 0
