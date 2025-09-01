@@ -5,13 +5,14 @@ public class EnemyAnimator : MonoBehaviour
     private Animator animator;
     private Transform enemyRoot;
 
-    [Header("States (must match Animator)")]
-    [SerializeField] private string walkStateName = "WalkBT";
-    [SerializeField] private string attackStateName = "AttackBT";
-    [SerializeField] private string dieStateName = "DieBT";
+    //[Header("States (must match Animator)")]
+    //[SerializeField] private string walkStateName = "WalkBT";
+    //[SerializeField] private string attackStateName = "AttackBT";
+    //[SerializeField] private string dieStateName = "DieBT";
 
     [Header("Params")]
     [SerializeField] private float movingThreshold = 0.01f;
+    [SerializeField] private float directionThreshold = 0.05f; // NEW: minimum magnitude to update facing
 
     private Rigidbody2D rb;
     private Transform player;
@@ -45,10 +46,14 @@ public class EnemyAnimator : MonoBehaviour
             dir = lastDir;
 
         Vector2 snapped = SnapToCardinal(dir);
-        lastDir = snapped;
+        
 
-        animator.SetFloat("MoveX", snapped.x);
-        animator.SetFloat("MoveY", snapped.y);
+        if (snapped != lastDir)
+        {
+            lastDir = snapped;
+            animator.SetFloat("MoveX", snapped.x);
+            animator.SetFloat("MoveY", snapped.y);
+        }
     }
 
     public void PlayAttack()
@@ -72,8 +77,13 @@ public class EnemyAnimator : MonoBehaviour
 
     private Vector2 SnapToCardinal(Vector2 v)
     {
-        if (v.sqrMagnitude < 0.0001f) return Vector2.down;
-        if (Mathf.Abs(v.x) > Mathf.Abs(v.y)) return new Vector2(Mathf.Sign(v.x), 0f);
-        else return new Vector2(0f, Mathf.Sign(v.y));
+        // if direction vector is too small, keep last facing (prevents flicker)
+        if (v.sqrMagnitude < directionThreshold * directionThreshold)
+            return lastDir;
+
+        if (Mathf.Abs(v.x) > Mathf.Abs(v.y))
+            return new Vector2(Mathf.Sign(v.x), 0f);
+        else
+            return new Vector2(0f, Mathf.Sign(v.y));
     }
 }

@@ -3,12 +3,13 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
 using UnityEngine.InputSystem;
+using System.Collections;
 
 public class CardHandUI : MonoBehaviour
 {
     [Header("Hand (static children under parent)")]
-    [SerializeField] private Transform handParent;     // Put EXACTLY 4 CardSlot instances under this
-    [SerializeField] private CardSlotUI[] cardSlots;   // Leave empty in Inspector; auto-filled at runtime
+    [SerializeField] private Transform handParent;
+    [SerializeField] private CardSlotUI[] cardSlots;
 
     [Header("Counters")]
     [SerializeField] private TextMeshProUGUI discardCounterText;
@@ -30,17 +31,23 @@ public class CardHandUI : MonoBehaviour
 
     [Header("Reward UI (parent + per-type prefabs)")]
     [SerializeField] private GameObject rewardUI;
-    [SerializeField] private Transform rewardCardsParent; // Layout parent for rewards
+    [SerializeField] private Transform rewardCardsParent;
     [SerializeField] private GameObject fireRewardCardPrefab;
     [SerializeField] private GameObject lightningRewardCardPrefab;
     [SerializeField] private GameObject otherRewardCardPrefab;
     [SerializeField] private Button skipButton;
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip shuffleClip;
+    [SerializeField] private Vector2 shuffleDurationRange = new Vector2(1f, 2f);
+    //[SerializeField] private float shuffleDuration = 1.5f; // duration in seconds, adjustable in inspector
+
     private int waveCount = 0;
     private readonly List<Ability> deck = new();
     private readonly List<Ability> drawPile = new();
     private readonly List<Ability> discardPile = new();
-    private Ability[] hand; // sized to cardSlots.Length at runtime
+    private Ability[] hand;
 
     [System.Serializable]
     public class StartingCard
@@ -51,7 +58,6 @@ public class CardHandUI : MonoBehaviour
 
     private void Start()
     {
-        // --- Auto-wire: find CardSlotUI components under the parent (no instantiation) ---
         if (!handParent)
         {
             Debug.LogError("CardHandUI: handParent is not assigned.");
@@ -67,7 +73,6 @@ public class CardHandUI : MonoBehaviour
 
         hand = new Ability[cardSlots.Length];
 
-        // --- Load abilities / deck / draw ---
         allAbilities = new List<Ability>(Resources.LoadAll<Ability>(""));
         CreateStartingDeck();
         Shuffle(drawPile);
@@ -132,25 +137,16 @@ public class CardHandUI : MonoBehaviour
         {
             drawPile.AddRange(discardPile);
             discardPile.Clear();
-            Shuffle(drawPile);
 
-            UpdateDiscardText();
-            UpdateDeckText();
-            UpdatePileUIs();
-
-            // Fill empty hand slots now that we have a fresh draw pile
-            for (int i = 0; i < hand.Length; i++)
-                if (hand[i] == null)
-                    DrawCard(i);
+            StartCoroutine(ShuffleWithDelay(drawPile));
             return;
         }
 
         if (drawPile.Count == 0)
         {
-            // Make sure this slot is logically empty AND looks empty
-            hand[slotIndex] = null;                                 // <-- add this
+            hand[slotIndex] = null;
             if (cardSlots != null && slotIndex < cardSlots.Length && cardSlots[slotIndex] != null)
-                cardSlots[slotIndex].Clear();                       // shows Face_Empty (no frame)
+                cardSlots[slotIndex].Clear();
 
             UpdateDeckText();
             UpdatePileUIs();
@@ -160,13 +156,44 @@ public class CardHandUI : MonoBehaviour
         Ability card = drawPile[0];
         drawPile.RemoveAt(0);
         UpdateDeckText();
-        UpdatePileUIs(); // top back may change after removing
+        UpdatePileUIs();
 
         hand[slotIndex] = card;
 
-        // Bind into the existing slot (slot toggles the correct face internally)
         if (cardSlots != null && slotIndex < cardSlots.Length && cardSlots[slotIndex] != null)
             cardSlots[slotIndex].Show(card);
+    }
+
+    private IEnumerator ShuffleWithDelay(List<Ability> list)
+    {
+        float duration = Random.Range(shuffleDurationRange.x, shuffleDurationRange.y);
+
+        if (audioSource != null && shuffleClip != null)
+        {
+            audioSource.clip = shuffleClip;
+            audioSource.loop = true;
+            audioSource.Play();
+        }
+
+        yield return new WaitForSeconds(duration);
+        //yield return new WaitForSeconds(shuffleDuration);
+
+        if (audioSource != null)
+        {
+            audioSource.Stop();
+            audioSource.loop = false;
+        }
+
+        Shuffle(list);
+
+        UpdateDiscardText();
+        UpdateDeckText();
+        UpdatePileUIs();
+
+        // After shuffle, refill all empty slots
+        for (int i = 0; i < hand.Length; i++)
+            if (hand[i] == null)
+                DrawCard(i);
     }
 
     private void TryUseCard(int index)
@@ -214,7 +241,7 @@ public class CardHandUI : MonoBehaviour
     public void OnWaveCompleted()
     {
         waveCount++;
-        if (waveCount % 4 == 0)
+        if (waveCount % 2 == 0)
             ShowRewardUI();
     }
 
@@ -233,7 +260,6 @@ public class CardHandUI : MonoBehaviour
         if (pile == null || pile.Count == 0)
             return emptyBack ? emptyBack : otherBack;
 
-        // Draw pile top = index 0; Discard pile "top" = last added = last index
         var top = ReferenceEquals(pile, discardPile)
             ? pile[pile.Count - 1]
             : pile[0];
@@ -250,7 +276,7 @@ public class CardHandUI : MonoBehaviour
             discardPileUI.Set(GetTopBackFromPile(discardPile), discardPile.Count);
     }
 
-    // -------------------- Rewards (per-type prefabs under parent) --------------------
+    // -------------------- Rewards --------------------
     private GameObject GetRewardCardPrefab(MagicType type)
     {
         switch (type)
@@ -279,7 +305,6 @@ public class CardHandUI : MonoBehaviour
         var prefab = GetRewardCardPrefab(ability.magicType);
         var cardGO = Instantiate(prefab, rewardCardsParent);
 
-        // Look up parts by name (make sure your reward prefabs use these names)
         var nameText = cardGO.transform.Find("AbilityName")?.GetComponent<TextMeshProUGUI>();
         var artImage = cardGO.transform.Find("AbilityArt")?.GetComponent<Image>();
         var descText = cardGO.transform.Find("AbilityDescription")?.GetComponent<TextMeshProUGUI>();
@@ -313,7 +338,7 @@ public class CardHandUI : MonoBehaviour
 
         for (int i = 0; i < 3 && i < pool.Count; i++)
         {
-            Ability abilityCopy = Instantiate(pool[i]); // avoid mutating base asset
+            Ability abilityCopy = Instantiate(pool[i]);
             abilityCopy.rarity = RollRarity();
             BuildRewardCard(abilityCopy);
         }
@@ -344,7 +369,7 @@ public class CardHandUI : MonoBehaviour
         deck.Add(ability);
         drawPile.Add(ability);
         UpdateDeckText();
-        UpdatePileUIs(); // draw pile back & count changed
+        UpdatePileUIs();
     }
 
     private Rarity RollRarity()

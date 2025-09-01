@@ -5,7 +5,6 @@ public class AOEPulse : MonoBehaviour, IAbilityBehavior
     [Header("Tuning")]
     [SerializeField] private float radius = 3f;
     [SerializeField] private int damage = 5;
-    [SerializeField] private float lifetime = 0.5f;
     [SerializeField] private LayerMask enemyLayer;
 
     public bool Initialize(Vector2 dir, Rarity rarity)
@@ -32,9 +31,8 @@ public class AOEPulse : MonoBehaviour, IAbilityBehavior
             if (h.TryGetComponent(out EnemyHealth eh)) eh.TakeDamage(damage, DamageElement.Fire);
             if (h.TryGetComponent(out BossHealth bh)) bh.TakeDamage(damage, DamageElement.Fire);
         }
-
-        Destroy(gameObject, lifetime);
     }
+    public void OnImpactFinished() => Destroy(gameObject);
 
 #if UNITY_EDITOR
     private void OnDrawGizmosSelected()

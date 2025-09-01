@@ -47,6 +47,7 @@ public class LightningRod : MonoBehaviour, IAbilityBehavior
         damageTimer -= Time.deltaTime;
         seenThisFrame.Clear();
 
+        // Connect to other rods
         for (int i = 0; i < activeRods.Count; i++)
         {
             var other = activeRods[i];
@@ -57,6 +58,15 @@ public class LightningRod : MonoBehaviour, IAbilityBehavior
                 HandleConnection(transform, other.transform);
         }
 
+        // Connect to player
+        if (player != null)
+        {
+            float distToPlayer = Vector2.Distance(player.position, transform.position);
+            if (distToPlayer <= rodRange)
+                HandleConnection(player, transform);
+        }
+
+        // Cleanup unused bolts
         var toRemove = new List<ConnKey>();
         foreach (var kv in bolts)
         {
@@ -68,6 +78,18 @@ public class LightningRod : MonoBehaviour, IAbilityBehavior
         }
         foreach (var key in toRemove) bolts.Remove(key);
     }
+
+    private void OnDestroy()
+    {
+        activeRods.Remove(this);
+
+        foreach (var kv in bolts)
+        {
+            if (kv.Value) Destroy(kv.Value);
+        }
+        bolts.Clear();
+    }
+
 
     private void HandleConnection(Transform a, Transform b)
     {

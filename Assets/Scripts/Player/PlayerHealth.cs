@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System;
+using System.Collections;
 
 /// Simpel health-komponent med ekstra liv og helper-metoder
 public class PlayerHealth : MonoBehaviour
@@ -18,7 +19,8 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] private Slider healthSlider; // drag your Slider here in Inspector
 
     public Action OnDeath;
-
+    [SerializeField] private Animator playerAnimator;
+    
     void Awake()
     {
         if (Instance == null) Instance = this;
@@ -40,8 +42,17 @@ public class PlayerHealth : MonoBehaviour
     {
         if (amount <= 0) return;
 
+        if (Shield.Active != null)
+        {
+            Shield.Active.ConsumeHit();
+            return; // shield absorbed the hit
+        }
+
         currentHealth -= amount;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+        var flash = GetComponent<HitFlash>();
+        if (flash != null)
+            flash.PlayFlash();
 
         if (healthSlider != null)
             healthSlider.value = currentHealth;
@@ -98,8 +109,7 @@ public class PlayerHealth : MonoBehaviour
         }
         return false;
     }
-
-    // --- Død + Game Over flow ---
+    // --- Death + Game Over flow ---
     public void Die()
     {
         if (TryConsumeExtraLife())
@@ -112,25 +122,62 @@ public class PlayerHealth : MonoBehaviour
         if (wavesCleared >= 10 && wavesCleared % 10 == 0)
             reward += 5;
 
-        // Tilføj til MetaProgression
         if (MetaProgressionManager.Instance != null)
             MetaProgressionManager.Instance.AddShards(reward);
-        else
-            Debug.LogWarning("[PlayerHealth] MetaProgressionManager mangler!");
-
-        // Trigger Game Over UI
-        if (GameOverManager.Instance != null)
-            GameOverManager.Instance.TriggerGameOver(wavesCleared, reward);
-        else
-            Debug.LogWarning("[PlayerHealth] GameOverManager mangler!");
+        if (healthSlider != null)
+        {
+            healthSlider.value = 0;   // slider shows empty
+            if (healthSlider.fillRect != null)
+                healthSlider.fillRect.gameObject.SetActive(false);
+        }
+        // Play death animation instead of instantly popping UI
+        if (playerAnimator != null)
+        {
+            playerAnimator.SetTrigger("Die");
+        }
 
         Debug.Log($"[PlayerHealth] Dead - Game Over. Waves: {wavesCleared}, Shards: {reward}");
 
         OnDeath?.Invoke();
 
-        // Disable player
+        // Disable player controls/collider immediately (but not the GameObject yet)
+        var col = GetComponent<Collider2D>();
+        if (col) col.enabled = false;
+        var rb = GetComponent<Rigidbody2D>();
+        if (rb) rb.simulated = false;
+
+        // GameOverManager.TriggerGameOver will be called by animation event
+        // (see below)
+    }
+
+    // This will be called from the animation event at the right frame
+    public void OnDeathAnimationFinished()
+    {
+        int wavesCleared = WaveManager.Instance != null ? WaveManager.Instance.CurrentWave : 0;
+
+        int reward = wavesCleared / 5;
+        if (wavesCleared >= 10 && wavesCleared % 10 == 0)
+            reward += 5;
+
+        if (GameOverManager.Instance != null)
+            GameOverManager.Instance.TriggerGameOver(wavesCleared, reward);
+        else
+            Debug.LogWarning("[PlayerHealth] GameOverManager missing!");
+
+        // Now disable the player object entirely
         gameObject.SetActive(false);
     }
+
+    private IEnumerator ShowGameOverDelayed(int wavesCleared, int reward)
+    {
+        yield return new WaitForSeconds(1.5f); // delay in seconds, tweak as you like
+
+        if (GameOverManager.Instance != null)
+            GameOverManager.Instance.TriggerGameOver(wavesCleared, reward);
+        else
+            Debug.LogWarning("[PlayerHealth] GameOverManager mangler!");
+    }
+
 
     public void SetMaxHealthTemporary(int newMax, bool clampCurrent = true)
     {

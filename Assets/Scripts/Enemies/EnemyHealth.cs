@@ -17,6 +17,8 @@ public class EnemyHealth : MonoBehaviour
     // Globalt event (for alle enemies)
     public static event Action<EnemyHealth> OnAnyEnemyDied;
 
+    private bool isDead = false; // NEW FLAG
+
     void Awake()
     {
         currentHealth = maxHealth;
@@ -26,11 +28,11 @@ public class EnemyHealth : MonoBehaviour
         hitbox = GetComponent<CircleCollider2D>();
     }
 
-
     // Standard entrypoint
     public void TakeDamage(int amount, DamageElement element)
     {
         if (amount <= 0) return;
+        if (isDead) return; // ignore damage after death
 
         currentHealth -= amount;
 
@@ -43,12 +45,14 @@ public class EnemyHealth : MonoBehaviour
 
         if (currentHealth <= 0)
             Die();
+
         Debug.Log($"EnemyHealth.TakeDamage: dmg={amount}, element={element}");
     }
 
     public void Heal(int amount)
     {
         if (amount <= 0) return;
+        if (isDead) return; // don't heal corpses
         currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
     }
 
@@ -57,9 +61,15 @@ public class EnemyHealth : MonoBehaviour
 
     void Die()
     {
+        if (isDead) return; // prevent double-death
+        isDead = true;
+
         GetComponent<EnemyFollow>()?.Kill();
         GetComponent<FlyingEnemy>()?.Kill();
-        hitbox.enabled = false;
+
+        // Disable ALL colliders so bullets no longer hit
+        foreach (var col in GetComponentsInChildren<Collider2D>())
+            col.enabled = false;
 
         // === Gold Reward ===
         if (Wallet.Instance != null)
@@ -68,8 +78,9 @@ public class EnemyHealth : MonoBehaviour
         OnDeath?.Invoke();
         OnAnyEnemyDied?.Invoke(this);
 
-        enemyAnimator.PlayDie();
+        enemyAnimator?.PlayDie();
     }
+
 
     // Called by animation event at the end of the death animation
     public void FinishDeath()

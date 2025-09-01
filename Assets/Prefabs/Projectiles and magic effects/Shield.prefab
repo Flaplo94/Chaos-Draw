@@ -77,8 +77,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1837387899
+  m_SortingLayer: 7
   m_SortingOrder: 0
   m_Sprite: {fileID: -6717884257390833292, guid: 742b6093d6c876c4f9e1d2246fa7a84c, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -176,7 +176,9 @@ MonoBehaviour:
   shieldAnimator: {fileID: -898444186571195675}
   hitTriggerName: Hit
   shieldSR: {fileID: 2751747927999673603}
-  fitPadding: 0.1
+  followTarget: {fileID: 0}
+  followOffset: {x: 0, y: 0, z: 0}
+  shieldRadius: 0.15
 --- !u!95 &-898444186571195675
 Animator:
   serializedVersion: 7

@@ -130,8 +130,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   radius: 10
   minStrikes: 1
-  maxStrikes: 2
-  damage: 1
+  maxStrikes: 3
+  damage: 5
   lightningVisual: {fileID: 6422944563533170519, guid: ecab06e113dceeb49853d98e15bcc636, type: 3}
   playTrigger: Play
   stateName: Strike

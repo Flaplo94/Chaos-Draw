@@ -16,7 +16,7 @@ MonoBehaviour:
   icon: {fileID: 4482472655010951195, guid: c4d6c725894e20445ac5aaaa73e0f5ce, type: 3}
   effectPrefab: {fileID: 4804991577932546782, guid: 3e664dbe6b27497478539814cece0f6d, type: 3}
   spawnAtMousePosition: 0
-  manaCost: 10
+  manaCost: 25
   description: Gives you a shield that will block the next attack thats hits you.
   rarity: 0
   magicType: 2
