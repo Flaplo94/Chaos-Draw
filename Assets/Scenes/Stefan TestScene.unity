@@ -1294,6 +1294,7 @@ MonoBehaviour:
   startEnemyCount: 3
   timeBetweenWaves: 2
   waveText: {fileID: 2018384954}
+  afterWave20Scene: TYscene
 --- !u!1 &144529151
 GameObject:
   m_ObjectHideFlags: 0
@@ -2237,7 +2238,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 6.515625
+  orthographic size: 7
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -4549,9 +4550,9 @@ RectTransform:
   - {fileID: 1074366049}
   m_Father: {fileID: 811522137}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1147.5, y: -634}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 0}
+  m_AnchoredPosition: {x: 0, y: 269}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &951907727
@@ -7177,7 +7178,7 @@ MonoBehaviour:
     count: 1
   - abilityName: Fireball
     count: 2
-  - abilityName: firebird
+  - abilityName: FireBird
     count: 2
   - abilityName: AOEPulse
     count: 1
@@ -7541,7 +7542,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
   m_AnchoredPosition: {x: 14, y: 401.75}
-  m_SizeDelta: {x: -2178, y: 85.902}
+  m_SizeDelta: {x: -2178, y: 92.288}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &1597212920
 MonoBehaviour:

@@ -321,21 +321,25 @@ public class WaveManager : MonoBehaviour
         if (GameOverManager.Instance != null)
             GameOverManager.Instance.TriggerGameOver(wavesCleared, reward);
     }
-    public void OnBossDied()
+    public void OnBossDied(int currentWave)
     {
-        currentBoss = null;
+        Debug.Log($"Boss died on wave {currentWave}");
+
         bossSpawned = false;
+        currentBoss = null;
+
+        if (bossHealthBarUI != null && bossHealthBarUI.activeSelf)
+            bossHealthBarUI.SetActive(false);
 
         if (currentWave == 20 && !string.IsNullOrEmpty(afterWave20Scene))
         {
             SceneManager.LoadScene(afterWave20Scene);
+            return;
         }
-        else
-        {
-            if (musicManager != null && normalMusic != null)
-                musicManager.PlayMusic(normalMusic);
 
-            TryOpenShopOrStartNextWave();
-        }
+        if (musicManager != null && normalMusic != null)
+            musicManager.PlayMusic(normalMusic);
+
+        TryOpenShopOrStartNextWave();
     }
 }
