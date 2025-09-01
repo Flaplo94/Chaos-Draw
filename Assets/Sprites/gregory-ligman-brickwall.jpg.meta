@@ -186,7 +186,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      gregory-ligman-brickwall_0: -231959024900046805
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

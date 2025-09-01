@@ -186,7 +186,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      gregory-ligman-brick-wall-tile_0: -1023864670357360234
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

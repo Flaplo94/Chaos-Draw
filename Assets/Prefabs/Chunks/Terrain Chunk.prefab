@@ -376,7 +376,7 @@ MonoBehaviour:
   spawnParentName: Props
   spawnPointNameContains: Prop Location
   minSeparation: 1.25
-  jitterRadius: 0.4
+  jitterRadius: 2
   maxAttemptsPerPoint: 10
 --- !u!1 &5838556780586789042
 GameObject:
@@ -4639,7 +4639,7 @@ GameObject:
   m_Icon: {fileID: 5721338939258241955, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8718323557875312595
 Transform:
   m_ObjectHideFlags: 0
@@ -4762,7 +4762,7 @@ GameObject:
   m_Icon: {fileID: 5721338939258241955, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &3769174117118152646
 Transform:
   m_ObjectHideFlags: 0
