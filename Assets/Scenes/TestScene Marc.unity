@@ -355,7 +355,7 @@ MonoBehaviour:
   minSpawnDistance: 5
   spawnRadius: 10
   enemyPrefabs:
-  - {fileID: 7502241114002446682, guid: 142aa5be84e910d4d9bf9b2a7d7e2612, type: 3}
+  - {fileID: 7502241114002446682, guid: af535699c9caddd418ddb82d17593458, type: 3}
   enemySpawnWeights:
   - 1
   - 1
@@ -2208,7 +2208,7 @@ MonoBehaviour:
   cardPrefab: {fileID: 4804991577932546782, guid: 671979fe7bb24ac41a2c88dc542ec91f, type: 3}
   firePoint: {fileID: 2091777804}
   cardSpeed: 10
-  baseCooldown: 0.3
+  baseCooldown: 0.1
   spreadDegrees: 0
   stats: {fileID: 0}
   attackSfx: {fileID: 8300000, guid: 708a1ca39b146634fa4dd9f840a05904, type: 3}
