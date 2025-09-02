@@ -271,7 +271,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d32584ad1a20fe24b9522d8dbef73d33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 2
+  maxHealth: 1
   flashOnLethalHit: 1
   goldReward: 1
 --- !u!114 &-5316026703860550698

@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System;
 
 public class BossHealth : MonoBehaviour
 {
@@ -18,7 +19,10 @@ public class BossHealth : MonoBehaviour
     private TextMeshProUGUI bossNameText;   // assigned at runtime
     [SerializeField] private string displayName; // optional override name
 
-    private bool isDead = false; // NEW FLAG
+    private bool isDead = false;
+
+    // event so WaveManager can track boss like a minion
+    public Action OnDeath;
 
     void Awake()
     {
@@ -66,7 +70,6 @@ public class BossHealth : MonoBehaviour
                 ? gameObject.name.Replace("(Clone)", "")
                 : displayName;
 
-            // optional: enforce black text
             bossNameText.color = Color.black;
         }
     }
@@ -74,11 +77,10 @@ public class BossHealth : MonoBehaviour
     public void TakeDamage(int amount, DamageElement element)
     {
         if (amount <= 0) return;
-        if (isDead) return; // ignore hits after death
+        if (isDead) return;
 
         currentHealth -= amount;
 
-        // === Damage Numbers ===
         if (DamageNumbers.Instance != null)
             DamageNumbers.Instance.Show(transform.position, amount, element);
 
@@ -99,7 +101,6 @@ public class BossHealth : MonoBehaviour
         if (isDead) return;
         isDead = true;
 
-        // Disable ALL colliders so bullets stop colliding
         foreach (var col in GetComponentsInChildren<Collider2D>())
             col.enabled = false;
 
@@ -109,6 +110,9 @@ public class BossHealth : MonoBehaviour
     // Called by animation event at the end of the death animation
     void FinishDeath()
     {
+        // Notify WaveManager before destroying
+        OnDeath?.Invoke();
+
         if (WaveManager.Instance != null && WaveManager.Instance.bossHealthBarUI != null)
             WaveManager.Instance.bossHealthBarUI.SetActive(false);
 
