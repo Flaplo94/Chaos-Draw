@@ -19,7 +19,7 @@ public class GameOverManager : MonoBehaviour
     [Header("HUD Elements")]
     [SerializeField] private GameObject waveCounterUI;
     [SerializeField] private GameObject healthBarUI;
-
+    [SerializeField] private GameObject bossHealthBarUI;
     private float runStartTime;
 
     void Awake()
@@ -39,6 +39,7 @@ public class GameOverManager : MonoBehaviour
         // Sluk HUD
         waveCounterUI?.SetActive(false);
         healthBarUI?.SetActive(false);
+        bossHealthBarUI?.SetActive(false);
 
         // Pause spillet
         Time.timeScale = 0f;

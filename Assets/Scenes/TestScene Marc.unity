@@ -364,14 +364,17 @@ MonoBehaviour:
   - 0.3
   - 0.1
   bossPrefab: {fileID: 5679082729230498780, guid: fc4a16f7a9bb2cc4697918d31f977cf1, type: 3}
+  secondBossPrefab: {fileID: 0}
   bossSpawnPoint: {fileID: 1487545839}
   bossHealthBarUI: {fileID: 1325004279}
   musicManager: {fileID: 0}
   normalMusic: {fileID: 0}
-  bossMusicClips: []
+  boss1Music: {fileID: 0}
+  boss2Music: {fileID: 0}
   startEnemyCount: 1
   timeBetweenWaves: 2
   waveText: {fileID: 158786347}
+  afterWave20Scene: TYscene
 --- !u!1 &144952538
 GameObject:
   m_ObjectHideFlags: 0
@@ -1724,12 +1727,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 0
+  m_MatchWidthOrHeight: 0.5
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
