@@ -16,8 +16,9 @@ MonoBehaviour:
   icon: {fileID: -963791335356448533, guid: 2eb521d373827fb409bbc6051444afb1, type: 3}
   effectPrefab: {fileID: 4804991577932546782, guid: 8bc3f8327a435c842a89e756c90fcd79, type: 3}
   spawnAtMousePosition: 0
-  damage: 2
+  damage: 8
   manaCost: 20
-  description: Increases the players movement speed and zaps enemies that gets close
+  description: Empower yourself with lightning for 5s, moving faster and zapping
+    nearby enemies for up to 8 DPS per enemy
   rarity: 0
   magicType: 1

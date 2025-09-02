@@ -16,6 +16,9 @@ MonoBehaviour:
   icon: {fileID: 7496959465385436309, guid: 54ae97eef3af8724c8592582e12798b2, type: 3}
   effectPrefab: {fileID: 4804991577932546782, guid: a5939ed10f5cedb4eb4f7b4d5fb39f3b, type: 3}
   spawnAtMousePosition: 1
+  damage: 0
   manaCost: 10
-  description: Place a wall where you aim.
+  description: Raise a solid wall for 5s, blocking enemies and potentially inflicting
+    thorn damage on those who collide with it.
   rarity: 0
+  magicType: 2

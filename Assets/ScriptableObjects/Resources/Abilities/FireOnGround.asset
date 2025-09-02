@@ -18,6 +18,7 @@ MonoBehaviour:
   spawnAtMousePosition: 1
   damage: 2
   manaCost: 15
-  description: Place fire where you aim it.
+  description: Ignite the ground beneath enemies, burning them for 2 DPS while they
+    remain in the flames
   rarity: 0
   magicType: 0

@@ -16,7 +16,9 @@ MonoBehaviour:
   icon: {fileID: 7680820834086852892, guid: 67b23ed8c815a7d448851a76cb376c64, type: 3}
   effectPrefab: {fileID: 4804991577932546782, guid: 8b4dd582ffba7ce4ea20ff06f1199905, type: 3}
   spawnAtMousePosition: 0
+  damage: 5
   manaCost: 10
-  description: Hits a random enemy in range and jumps to 2 other random enemies.
+  description: Zap enemies with lightning, dealing 5 DPS per target and chaining
+    up to 3 enemies (max 15 DPS)
   rarity: 0
   magicType: 1

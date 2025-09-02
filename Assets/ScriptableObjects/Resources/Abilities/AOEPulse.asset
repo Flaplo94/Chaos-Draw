@@ -18,6 +18,6 @@ MonoBehaviour:
   spawnAtMousePosition: 0
   damage: 10
   manaCost: 25
-  description: Hits all enemies around the player in range.
+  description: Release a fiery shockwave that deals 10 DPS to all enemies in a smallradius.
   rarity: 0
   magicType: 0

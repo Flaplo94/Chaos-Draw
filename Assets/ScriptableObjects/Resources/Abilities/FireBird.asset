@@ -18,6 +18,7 @@ MonoBehaviour:
   spawnAtMousePosition: 0
   damage: 5
   manaCost: 10
-  description: Flying through enemies dealing damage when it go through them
+  description: Summon a fiery phoenix that soars forward, dealing 10 DPS per enemy
+    and piercing up to 1 additional target for the same damage.
   rarity: 0
   magicType: 0

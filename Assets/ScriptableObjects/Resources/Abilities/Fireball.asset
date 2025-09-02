@@ -18,6 +18,7 @@ MonoBehaviour:
   spawnAtMousePosition: 0
   damage: 5
   manaCost: 15
-  description: Shoots where you aim it and explodes when it hits an enemy.
+  description: Launch a blazing fireball that explodes on impact, dealing heavy damage
+    in a small radius.
   rarity: 0
   magicType: 0

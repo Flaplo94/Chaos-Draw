@@ -18,7 +18,7 @@ MonoBehaviour:
   spawnAtMousePosition: 1
   damage: 1
   manaCost: 10
-  description: Place a lightning rod where you aim, lightning will jump between you
-    and other rods in range.
+  description: Summon a charged rod for 8s that connects with lightning, dealing
+    1 DPS to all enemies caught in its arcs.
   rarity: 0
   magicType: 1
