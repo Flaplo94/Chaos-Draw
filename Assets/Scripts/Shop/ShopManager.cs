@@ -53,7 +53,7 @@ public class ShopManager : MonoBehaviour
 
     void OnDisable()
     {
-        if (pauseOnOpen) Time.timeScale = 1f;
+        if (pauseOnOpen) PauseManager.ForceUnpause();
     }
 
     void Update()
@@ -95,7 +95,7 @@ public class ShopManager : MonoBehaviour
         else if (dimmerGO) dimmerGO.SetActive(true);
         else Debug.LogWarning("[Shop] No Dimmer reference set.");
 
-        if (pauseOnOpen) Time.timeScale = 0f;
+        if (pauseOnOpen) PauseManager.RequestPause();
 
         isOpen = true;
         Debug.Log("[Shop] Open()");
@@ -111,7 +111,7 @@ public class ShopManager : MonoBehaviour
         if (dimmer) dimmer.Hide();
         else if (dimmerGO) dimmerGO.SetActive(false);
 
-        if (pauseOnOpen) Time.timeScale = 1f;
+        if (pauseOnOpen) PauseManager.ReleasePause();
 
         ClearUI();
         isOpen = false;

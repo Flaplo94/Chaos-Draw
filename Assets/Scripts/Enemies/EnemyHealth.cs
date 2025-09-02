@@ -75,7 +75,6 @@ public class EnemyHealth : MonoBehaviour
         if (Wallet.Instance != null)
             Wallet.Instance.Add(goldReward);
 
-        OnDeath?.Invoke();
         OnAnyEnemyDied?.Invoke(this);
 
         enemyAnimator?.PlayDie();
@@ -85,6 +84,7 @@ public class EnemyHealth : MonoBehaviour
     // Called by animation event at the end of the death animation
     public void FinishDeath()
     {
+        OnDeath?.Invoke();
         Destroy(gameObject);
     }
 }

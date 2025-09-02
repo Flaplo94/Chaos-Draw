@@ -187,7 +187,7 @@ GameObject:
   - component: {fileID: 8426112754350787750}
   - component: {fileID: 4930922325169621274}
   m_Layer: 5
-  m_Name: AbilityRarity
+  m_Name: RarityText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -774,7 +774,7 @@ GameObject:
   - component: {fileID: 9019504908631802393}
   - component: {fileID: 660834509315212135}
   m_Layer: 5
-  m_Name: AbilityRarity
+  m_Name: RarityText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -985,7 +985,7 @@ GameObject:
   - component: {fileID: 1296566927680218897}
   - component: {fileID: 4750272462025852352}
   m_Layer: 5
-  m_Name: AbilityRarity
+  m_Name: RarityText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

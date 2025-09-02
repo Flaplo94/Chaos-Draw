@@ -6,7 +6,6 @@ using TMPro;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
-
 public class WaveManager : MonoBehaviour
 {
     public static WaveManager Instance;
@@ -25,7 +24,6 @@ public class WaveManager : MonoBehaviour
     [Header("Boss Prefabs")]
     [SerializeField] private GameObject bossPrefab;        // First boss (wave 10, 30, 40, …)
     [SerializeField] private GameObject secondBossPrefab;  // Special boss at wave 20
-    public Transform bossSpawnPoint;
     public GameObject bossHealthBarUI;
 
     private bool bossSpawned = false;
@@ -69,7 +67,6 @@ public class WaveManager : MonoBehaviour
 
     void Start()
     {
-        // start normal gameplay music
         if (musicManager != null && normalMusic != null)
             musicManager.PlayMusic(normalMusic);
 
@@ -79,59 +76,49 @@ public class WaveManager : MonoBehaviour
     void Update()
     {
         // === TEST CHEATS ===
-        if (Input.GetKeyDown(KeyCode.L)) // L = jump to wave 10 boss
+        if (Input.GetKeyDown(KeyCode.L))
         {
             Debug.Log("[WaveManager] CHEAT: Skipping to wave 10 boss");
-            currentWave = 9; // next wave will be wave 10
+            currentWave = 9;
             StartCoroutine(NextWave());
         }
 
-        if (Input.GetKeyDown(KeyCode.K)) // K = jump to wave 20 boss
+        if (Input.GetKeyDown(KeyCode.K))
         {
             Debug.Log("[WaveManager] CHEAT: Skipping to wave 20 boss");
-            currentWave = 19; // next wave will be wave 20
+            currentWave = 19;
             StartCoroutine(NextWave());
         }
 
-        if (Input.GetKeyDown(KeyCode.U)) // U = unlock Legacy Deck uden kamp
+        if (Input.GetKeyDown(KeyCode.U))
         {
             Debug.Log("[WaveManager] CHEAT: Force unlock Legacy Deck");
             MetaProgressionManager.Instance.UnlockLegacy();
         }
+
         if (Input.GetKeyDown(KeyCode.P))
         {
             Debug.Log("FORCE LOADING TEST SCENE");
             SceneManager.LoadScene(afterWave20Scene);
         }
 
-        // Boss wave handling
-        if (bossSpawned)
+        // ===== Unified wave end check =====
+        if (waveInProgress)
         {
-            if (currentBoss == null)
+            bool bossAlive = bossSpawned && currentBoss != null;
+            bool minionsAlive = enemiesInWave.Count > 0;
+
+            if (!bossAlive && !minionsAlive)
             {
+                waveInProgress = false;
+                bossSpawned = false;
+                currentBoss = null;
+
                 if (bossHealthBarUI.activeSelf)
                     bossHealthBarUI.SetActive(false);
 
-                if (bossSpawned) // boss just died
-                {
-                    bossSpawned = false;
-
-                    // Return to normal music
-                    if (musicManager != null && normalMusic != null)
-                        musicManager.PlayMusic(normalMusic);
-
-                    if (cardHandUI != null) cardHandUI.OnWaveCompleted();
-
-                    OnWaveCompleted?.Invoke(currentWave);
-                    OnWaveChanged?.Invoke(currentWave);
-
-                    TryOpenShopOrStartNextWave();
-                }
-                return;
-            }
-            if (currentBoss == null && enemiesInWave.Count == 0)
-            {
-                bossSpawned = false;
+                if (musicManager != null && normalMusic != null)
+                    musicManager.PlayMusic(normalMusic);
 
                 if (cardHandUI != null) cardHandUI.OnWaveCompleted();
 
@@ -140,32 +127,16 @@ public class WaveManager : MonoBehaviour
 
                 if (currentWave == 20)
                 {
-                    SceneManager.LoadScene("TYscene");
+                    SceneManager.LoadScene(afterWave20Scene);
                 }
                 else
                 {
                     TryOpenShopOrStartNextWave();
                 }
             }
-
-            return;
-        }
-
-        // Normal wave end
-        if (waveInProgress && enemiesInWave.Count == 0)
-        {
-            waveInProgress = false;
-
-            CardHandUI cardUI = FindFirstObjectByType<CardHandUI>();
-            if (cardUI != null)
-                cardUI.OnWaveCompleted();
-
-            OnWaveCompleted?.Invoke(currentWave);
-            OnWaveChanged?.Invoke(currentWave);
-
-            TryOpenShopOrStartNextWave();
         }
     }
+
 
     IEnumerator NextWave()
     {
@@ -187,18 +158,29 @@ public class WaveManager : MonoBehaviour
         {
             bossHealthBarUI.SetActive(true);
 
+            // pick a spawn offset further away than normal enemies
+            Vector2 bossSpawnOffset;
+            float bossMinDistance = minSpawnDistance + 20f;
+            float bossRadius = spawnRadius + 20f;
+
+            do
+            {
+                bossSpawnOffset = UnityEngine.Random.insideUnitCircle * bossRadius;
+            }
+            while (bossSpawnOffset.magnitude < bossMinDistance);
+
+            Vector3 spawnPosition = playerTransform.position + (Vector3)bossSpawnOffset;
+
             if (currentWave == 20)
             {
-                // Special boss at wave 20
-                currentBoss = Instantiate(secondBossPrefab, bossSpawnPoint.position, Quaternion.identity);
+                currentBoss = Instantiate(secondBossPrefab, spawnPosition, Quaternion.identity);
 
                 if (musicManager != null && boss2Music != null)
                     musicManager.PlayMusic(boss2Music);
             }
             else
             {
-                // Boss at wave 10, 30, 40, …
-                currentBoss = Instantiate(bossPrefab, bossSpawnPoint.position, Quaternion.identity);
+                currentBoss = Instantiate(bossPrefab, spawnPosition, Quaternion.identity);
 
                 if (musicManager != null && boss1Music != null)
                     musicManager.PlayMusic(boss1Music);
@@ -215,7 +197,13 @@ public class WaveManager : MonoBehaviour
             BossHealth bossHealth = currentBoss.GetComponent<BossHealth>();
             bossHealth.AssignHealthBar(bossSlider, bossNameText);
 
-            Camera.main.GetComponent<CameraFollow>().FocusTemporarily(bossSpawnPoint.position, 2.5f);
+            // Camera focus on boss spawn position
+            var camFollow = Camera.main.GetComponent<CameraFollow>();
+            if (camFollow != null)
+            {
+                StartCoroutine(PauseDuringFocus(camFollow, spawnPosition, 4f));
+            }
+
             singleTypeIndex = -1;
             yield break;
         }
@@ -239,7 +227,7 @@ public class WaveManager : MonoBehaviour
 
             Vector2 spawnPos = (Vector2)playerTransform.position + spawnOffset;
 
-            GameObject chosenPrefab = (singleTypeIndex >= 0)
+            GameObject chosenPrefab = (singleTypeWave)
                 ? enemyPrefabs[singleTypeIndex]
                 : enemyPrefabs[GetWeightedRandomIndex(maxIndex)];
 
@@ -321,6 +309,7 @@ public class WaveManager : MonoBehaviour
         if (GameOverManager.Instance != null)
             GameOverManager.Instance.TriggerGameOver(wavesCleared, reward);
     }
+
     public void OnBossDied(int currentWave)
     {
         Debug.Log($"Boss died on wave {currentWave}");
@@ -342,4 +331,19 @@ public class WaveManager : MonoBehaviour
 
         TryOpenShopOrStartNextWave();
     }
+    private IEnumerator PauseDuringFocus(CameraFollow camFollow, Vector3 target, float duration)
+    {
+        // Pause game
+        Time.timeScale = 0f;
+
+        // Start camera focus
+        camFollow.FocusTemporarily(target, duration);
+
+        // Wait in realtime (ignores timescale)
+        yield return new WaitForSecondsRealtime(duration);
+
+        // Resume game
+        Time.timeScale = 1f;
+    }
+
 }

@@ -2,7 +2,8 @@ using UnityEngine;
 
 public class Shield : MonoBehaviour, IAbilityBehavior
 {
-    public static Shield Active;
+    private static int activeShieldCount = 0; // count how many shields are active
+    private int myIndex = 0;
 
     [Header("Base")]
     [SerializeField] private int baseShieldHealth = 1;
@@ -23,7 +24,8 @@ public class Shield : MonoBehaviour, IAbilityBehavior
     [SerializeField] private Vector3 followOffset = Vector3.zero;
 
     [Header("Sizing")]
-    [SerializeField, Min(0f)] private float shieldRadius = 1f; // manual scale in inspector
+    [SerializeField, Min(0f)] private float shieldRadius = 1f; // base manual radius in inspector
+    [SerializeField, Min(0f)] private float stackSpacing = 0.2f; // how much bigger each stacked shield is
 
     private int currentHealth;
 
@@ -35,15 +37,8 @@ public class Shield : MonoBehaviour, IAbilityBehavior
 
     public bool Initialize(Vector2 _, Rarity rarity)
     {
-        if (Active != null && Active != this)
-        {
-            var ui = FindFirstObjectByType<UIMessage>();
-            if (ui) ui.ShowMessage("Shield is already active");
-            Destroy(gameObject);
-            return false;
-        }
-
-        Active = this;
+        // Assign unique index for this shield
+        myIndex = activeShieldCount++;
         currentHealth = baseShieldHealth;
 
         switch (rarity)
@@ -80,7 +75,7 @@ public class Shield : MonoBehaviour, IAbilityBehavior
         if (shieldSR != null)
         {
             shieldSR.enabled = true;
-            shieldSR.sortingOrder = 1000;
+            shieldSR.sortingOrder = 1000 + myIndex; // ensure stacked order
         }
 
         foreach (var c in GetComponentsInChildren<Collider2D>()) c.enabled = false;
@@ -93,7 +88,6 @@ public class Shield : MonoBehaviour, IAbilityBehavior
             transform.position = followTarget.position + followOffset;
             transform.rotation = followTarget.rotation;
 
-            // Keep radius applied
             ApplyManualScale();
         }
     }
@@ -105,7 +99,12 @@ public class Shield : MonoBehaviour, IAbilityBehavior
         float baseDiameter = Mathf.Max(shieldSR.sprite.bounds.size.x, shieldSR.sprite.bounds.size.y);
         if (baseDiameter <= 0f) return;
 
-        float scale = (shieldRadius * 2f) / baseDiameter; // radius diameter
+        // base scale from inspector radius
+        float scale = (shieldRadius * 2f) / baseDiameter;
+
+        // extra scale per stacked shield
+        scale *= (1f + stackSpacing * myIndex);
+
         transform.localScale = new Vector3(scale, scale, 1f);
     }
 
@@ -140,7 +139,7 @@ public class Shield : MonoBehaviour, IAbilityBehavior
 
     void OnDestroy()
     {
-        if (Active == this) Active = null;
+        activeShieldCount = Mathf.Max(0, activeShieldCount - 1);
     }
 
     private void DestroySelf() => Destroy(gameObject);
@@ -150,9 +149,9 @@ public class Shield : MonoBehaviour, IAbilityBehavior
     {
         Gizmos.color = Color.white;
         var center = followTarget ? followTarget.position : transform.position;
-        Gizmos.DrawWireSphere(center, shieldRadius); // show shield radius for clarity
+        Gizmos.DrawWireSphere(center, shieldRadius * (1f + stackSpacing * myIndex));
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(center, reflectRadius); // show reflect radius separately
+        Gizmos.DrawWireSphere(center, reflectRadius);
     }
 #endif
 }

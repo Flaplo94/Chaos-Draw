@@ -20,21 +20,26 @@ public class CameraFollow : MonoBehaviour
         isOverriding = true;
         returnPosition = transform.position;
 
+        float halfDuration = duration / 2f;
+
+        // pan to boss
         float t = 0f;
         while (t < 1f)
         {
-            t += Time.deltaTime / (duration / 2f);
+            t += Time.unscaledDeltaTime / halfDuration;
             Vector2 pos = Vector2.Lerp(returnPosition, focusPos, t);
             transform.position = new Vector3(pos.x, pos.y, cameraZ);
             yield return null;
         }
 
-        yield return new WaitForSeconds(1f);
+        // stay focused for 1 second (real time)
+        yield return new WaitForSecondsRealtime(1f);
 
+        // pan back to player
         t = 0f;
         while (t < 1f)
         {
-            t += Time.deltaTime / (duration / 2f);
+            t += Time.unscaledDeltaTime / halfDuration;
             Vector2 pos = Vector2.Lerp(focusPos, returnPosition, t);
             transform.position = new Vector3(pos.x, pos.y, cameraZ);
             yield return null;
