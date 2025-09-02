@@ -16,6 +16,7 @@ MonoBehaviour:
   icon: {fileID: -7352255774374889779, guid: e1d293d58ccd9e6449a3ba6cd60827c2, type: 3}
   effectPrefab: {fileID: 4804991577932546782, guid: 3c18a37447b62754498692a052d80e02, type: 3}
   spawnAtMousePosition: 0
+  damage: 1
   manaCost: 15
   description: Place fire where you walk.
   rarity: 0

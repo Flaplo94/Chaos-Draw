@@ -7276,7 +7276,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c28f7791ef1001840b7ee52317342dd1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  chaosShards: 100
+  chaosShards: 0
   legacyUnlocked: 0
   skillTreeUnlocked: 0
 --- !u!114 &361607210 stripped

@@ -6,20 +6,24 @@ public enum MagicType { Fire, Lightning, Other }
 [CreateAssetMenu(fileName = "NewAbility", menuName = "Abilities/Ability")]
 public class Ability : ScriptableObject
 {
+    [Header("Identity")]
     public string abilityName;
     public Sprite icon;
     public GameObject effectPrefab;
+
+    [Header("Spawn Settings")]
     public bool spawnAtMousePosition;
     [HideInInspector] public Vector2? overrideDirection;
 
-    [Header("Ability Settings")]
-    public float manaCost = 10f;
-    [TextArea] public string description;
+    [Header("Ability Settings (UI + Balance)")]
+    [Min(0)] public int damage = 0;               //  NYT felt til kort-UI
+    [Min(0)] public float manaCost = 10f;         // mana cost for at spille ability
+    [TextArea] public string description;         // kortbeskrivelse til reward card
 
     [Header("Rarity")]
     public Rarity rarity = Rarity.Common;
 
-    [Header("Magic Type (informativ – bruges i selve ability scripts)")]
+    [Header("Magic Type (informativ – bruges i ability scripts)")]
     public MagicType magicType = MagicType.Other;
 
     public bool Activate()
@@ -69,7 +73,7 @@ public class Ability : ScriptableObject
             return false;
         }
 
-        // Brug mana efter vellykket init (samme adfærd som før)
+        // Brug mana efter vellykket init
         if (!PlayerMana.Instance.TrySpend(manaCost))
         {
             Destroy(obj);

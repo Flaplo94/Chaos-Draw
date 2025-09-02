@@ -165,8 +165,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 44235d65480005d4eb5162f10f97291e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  range: 5
-  damage: 2
+  range: 10
+  damage: 5
   maxChains: 3
   enemyLayer:
     serializedVersion: 2
