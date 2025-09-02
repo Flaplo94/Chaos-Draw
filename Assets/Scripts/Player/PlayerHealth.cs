@@ -43,10 +43,12 @@ public class PlayerHealth : MonoBehaviour
     {
         if (amount <= 0) return;
 
-        if (Shield.Active != null)
+        // check for any active shield
+        var shield = FindFirstObjectByType<Shield>();
+        if (shield != null)
         {
-            Shield.Active.ConsumeHit();
-            return; // shield absorbed the hit
+            shield.ConsumeHit();
+            return; // a shield absorbed the hit
         }
 
         currentHealth -= amount;

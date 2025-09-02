@@ -48,6 +48,10 @@ public class CardHandUI : MonoBehaviour
     private readonly List<Ability> discardPile = new();
     private Ability[] hand;
 
+    [SerializeField] private float manualShuffleBaseTime = 4f;
+    private float currentManualShuffleTime;
+
+
     [System.Serializable]
     public class StartingCard
     {
@@ -57,6 +61,8 @@ public class CardHandUI : MonoBehaviour
 
     private void Start()
     {
+        currentManualShuffleTime = manualShuffleBaseTime;
+
         if (!handParent)
         {
             Debug.LogError("CardHandUI: handParent is not assigned.");
@@ -87,10 +93,14 @@ public class CardHandUI : MonoBehaviour
     {
         if (Keyboard.current == null) return;
 
-        if (Keyboard.current.digit1Key.wasPressedThisFrame && hand.Length > 0) TryUseCard(0);
+        if (Keyboard.current.qKey.wasPressedThisFrame && hand.Length > 0) TryUseCard(0);
         if (Keyboard.current.digit2Key.wasPressedThisFrame && hand.Length > 1) TryUseCard(1);
         if (Keyboard.current.digit3Key.wasPressedThisFrame && hand.Length > 2) TryUseCard(2);
-        if (Keyboard.current.digit4Key.wasPressedThisFrame && hand.Length > 3) TryUseCard(3);
+        if (Keyboard.current.eKey.wasPressedThisFrame && hand.Length > 3) TryUseCard(3);
+        if (Keyboard.current.rKey.wasPressedThisFrame)
+        {
+            StartCoroutine(ManualShuffle());
+        }
     }
 
     // -------------------- Deck / Draw / Use --------------------
@@ -355,7 +365,7 @@ public class CardHandUI : MonoBehaviour
 
     private void ShowRewardUI()
     {
-        Time.timeScale = 0f;
+        PauseManager.RequestPause();
         rewardUI.SetActive(true);
         ClearRewardCardsParent();
 
@@ -375,9 +385,7 @@ public class CardHandUI : MonoBehaviour
             skipButton.onClick.RemoveAllListeners();
             skipButton.onClick.AddListener(() =>
             {
-                rewardUI.SetActive(false);
-                skipButton.gameObject.SetActive(false);
-                Time.timeScale = 1f;
+                CloseRewardUI();
             });
         }
     }
@@ -387,8 +395,9 @@ public class CardHandUI : MonoBehaviour
         rewardUI.SetActive(false);
         skipButton.gameObject.SetActive(false);
         ClearRewardCardsParent();
-        Time.timeScale = 1f;
+        PauseManager.ReleasePause();
     }
+
 
     private void AddCardToDeck(Ability ability)
     {
@@ -408,4 +417,64 @@ public class CardHandUI : MonoBehaviour
         if (roll < 0.30f) return Rarity.Uncommon;
         return Rarity.Common;
     }
+
+    private IEnumerator ManualShuffle()
+    {
+        Debug.Log("[CardHandUI] Manual shuffle triggered by R. Shuffle time = " + currentManualShuffleTime);
+
+        List<Ability> allCards = new List<Ability>();
+        allCards.AddRange(drawPile);
+        allCards.AddRange(discardPile);
+
+        for (int i = 0; i < hand.Length; i++)
+        {
+            if (hand[i] != null)
+            {
+                allCards.Add(hand[i]);
+                hand[i] = null;
+                if (cardSlots != null && cardSlots[i] != null)
+                    cardSlots[i].Clear();
+            }
+        }
+
+        drawPile.Clear();
+        discardPile.Clear();
+
+        UpdateDiscardText();
+        UpdateDeckText();
+        UpdatePileUIs();
+
+        if (audioSource != null && shuffleClip != null)
+        {
+            audioSource.clip = shuffleClip;
+            audioSource.loop = true;
+            audioSource.Play();
+        }
+
+        yield return new WaitForSeconds(currentManualShuffleTime);
+
+        if (audioSource != null)
+        {
+            audioSource.Stop();
+            audioSource.loop = false;
+        }
+
+        drawPile.AddRange(allCards);
+        Shuffle(drawPile);
+
+        UpdateDiscardText();
+        UpdateDeckText();
+        UpdatePileUIs();
+
+        for (int i = 0; i < hand.Length; i++)
+        {
+            DrawCard(i);
+        }
+
+        Debug.Log("[CardHandUI] Manual shuffle finished after " + currentManualShuffleTime + " seconds");
+
+        // increase shuffle time by 2 sec for next manual shuffle
+        currentManualShuffleTime += 2f;
+    }
+
 }
