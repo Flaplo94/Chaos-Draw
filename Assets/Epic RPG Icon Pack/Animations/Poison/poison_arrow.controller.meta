@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: cf56fac15dbcf144783a7c8b462d82f8
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 9100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 119943
+  packageName: "Epic RPG Icon Pack \u2013 Animated Fantasy Skill Icons with Frames"
+  packageVersion: 1.7
+  assetPath: Assets/Epic RPG Icon Pack/Animations/Poison/poison_arrow.controller
+  uploadId: 745008

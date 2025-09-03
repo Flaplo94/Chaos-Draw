@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: af2dbec7c892ef2479ac7760e4f2518a
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 9100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 119943
+  packageName: "Epic RPG Icon Pack \u2013 Animated Fantasy Skill Icons with Frames"
+  packageVersion: 1.7
+  assetPath: Assets/Epic RPG Icon Pack/Animations/Force/anim_force_shield.controller
+  uploadId: 745008

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 9b266ff4708b16b448488dbf99957107
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 9100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 119943
+  packageName: "Epic RPG Icon Pack \u2013 Animated Fantasy Skill Icons with Frames"
+  packageVersion: 1.7
+  assetPath: Assets/Epic RPG Icon Pack/Animations/Force/anim_force_arrow.controller
+  uploadId: 745008

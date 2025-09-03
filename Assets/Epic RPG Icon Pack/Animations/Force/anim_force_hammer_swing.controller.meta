@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: cf7b14e64ea6e9843a784f2e4cce47a8
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 9100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 119943
+  packageName: "Epic RPG Icon Pack \u2013 Animated Fantasy Skill Icons with Frames"
+  packageVersion: 1.7
+  assetPath: Assets/Epic RPG Icon Pack/Animations/Force/anim_force_hammer_swing.controller
+  uploadId: 745008

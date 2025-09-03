@@ -41,7 +41,6 @@ public class CardHandUI : MonoBehaviour
     [SerializeField] private AudioSource audioSource;
     [SerializeField] private AudioClip shuffleClip;
     [SerializeField] private Vector2 shuffleDurationRange = new Vector2(1f, 2f);
-    //[SerializeField] private float shuffleDuration = 1.5f; // duration in seconds, adjustable in inspector
 
     private int waveCount = 0;
     private readonly List<Ability> deck = new();
@@ -142,7 +141,6 @@ public class CardHandUI : MonoBehaviour
     {
         if (slotIndex < 0 || slotIndex >= hand.Length) return;
 
-        // If draw pile is empty but all cards are in discard, reshuffle discard -> draw
         if (drawPile.Count == 0 && discardPile.Count == deck.Count)
         {
             drawPile.AddRange(discardPile);
@@ -186,7 +184,6 @@ public class CardHandUI : MonoBehaviour
         }
 
         yield return new WaitForSeconds(duration);
-        //yield return new WaitForSeconds(shuffleDuration);
 
         if (audioSource != null)
         {
@@ -200,7 +197,6 @@ public class CardHandUI : MonoBehaviour
         UpdateDeckText();
         UpdatePileUIs();
 
-        // After shuffle, refill all empty slots
         for (int i = 0; i < hand.Length; i++)
             if (hand[i] == null)
                 DrawCard(i);
@@ -306,26 +302,49 @@ public class CardHandUI : MonoBehaviour
 
     private void BuildRewardCard(Ability ability)
     {
-        if (!rewardCardsParent)
-        {
-            Debug.LogError("CardHandUI: rewardCardsParent is not assigned.");
-            return;
-        }
-
         var prefab = GetRewardCardPrefab(ability.magicType);
         var cardGO = Instantiate(prefab, rewardCardsParent);
 
-        var nameText = cardGO.transform.Find("AbilityName")?.GetComponent<TextMeshProUGUI>();
-        var artImage = cardGO.transform.Find("AbilityArt")?.GetComponent<Image>();
-        var descText = cardGO.transform.Find("AbilityDescription")?.GetComponent<TextMeshProUGUI>();
-        var rarityTxt = cardGO.transform.Find("RarityText")?.GetComponent<TextMeshProUGUI>();
+        var ui = cardGO.GetComponent<CardRewardUI>();
+        if (ui == null)
+        {
+            Debug.LogError("CardRewardUI mangler på prefab!");
+            return;
+        }
+
+        // Fyld felter manuelt
+        ui.nameText.text = ability.abilityName;
+        ui.artImage.sprite = ability.icon;
+        ui.artImage.color = Color.white;
+        ui.artImage.preserveAspect = true;
+        ui.rarityText.text = ability.rarity.ToString();
+
+        ui.dmgText.text = ability.damage > 0 ? ability.damage.ToString() : "—";
+        ui.manaText.text = ability.manaCost.ToString("0");
+
+        //  Brug "AbilityDescription" fra prefab
+        var desc = cardGO.transform.Find("AbilityDescription")?.GetComponent<TextMeshProUGUI>();
+        if (desc != null)
+            desc.text = ability.description;
+        else
+            Debug.LogWarning("Reward card prefab mangler 'AbilityDescription' TextMeshPro objekt!");
+
+        // Tags
+        if (ui.tagRow != null)
+        {
+            foreach (Transform child in ui.tagRow)
+                Destroy(child.gameObject);
+
+            var badge = new GameObject("TagBadge", typeof(RectTransform), typeof(TextMeshProUGUI));
+            badge.transform.SetParent(ui.tagRow, false);
+            var txt = badge.GetComponent<TextMeshProUGUI>();
+            txt.text = ability.magicType.ToString();
+            txt.fontSize = 14;
+            txt.alignment = TextAlignmentOptions.Center;
+        }
+
+        // Button
         var button = cardGO.GetComponent<Button>();
-
-        if (nameText) nameText.text = ability.abilityName;
-        if (artImage) { artImage.sprite = ability.icon; artImage.color = Color.white; artImage.preserveAspect = true; }
-        if (descText) descText.text = ability.description;
-        if (rarityTxt) rarityTxt.text = ability.rarity.ToString();
-
         if (button)
         {
             button.onClick.RemoveAllListeners();
@@ -336,6 +355,13 @@ public class CardHandUI : MonoBehaviour
             });
         }
     }
+
+
+
+
+
+
+
 
     private void ShowRewardUI()
     {

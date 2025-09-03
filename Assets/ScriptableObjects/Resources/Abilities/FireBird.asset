@@ -16,7 +16,9 @@ MonoBehaviour:
   icon: {fileID: -8586417740124189794, guid: a93bace5f3f458944a6d018144bd0ea2, type: 3}
   effectPrefab: {fileID: 4804991577932546782, guid: 9019518a972eb32498dabb87b5a33b0c, type: 3}
   spawnAtMousePosition: 0
+  damage: 5
   manaCost: 10
-  description: Flying through enemies dealing damage when it go through them
+  description: Summon a fiery phoenix that soars forward, dealing 10 DPS per enemy
+    and piercing up to 1 additional target for the same damage.
   rarity: 0
   magicType: 0

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 6006a9d3603a33243bd3368c1719af3c
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 9100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 119943
+  packageName: "Epic RPG Icon Pack \u2013 Animated Fantasy Skill Icons with Frames"
+  packageVersion: 1.7
+  assetPath: Assets/Epic RPG Icon Pack/Animations/Wind/anim_general_bag.controller
+  uploadId: 745008

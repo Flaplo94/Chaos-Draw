@@ -14,21 +14,19 @@ public class CardSlotUI : MonoBehaviour
 
     private void Awake()
     {
-        // Auto-find faces by name if not assigned
         if (!faceFire) faceFire = transform.Find("Face_Fire") as RectTransform;
         if (!faceLightning) faceLightning = transform.Find("Face_Lightning") as RectTransform;
         if (!faceOther) faceOther = transform.Find("Face_Other") as RectTransform;
         if (!faceEmpty) faceEmpty = transform.Find("Face_Empty") as RectTransform;
 
-        // Ensure exactly one face is active initially (default to empty if nothing is active)
         DeactivateAllFaces();
-        if (faceOther) SetActive(faceOther); // default prefab look
+        if (faceOther) SetActive(faceOther);
         else if (faceEmpty) SetActive(faceEmpty);
     }
 
     public void Show(Ability a)
     {
-        // Switch to the right type face
+        // Vælg korrekt face
         var next = a.magicType switch
         {
             MagicType.Fire => faceFire ? faceFire : faceOther,
@@ -36,13 +34,17 @@ public class CardSlotUI : MonoBehaviour
             _ => faceOther
         };
 
-        if (!next && faceEmpty) next = faceEmpty; // absolute fallback
+        if (!next && faceEmpty) next = faceEmpty;
         SetActive(next);
 
-        // Bind inside ACTIVE face
+        // Bind UI felter
         var nameText = activeFace.Find("AbilityName")?.GetComponent<TextMeshProUGUI>();
-        var rarityText = activeFace.Find("RarityText")?.GetComponent<TextMeshProUGUI>();
+        var rarityText = activeFace.Find("AbilityRarity")?.GetComponent<TextMeshProUGUI>();
         var artImage = activeFace.Find("AbilityArt")?.GetComponent<Image>();
+
+        //  Rettede paths
+        var dmgValueText = activeFace.Find("StatsRow/DamageIcon/DamageValue")?.GetComponent<TextMeshProUGUI>();
+        var manaValueText = activeFace.Find("StatsRow/ManaIcon/ManaValue")?.GetComponent<TextMeshProUGUI>();
 
         if (nameText) nameText.text = a.abilityName;
         if (rarityText) rarityText.text = a.rarity.ToString();
@@ -54,14 +56,17 @@ public class CardSlotUI : MonoBehaviour
             artImage.preserveAspect = true;
         }
 
+        if (dmgValueText) dmgValueText.text = a.damage > 0 ? a.damage.ToString() : "—";
+        if (manaValueText) manaValueText.text = a.manaCost.ToString("0");
+
         ForceLayout();
     }
 
+
     public void Clear()
     {
-        // Show the empty face (no frame), or hide all faces if you didn't add one
         if (faceEmpty) SetActive(faceEmpty);
-        else DeactivateAllFaces(); // this will show nothing; slot root stays in layout
+        else DeactivateAllFaces();
     }
 
     private void SetActive(RectTransform face)
