@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: e43c8a0058a33c94494d6b3b8d5d1eed
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 119943
+  packageName: "Epic RPG Icon Pack \u2013 Animated Fantasy Skill Icons with Frames"
+  packageVersion: 1.7
+  assetPath: Assets/Epic RPG Icon Pack/Scripts/NavManager.cs
+  uploadId: 745008
