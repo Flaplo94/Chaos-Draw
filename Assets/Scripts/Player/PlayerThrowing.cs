@@ -25,6 +25,8 @@ public class PlayerThrowing : MonoBehaviour
 
     float cooldown;
 
+    [SerializeField] private AttackCooldownIndicator cooldownIndicator; // assign prefab in inspector
+
     void Awake()
     {
         // fallback if not assigned
@@ -47,7 +49,16 @@ public class PlayerThrowing : MonoBehaviour
 
             float effective = baseCooldown / Mathf.Max(0.01f, fireRateMult);
             cooldown = effective;
+            if (cooldownIndicator != null)
+            {
+                cooldownIndicator.StartCooldown(effective, transform);
+            }
+            else
+            {
+                Debug.LogWarning("[PlayerThrowing] cooldownIndicator not assigned!");
+            }
         }
+
     }
 
     void ThrowTowardMouse()

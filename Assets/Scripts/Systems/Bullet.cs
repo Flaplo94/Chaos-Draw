@@ -22,9 +22,21 @@ public class Bullet : MonoBehaviour
     [HideInInspector] public float debugGlobalMult = 1f;
     [HideInInspector] public float debugElementMult = 1f;
 
+    private Rigidbody2D rb;
+
     void Start()
     {
+        rb = GetComponent<Rigidbody2D>();
         Destroy(gameObject, lifetime);
+    }
+
+    void Update()
+    {
+        if (rb && rb.linearVelocity.sqrMagnitude > 0.01f)
+        {
+            float angle = Mathf.Atan2(rb.linearVelocity.y, rb.linearVelocity.x) * Mathf.Rad2Deg;
+            transform.rotation = Quaternion.AngleAxis(angle - 90f, Vector3.forward);
+        }
     }
 
     void OnTriggerEnter2D(Collider2D other)

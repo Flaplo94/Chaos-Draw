@@ -51,7 +51,6 @@ public class CardHandUI : MonoBehaviour
     [SerializeField] private float manualShuffleBaseTime = 4f;
     private float currentManualShuffleTime;
 
-
     [System.Serializable]
     public class StartingCard
     {
@@ -63,18 +62,10 @@ public class CardHandUI : MonoBehaviour
     {
         currentManualShuffleTime = manualShuffleBaseTime;
 
-        if (!handParent)
-        {
-            Debug.LogError("CardHandUI: handParent is not assigned.");
-            return;
-        }
+        if (!handParent) return;
 
         cardSlots = handParent.GetComponentsInChildren<CardSlotUI>(true);
-        if (cardSlots == null || cardSlots.Length == 0)
-        {
-            Debug.LogError("CardHandUI: No CardSlotUI children found under handParent. Place exactly 4 CardSlot prefab instances there.");
-            return;
-        }
+        if (cardSlots == null || cardSlots.Length == 0) return;
 
         hand = new Ability[cardSlots.Length];
 
@@ -97,10 +88,9 @@ public class CardHandUI : MonoBehaviour
         if (Keyboard.current.digit2Key.wasPressedThisFrame && hand.Length > 1) TryUseCard(1);
         if (Keyboard.current.digit3Key.wasPressedThisFrame && hand.Length > 2) TryUseCard(2);
         if (Keyboard.current.eKey.wasPressedThisFrame && hand.Length > 3) TryUseCard(3);
-        if (Keyboard.current.rKey.wasPressedThisFrame)
-        {
-            StartCoroutine(ManualShuffle());
-        }
+        if (Keyboard.current.rKey.wasPressedThisFrame) StartCoroutine(ManualShuffle());
+
+        UpdateCardOverlays(); // keep overlays in sync with mana
     }
 
     // -------------------- Deck / Draw / Use --------------------
@@ -109,24 +99,18 @@ public class CardHandUI : MonoBehaviour
         deck.Clear();
         drawPile.Clear();
         discardPile.Clear();
-
         UpdateDiscardText();
 
         foreach (var entry in startingDeckList)
         {
             Ability match = allAbilities.Find(a => a.name == entry.abilityName);
-            if (match == null)
-            {
-                Debug.LogWarning("Ability not found: " + entry.abilityName);
-                continue;
-            }
+            if (match == null) continue;
 
             for (int i = 0; i < entry.count; i++)
                 deck.Add(match);
         }
 
         drawPile.AddRange(deck);
-
         UpdateDeckText();
         UpdatePileUIs();
     }
@@ -145,7 +129,6 @@ public class CardHandUI : MonoBehaviour
         {
             drawPile.AddRange(discardPile);
             discardPile.Clear();
-
             StartCoroutine(ShuffleWithDelay(drawPile));
             return;
         }
@@ -198,8 +181,7 @@ public class CardHandUI : MonoBehaviour
         UpdatePileUIs();
 
         for (int i = 0; i < hand.Length; i++)
-            if (hand[i] == null)
-                DrawCard(i);
+            if (hand[i] == null) DrawCard(i);
     }
 
     private void TryUseCard(int index)
@@ -218,11 +200,10 @@ public class CardHandUI : MonoBehaviour
 
         UpdateDiscardText();
         UpdatePileUIs();
-
         DrawCard(index);
     }
 
-    // -------------------- UI counters / pile backs --------------------
+    // -------------------- UI helpers --------------------
     private void UpdateDiscardText()
     {
         if (discardCounterText != null)
@@ -244,12 +225,26 @@ public class CardHandUI : MonoBehaviour
         }
     }
 
-    public void OnWaveCompleted()
+    private void UpdateCardOverlays()
     {
-        waveCount++;
-        if (waveCount % 2 == 0)
-            ShowRewardUI();
+        if (PlayerMana.Instance == null) return;
+        float currentMana = PlayerMana.Instance.GetMana();
+
+        for (int i = 0; i < cardSlots.Length; i++)
+        {
+            var ability = cardSlots[i].GetAbility();
+            if (ability != null)
+            {
+                bool notEnough = ability.manaCost > currentMana;
+                cardSlots[i].SetGreyedOut(notEnough);
+            }
+            else
+            {
+                cardSlots[i].SetGreyedOut(false);
+            }
+        }
     }
+
 
     private Sprite GetBackFor(MagicType type)
     {
@@ -306,13 +301,8 @@ public class CardHandUI : MonoBehaviour
         var cardGO = Instantiate(prefab, rewardCardsParent);
 
         var ui = cardGO.GetComponent<CardRewardUI>();
-        if (ui == null)
-        {
-            Debug.LogError("CardRewardUI mangler på prefab!");
-            return;
-        }
+        if (ui == null) return;
 
-        // Fyld felter manuelt
         ui.nameText.text = ability.abilityName;
         ui.artImage.sprite = ability.icon;
         ui.artImage.color = Color.white;
@@ -322,14 +312,9 @@ public class CardHandUI : MonoBehaviour
         ui.dmgText.text = ability.damage > 0 ? ability.damage.ToString() : "—";
         ui.manaText.text = ability.manaCost.ToString("0");
 
-        //  Brug "AbilityDescription" fra prefab
         var desc = cardGO.transform.Find("AbilityDescription")?.GetComponent<TextMeshProUGUI>();
-        if (desc != null)
-            desc.text = ability.description;
-        else
-            Debug.LogWarning("Reward card prefab mangler 'AbilityDescription' TextMeshPro objekt!");
+        if (desc != null) desc.text = ability.description;
 
-        // Tags
         if (ui.tagRow != null)
         {
             foreach (Transform child in ui.tagRow)
@@ -343,7 +328,6 @@ public class CardHandUI : MonoBehaviour
             txt.alignment = TextAlignmentOptions.Center;
         }
 
-        // Button
         var button = cardGO.GetComponent<Button>();
         if (button)
         {
@@ -355,13 +339,6 @@ public class CardHandUI : MonoBehaviour
             });
         }
     }
-
-
-
-
-
-
-
 
     private void ShowRewardUI()
     {
@@ -398,7 +375,6 @@ public class CardHandUI : MonoBehaviour
         PauseManager.ReleasePause();
     }
 
-
     private void AddCardToDeck(Ability ability)
     {
         deck.Add(ability);
@@ -420,8 +396,6 @@ public class CardHandUI : MonoBehaviour
 
     private IEnumerator ManualShuffle()
     {
-        Debug.Log("[CardHandUI] Manual shuffle triggered by R. Shuffle time = " + currentManualShuffleTime);
-
         List<Ability> allCards = new List<Ability>();
         allCards.AddRange(drawPile);
         allCards.AddRange(discardPile);
@@ -471,10 +445,13 @@ public class CardHandUI : MonoBehaviour
             DrawCard(i);
         }
 
-        Debug.Log("[CardHandUI] Manual shuffle finished after " + currentManualShuffleTime + " seconds");
-
-        // increase shuffle time by 2 sec for next manual shuffle
         currentManualShuffleTime += 2f;
     }
 
+    public void OnWaveCompleted()
+    {
+        waveCount++;
+        if (waveCount % 2 == 0)
+            ShowRewardUI();
+    }
 }

@@ -52,4 +52,6 @@ public class PlayerMana : MonoBehaviour
             manaBar.value = currentMana / maxMana;
         }
     }
+    public float GetMana() => currentMana;
+    public float GetMaxMana() => maxMana;
 }

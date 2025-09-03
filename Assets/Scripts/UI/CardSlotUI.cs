@@ -8,9 +8,16 @@ public class CardSlotUI : MonoBehaviour
     [SerializeField] private RectTransform faceFire;       // child: "Face_Fire"
     [SerializeField] private RectTransform faceLightning;  // child: "Face_Lightning"
     [SerializeField] private RectTransform faceOther;      // child: "Face_Other"
-    [SerializeField] private RectTransform faceEmpty;      // child: "Face_Empty" (no visuals)
+    [SerializeField] private RectTransform faceEmpty;      // child: "Face_Empty"
+
+    [Header("Overlay Images (per face)")]
+    [SerializeField] private Image overlayFire;       // child inside Face_Fire
+    [SerializeField] private Image overlayLightning;  // child inside Face_Lightning
+    [SerializeField] private Image overlayOther;      // child inside Face_Other
 
     private RectTransform activeFace;
+    private Image activeOverlay;
+    private Ability currentAbility;
 
     private void Awake()
     {
@@ -20,13 +27,19 @@ public class CardSlotUI : MonoBehaviour
         if (!faceEmpty) faceEmpty = transform.Find("Face_Empty") as RectTransform;
 
         DeactivateAllFaces();
-        if (faceOther) SetActive(faceOther);
-        else if (faceEmpty) SetActive(faceEmpty);
+
+        if (faceEmpty) SetActive(faceEmpty);
+        else if (faceOther) SetActive(faceOther);
+
+        if (activeOverlay != null)
+            activeOverlay.enabled = false;
     }
 
     public void Show(Ability a)
     {
-        // Vælg korrekt face
+        currentAbility = a;
+
+        // pick correct face
         var next = a.magicType switch
         {
             MagicType.Fire => faceFire ? faceFire : faceOther,
@@ -37,12 +50,10 @@ public class CardSlotUI : MonoBehaviour
         if (!next && faceEmpty) next = faceEmpty;
         SetActive(next);
 
-        // Bind UI felter
+        // Bind UI
         var nameText = activeFace.Find("AbilityName")?.GetComponent<TextMeshProUGUI>();
         var rarityText = activeFace.Find("AbilityRarity")?.GetComponent<TextMeshProUGUI>();
         var artImage = activeFace.Find("AbilityArt")?.GetComponent<Image>();
-
-        //  Rettede paths
         var dmgValueText = activeFace.Find("StatsRow/DamageIcon/DamageValue")?.GetComponent<TextMeshProUGUI>();
         var manaValueText = activeFace.Find("StatsRow/ManaIcon/ManaValue")?.GetComponent<TextMeshProUGUI>();
 
@@ -62,20 +73,37 @@ public class CardSlotUI : MonoBehaviour
         ForceLayout();
     }
 
-
     public void Clear()
     {
+        currentAbility = null;
         if (faceEmpty) SetActive(faceEmpty);
         else DeactivateAllFaces();
+
+        if (activeOverlay != null)
+            activeOverlay.enabled = false;
     }
+
+    public void SetGreyedOut(bool grey)
+    {
+        if (activeOverlay != null)
+            activeOverlay.enabled = grey;
+    }
+
+    public Ability GetAbility() => currentAbility;
 
     private void SetActive(RectTransform face)
     {
-        if (face == activeFace) return;
-
         DeactivateAllFaces();
         activeFace = face;
         if (activeFace) activeFace.gameObject.SetActive(true);
+
+        // pick the right overlay for this face
+        if (face == faceFire) activeOverlay = overlayFire;
+        else if (face == faceLightning) activeOverlay = overlayLightning;
+        else if (face == faceOther) activeOverlay = overlayOther;
+
+        if (activeOverlay != null)
+            activeOverlay.enabled = false;
     }
 
     private void DeactivateAllFaces()
@@ -85,6 +113,7 @@ public class CardSlotUI : MonoBehaviour
         if (faceOther) faceOther.gameObject.SetActive(false);
         if (faceEmpty) faceEmpty.gameObject.SetActive(false);
         activeFace = null;
+        activeOverlay = null;
     }
 
     private void ForceLayout()
