@@ -59,7 +59,7 @@ public class WaveManager : MonoBehaviour
     {
         if (Instance == null) Instance = this;
         else { Destroy(gameObject); return; }
-        Debug.Log("[Wave] Awake");
+        
     }
 
     void Start()
@@ -285,7 +285,7 @@ public class WaveManager : MonoBehaviour
         if (reward > 0)
             MetaProgressionManager.Instance.AddShards(reward);
 
-        Debug.Log($"[WaveManager] Run ended after wave {wavesCleared}. Reward: {reward} Chaos Shards.");
+        
 
         if ((currentWave + 1) >= 20 && !string.IsNullOrEmpty(afterWave20Scene))
         {

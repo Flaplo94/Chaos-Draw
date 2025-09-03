@@ -78,7 +78,7 @@ public class PlayerHealth : MonoBehaviour
     {
         maxHealth = 1;
         if (currentHealth > 1) currentHealth = 1;
-        Debug.Log("[PlayerHealth] ForceSetToOneHP");
+        
 
         if (healthSlider != null)
         {
@@ -91,7 +91,7 @@ public class PlayerHealth : MonoBehaviour
     public void AddExtraLife(int n)
     {
         extraLives += Mathf.Max(0, n);
-        Debug.Log("[PlayerHealth] AddExtraLife: +" + n + " (total: " + extraLives + ")");
+        
     }
 
     public bool TryConsumeExtraLife()
@@ -107,7 +107,6 @@ public class PlayerHealth : MonoBehaviour
                 healthSlider.value = currentHealth;
             }
 
-            Debug.Log("[PlayerHealth] Extra life consumed. Lives left: " + extraLives);
             return true;
         }
         return false;
@@ -139,8 +138,6 @@ public class PlayerHealth : MonoBehaviour
             playerAnimator.SetTrigger("Die");
         }
 
-        Debug.Log($"[PlayerHealth] Dead - Game Over. Waves: {wavesCleared}, Shards: {reward}");
-
         OnDeath?.Invoke();
 
         // Disable player controls/collider immediately (but not the GameObject yet)
@@ -163,15 +160,13 @@ public class PlayerHealth : MonoBehaviour
             reward += 5;
         if (WaveManager.Instance != null && WaveManager.Instance.CurrentWave >= 20)
         {
-            Debug.Log("[PlayerHealth] Loading next scene after dying at wave 20...");
+            
             SceneManager.LoadScene(WaveManager.Instance.afterWave20Scene);
             return;
         }
 
         if (GameOverManager.Instance != null)
             GameOverManager.Instance.TriggerGameOver(wavesCleared, reward);
-        else
-            Debug.LogWarning("[PlayerHealth] GameOverManager missing!");
 
         // Now disable the player object entirely
         gameObject.SetActive(false);

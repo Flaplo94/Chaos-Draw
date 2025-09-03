@@ -39,6 +39,12 @@ public class PlayerMana : MonoBehaviour
         return true;
     }
 
+    public void GainMana(float amount)
+    {
+        currentMana = Mathf.Min(currentMana + amount, maxMana);
+        UpdateUI();
+    }
+
     private void UpdateUI()
     {
         if (manaBar != null)

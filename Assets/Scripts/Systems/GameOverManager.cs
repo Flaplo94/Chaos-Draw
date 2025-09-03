@@ -35,7 +35,7 @@ public class GameOverManager : MonoBehaviour
 
     public void TriggerGameOver(int wavesCleared, int shardsEarned)
     {
-        Debug.Log("[TEST] TriggerGameOver called with wavesCleared=" + wavesCleared);
+        
         // Sluk HUD
         waveCounterUI?.SetActive(false);
         healthBarUI?.SetActive(false);
@@ -70,7 +70,7 @@ public class GameOverManager : MonoBehaviour
                 if (unlockMessage != null)
                     unlockMessage.gameObject.SetActive(true);
 
-                Debug.Log("[GameOverManager] Skill Tree unlocked (first time, wave >= 10).");
+                
             }
             else
             {
@@ -85,7 +85,7 @@ public class GameOverManager : MonoBehaviour
                 unlockMessage.gameObject.SetActive(false);
         }
 
-        Debug.Log($"[GameOverManager] Game Over – Wave {wavesCleared}, Shards {shardsEarned}, Time {formattedTime}");
+        
     }
 
     // --- Knapper ---

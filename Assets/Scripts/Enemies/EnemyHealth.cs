@@ -46,7 +46,7 @@ public class EnemyHealth : MonoBehaviour
         if (currentHealth <= 0)
             Die();
 
-        Debug.Log($"EnemyHealth.TakeDamage: dmg={amount}, element={element}");
+        
     }
 
     public void Heal(int amount)

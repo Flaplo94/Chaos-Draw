@@ -31,7 +31,7 @@ public class GodSpeed : MonoBehaviour, IAbilityBehavior
 
     private Transform player;
     private PlayerMovement playerMove;
-    private float originalMoveSpeed;
+    private float originalBaseSpeed;   // store baseSpeed instead of moveSpeed
     private float zapTimer;
 
     private GameObject auraHost;
@@ -81,8 +81,9 @@ public class GodSpeed : MonoBehaviour, IAbilityBehavior
         playerMove = playerObj.GetComponent<PlayerMovement>();
         if (!playerMove) { DestroySelf(); return; }
 
-        originalMoveSpeed = playerMove.moveSpeed;
-        playerMove.moveSpeed = originalMoveSpeed * Mathf.Max(1f, speedMultiplier);
+        // store and modify base speed using the provided API
+        originalBaseSpeed = playerMove.GetBaseSpeed();
+        playerMove.SetBaseSpeed(originalBaseSpeed * Mathf.Max(1f, speedMultiplier));
 
         CreateAuraHost();
 
@@ -233,7 +234,8 @@ public class GodSpeed : MonoBehaviour, IAbilityBehavior
 
     private void OnDestroy()
     {
-        if (playerMove != null) playerMove.moveSpeed = originalMoveSpeed;
+        if (playerMove != null)
+            playerMove.SetBaseSpeed(originalBaseSpeed);   // reset to original baseSpeed
         if (auraHost) Destroy(auraHost);
         if (Active == this) Active = null;
     }

@@ -61,7 +61,7 @@ public class Shield : MonoBehaviour, IAbilityBehavior
 
         if (followTarget == null)
         {
-            Debug.LogError("Shield: No followTarget found.");
+            
             Destroy(gameObject);
             return;
         }

@@ -101,4 +101,9 @@ public class PlayerMovement : MonoBehaviour
     {
         baseSpeed = Mathf.Max(0f, newBaseSpeed);
     }
+
+    public float GetBaseSpeed()
+    {
+        return baseSpeed;
+    }
 }
