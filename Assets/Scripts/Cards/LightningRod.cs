@@ -118,17 +118,20 @@ public class LightningRod : MonoBehaviour, IAbilityBehavior
 
         if (damageTimer <= 0f)
         {
+            var result = DamageCalculator.ComputeFinalDamage(damage, DamageElement.Lightning);
+
             RaycastHit2D[] hits = Physics2D.RaycastAll(from, dir.normalized, length, enemyLayer);
             for (int i = 0; i < hits.Length; i++)
             {
                 var col = hits[i].collider;
                 if (!col) continue;
-                if (col.TryGetComponent(out EnemyHealth eh)) eh.TakeDamage(Mathf.RoundToInt(damage), DamageElement.Lightning);
-                if (col.TryGetComponent(out BossHealth bh)) bh.TakeDamage(Mathf.RoundToInt(damage), DamageElement.Lightning);
+                if (col.TryGetComponent(out EnemyHealth eh)) eh.TakeDamage(result.amount, result.element);
+                if (col.TryGetComponent(out BossHealth bh)) bh.TakeDamage(result.amount, result.element);
             }
             damageTimer = damageTickRate;
         }
     }
+
 
     private void DestroySelf()
     {

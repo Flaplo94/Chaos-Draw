@@ -156,15 +156,16 @@ public class FireTrail : MonoBehaviour, IAbilityBehavior
         foreach (var col in hits)
         {
             if (!col) continue;
-
             Transform root = col.attachedRigidbody ? col.attachedRigidbody.transform : col.transform;
             if (!seen.Add(root)) continue;
             if (root.CompareTag("Player")) continue;
 
-            if (root.TryGetComponent(out EnemyHealth eh)) eh.TakeDamage(damagePerTick, DamageElement.Fire);
-            if (root.TryGetComponent(out BossHealth bh)) bh.TakeDamage(damagePerTick, DamageElement.Fire);
+            var result = DamageCalculator.ComputeFinalDamage(damagePerTick, DamageElement.Fire);
+            if (root.TryGetComponent(out EnemyHealth eh)) eh.TakeDamage(result.amount, result.element);
+            if (root.TryGetComponent(out BossHealth bh)) bh.TakeDamage(result.amount, result.element);
         }
     }
+
 
 #if UNITY_EDITOR
     private void OnDrawGizmosSelected()

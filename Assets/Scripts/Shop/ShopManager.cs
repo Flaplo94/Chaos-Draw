@@ -207,11 +207,18 @@ public class ShopManager : MonoBehaviour
     {
         bool artsOk = artifactSlots != null && artifactSlots.Length >= 3 &&
                       artifactSlots[0] && artifactSlots[1] && artifactSlots[2];
-        bool buffsOk = buffSlots != null && buffSlots.Length >= 3 &&
-                       buffSlots[0] && buffSlots[1] && buffSlots[2];
+
+        // Buff slots er valgfrie: enten alle sat, eller ingen
+        bool buffsOk = buffSlots == null || buffSlots.Length == 0 ||
+                       (buffSlots.Length >= 3 &&
+                        buffSlots[0] && buffSlots[1] && buffSlots[2]);
+
+        // Service stadig påkrævet
         bool serviceOk = serviceSlot != null;
+
         return artsOk && buffsOk && serviceOk;
     }
+
 
     private void AutoFindAllSlots()
     {

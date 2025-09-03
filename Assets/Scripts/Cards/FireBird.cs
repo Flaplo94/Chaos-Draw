@@ -54,22 +54,20 @@ public class FireBird : MonoBehaviour, IAbilityBehavior
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // Only react to enemies/bosses
         if (!other.CompareTag("Enemy") && !other.CompareTag("Boss"))
             return;
 
         Transform root = other.attachedRigidbody ? other.attachedRigidbody.transform : other.transform;
-        if (!hitRoots.Add(root))
-            return; // already damaged this target once
+        if (!hitRoots.Add(root)) return;
 
-        // Deal damage
-        if (root.TryGetComponent(out EnemyHealth eh)) eh.TakeDamage(damage, DamageElement.Fire);
-        if (root.TryGetComponent(out BossHealth bh)) bh.TakeDamage(damage, DamageElement.Fire);
+        var result = DamageCalculator.ComputeFinalDamage(damage, DamageElement.Fire);
+        if (root.TryGetComponent(out EnemyHealth eh)) eh.TakeDamage(result.amount, result.element);
+        if (root.TryGetComponent(out BossHealth bh)) bh.TakeDamage(result.amount, result.element);
 
         remainingPierces--;
-        if (remainingPierces < 0)
-            Destroy(gameObject);
+        if (remainingPierces < 0) Destroy(gameObject);
     }
+
 
     private void FaceDirection(Vector2 dir)
     {

@@ -69,8 +69,9 @@ public class Fireball : MonoBehaviour, IAbilityBehavior
         var hits = Physics2D.OverlapCircleAll(transform.position, aoeRadius);
         foreach (var h in hits)
         {
-            if (h.TryGetComponent(out EnemyHealth eh)) eh.TakeDamage(damage, DamageElement.Fire);
-            if (h.TryGetComponent(out BossHealth bh)) bh.TakeDamage(damage, DamageElement.Fire);
+            var result = DamageCalculator.ComputeFinalDamage(damage, DamageElement.Fire);
+            if (h.TryGetComponent(out EnemyHealth eh)) eh.TakeDamage(result.amount, result.element);
+            if (h.TryGetComponent(out BossHealth bh)) bh.TakeDamage(result.amount, result.element);
         }
 
         float baseSpriteSize = 32f;
@@ -83,6 +84,7 @@ public class Fireball : MonoBehaviour, IAbilityBehavior
 
         if (anim) anim.SetTrigger("Impact");
     }
+
 
     public void OnImpactFinished() => Destroy(gameObject);
 

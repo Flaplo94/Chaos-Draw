@@ -155,19 +155,20 @@ public class GodSpeed : MonoBehaviour, IAbilityBehavior
         foreach (var h in hits)
         {
             if (!h) continue;
-
             Transform root = h.attachedRigidbody ? h.attachedRigidbody.transform : h.transform;
             if (root == player) continue;
             if (root == transform || root.IsChildOf(transform)) continue;
 
-            bool didDamage = false;
-            if (h.TryGetComponent(out EnemyHealth eh)) { eh.TakeDamage(zapDamagePerTick, DamageElement.Lightning); didDamage = true; }
-            if (h.TryGetComponent(out BossHealth bh)) { bh.TakeDamage(zapDamagePerTick, DamageElement.Lightning); didDamage = true; }
-            if (!didDamage) continue;
+            var result = DamageCalculator.ComputeFinalDamage(zapDamagePerTick, DamageElement.Lightning);
 
-            if (lightningVisual) SpawnBolt(player.position, root.position);
+            bool didDamage = false;
+            if (h.TryGetComponent(out EnemyHealth eh)) { eh.TakeDamage(result.amount, result.element); didDamage = true; }
+            if (h.TryGetComponent(out BossHealth bh)) { bh.TakeDamage(result.amount, result.element); didDamage = true; }
+
+            if (didDamage && lightningVisual) SpawnBolt(player.position, root.position);
         }
     }
+
 
     private void SpawnBolt(Vector3 from, Vector3 to)
     {

@@ -35,9 +35,10 @@ public class Bullet : MonoBehaviour
 
         if (enemy != null)
         {
-            enemy.TakeDamage(baseDamage, DamageElement.Physical);
+            var result = DamageCalculator.ComputeFinalDamage(baseDamage, DamageElement.Physical);
+            enemy.TakeDamage(result.amount, result.element);
             PlayHitSound();
-            LogDamage("Enemy", enemy.gameObject.name);
+            LogDamage("Enemy", enemy.gameObject.name, result);
             Destroy(gameObject);
             return;
         }
@@ -48,9 +49,10 @@ public class Bullet : MonoBehaviour
 
         if (boss != null)
         {
-            boss.TakeDamage(baseDamage, DamageElement.Physical); // BossHealth skal evt. ogs� have element
+            var result = DamageCalculator.ComputeFinalDamage(baseDamage, DamageElement.Physical);
+            boss.TakeDamage(result.amount, result.element);
             PlayHitSound();
-            LogDamage("Boss", boss.gameObject.name);
+            LogDamage("Boss", boss.gameObject.name, result);
             Destroy(gameObject);
             return;
         }
@@ -66,28 +68,24 @@ public class Bullet : MonoBehaviour
     {
         if (hitSfx == null) return;
 
-        // create temporary object to host AudioSource
         GameObject temp = new GameObject("BulletHitSound");
         temp.transform.position = transform.position;
 
         AudioSource src = temp.AddComponent<AudioSource>();
         src.clip = hitSfx;
         src.volume = hitVolume;
-        src.spatialBlend = 0f; // 2D sound (instant, no distance delay)
+        src.spatialBlend = 0f; // 2D sound
         src.Play();
 
-        // destroy temp object after sound is done
         Destroy(temp, hitSfx.length);
     }
 
-    void LogDamage(string targetType, string targetName)
+    void LogDamage(string targetType, string targetName, DamageResult result)
     {
         if (!logDamage) return;
         Debug.Log(
-            "[DMG] " + targetType + " '" + targetName + "' <- " + baseDamage +
-            " (base " + debugBaseDamage +
-            ", global x" + debugGlobalMult.ToString("0.##") +
-            ", elem x" + debugElementMult.ToString("0.##") + ")"
+            $"[DMG] {targetType} '{targetName}' <- {result.amount} " +
+            $"(base {baseDamage}, mult={result.amount / (float)baseDamage:0.##}, element={result.element})"
         );
     }
 }
