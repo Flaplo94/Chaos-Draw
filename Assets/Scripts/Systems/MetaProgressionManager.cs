@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MetaProgressionManager : MonoBehaviour
 {
@@ -19,9 +20,21 @@ public class MetaProgressionManager : MonoBehaviour
         if (Instance == null) { Instance = this; DontDestroyOnLoad(gameObject); }
         else { Destroy(gameObject); return; }
 
+        // Force reset on new build
+        string currentVersion = Application.version; // comes from Project Settings Player Version
+        string lastVersion = PlayerPrefs.GetString("lastBuildVersion", "");
+
+        if (lastVersion != currentVersion)
+        {
+            Debug.Log($"[MetaProgression] New build detected (last={lastVersion}, current={currentVersion}). Resetting progression.");
+            ResetAllMeta();
+            PlayerPrefs.SetString("lastBuildVersion", currentVersion);
+            PlayerPrefs.Save();
+        }
+
         LoadData();
         Debug.Log("[MetaProgression] Awake in scene: " +
-            UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
+            SceneManager.GetActiveScene().name);
     }
 
     void Update()
