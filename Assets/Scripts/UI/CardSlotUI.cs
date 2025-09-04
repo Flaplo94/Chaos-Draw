@@ -42,7 +42,6 @@ public class CardSlotUI : MonoBehaviour
         var rarityText = activeFace.Find("AbilityRarity")?.GetComponent<TextMeshProUGUI>();
         var artImage = activeFace.Find("AbilityArt")?.GetComponent<Image>();
 
-        //  Rettede paths
         var dmgValueText = activeFace.Find("StatsRow/DamageIcon/DamageValue")?.GetComponent<TextMeshProUGUI>();
         var manaValueText = activeFace.Find("StatsRow/ManaIcon/ManaValue")?.GetComponent<TextMeshProUGUI>();
 
@@ -59,8 +58,18 @@ public class CardSlotUI : MonoBehaviour
         if (dmgValueText) dmgValueText.text = a.damage > 0 ? a.damage.ToString() : "—";
         if (manaValueText) manaValueText.text = a.manaCost.ToString("0");
 
+        //  Hover support
+        var hover = activeFace.GetComponent<CardHoverTrigger>();
+        if (hover != null)
+        {
+            hover.SetAbility(a);
+            Debug.Log("[CardSlotUI] Hover ability sat: " + a.abilityName);
+        }
+
         ForceLayout();
     }
+
+
 
 
     public void Clear()

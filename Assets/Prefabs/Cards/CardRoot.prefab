@@ -298,6 +298,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3142152902405379001}
   - component: {fileID: 7303202393188164058}
+  - component: {fileID: 8485290771991474711}
   m_Layer: 5
   m_Name: Face_Fire
   m_TagString: Untagged
@@ -348,6 +349,18 @@ MonoBehaviour:
   dmgText: {fileID: 282943190463634345}
   manaText: {fileID: 8177401200151123731}
   tagRow: {fileID: 7077115908182297331}
+--- !u!114 &8485290771991474711
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1424194116810278532}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b2ef199a71ff827488a7a02b65ccbec9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1870492079507363486
 GameObject:
   m_ObjectHideFlags: 0
@@ -1127,6 +1140,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8999933884999500702}
   - component: {fileID: 8047430878539621625}
+  - component: {fileID: 6268105299161301000}
   m_Layer: 5
   m_Name: Face_Lightning
   m_TagString: Untagged
@@ -1177,6 +1191,18 @@ MonoBehaviour:
   dmgText: {fileID: 2554353037130966993}
   manaText: {fileID: 663942016387020487}
   tagRow: {fileID: 9004420966615785651}
+--- !u!114 &6268105299161301000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3655010764611321914}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b2ef199a71ff827488a7a02b65ccbec9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4060490641503446627
 GameObject:
   m_ObjectHideFlags: 0
@@ -2222,7 +2248,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5273908769366224489}
   - component: {fileID: 129514244535901398}
-  - component: {fileID: 8423875330065929586}
+  - component: {fileID: 4327507862526440703}
   m_Layer: 5
   m_Name: Face_Other
   m_TagString: Untagged
@@ -2273,7 +2299,7 @@ MonoBehaviour:
   dmgText: {fileID: 4653745852074152054}
   manaText: {fileID: 6843646246476748118}
   tagRow: {fileID: 3670033061677468581}
---- !u!114 &8423875330065929586
+--- !u!114 &4327507862526440703
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2282,15 +2308,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 6200915675414229837}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ab1e07ceafab99e4baabf9bdbc7d931d, type: 3}
+  m_Script: {fileID: 11500000, guid: b2ef199a71ff827488a7a02b65ccbec9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nameText: {fileID: 0}
-  artImage: {fileID: 0}
-  rarityText: {fileID: 0}
-  dmgText: {fileID: 0}
-  manaText: {fileID: 0}
-  tagRow: {fileID: 0}
 --- !u!1 &6314515220683111967
 GameObject:
   m_ObjectHideFlags: 0
