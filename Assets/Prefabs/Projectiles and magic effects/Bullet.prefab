@@ -168,9 +168,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   baseDamage: 1
   lifetime: 5
+  manaOnHit: 5
   hitSfx: {fileID: 8300000, guid: aa74dd2837f0da14ca6b917c8a8d6565, type: 3}
-  hitVolume: 0.1
-  ManaOnHit: 5
+  audioSource: {fileID: 1767576040511546225}
   logDamage: 1
   debugBaseDamage: 0
   debugGlobalMult: 1
@@ -184,9 +184,9 @@ AudioSource:
   m_GameObject: {fileID: 4804991577932546782}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 9b5655111c4131d4e873b49368f4e837, type: 3}
-  m_Resource: {fileID: 8300000, guid: 9b5655111c4131d4e873b49368f4e837, type: 3}
+  OutputAudioMixerGroup: {fileID: 7188633681363462696, guid: feda25027cc99314b9e45516bade77b2, type: 2}
+  m_audioClip: {fileID: 8300000, guid: aa74dd2837f0da14ca6b917c8a8d6565, type: 3}
+  m_Resource: {fileID: 8300000, guid: aa74dd2837f0da14ca6b917c8a8d6565, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 0.27
   m_Pitch: 1

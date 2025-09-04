@@ -4,6 +4,8 @@ using UnityEngine.SceneManagement;
 public class PauseMenu : MonoBehaviour
 {
     [SerializeField] private GameObject pauseMenuUI; // assign PauseMenu panel
+    [SerializeField] private GameObject pauseMenu;
+    [SerializeField] private GameObject optionsMenu;
 
     private bool isPaused = false;
 
@@ -11,7 +13,9 @@ public class PauseMenu : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (isPaused) Resume();
+            if (isPaused && optionsMenu.activeSelf)
+                CloseOptions();
+            else if (isPaused) Resume();
             else Pause();
         }
     }
@@ -26,19 +30,23 @@ public class PauseMenu : MonoBehaviour
     public void Resume()
     {
         pauseMenuUI.SetActive(false);
+        optionsMenu.SetActive(false);
         PauseManager.ReleasePause();
         isPaused = false;
     }
 
     public void OpenOptions()
     {
-        Debug.Log("TODO: Show options menu");
-        // Replace with your options UI when ready
+        pauseMenu.SetActive(false);
+        optionsMenu.SetActive(true);
     }
-
+    public void CloseOptions()
+    {
+        optionsMenu.SetActive(false);
+        pauseMenu.SetActive(true);
+    }
     public void ExitToMainMenu()
     {
-        Debug.Log("TODO: Show Main menu");
         PauseManager.ReleasePause();
         SceneManager.LoadScene("MainMenu"); // <-- replace with your main menu scene name
     }

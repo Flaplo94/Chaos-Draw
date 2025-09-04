@@ -6,11 +6,11 @@ public class Bullet : MonoBehaviour
     public float lifetime = 5f;
 
     [Header("Mana")]
-    [SerializeField] private float manaOnHit = 5f;   // mana gain per hit
+    [SerializeField] private float manaOnHit = 5f;
 
     [Header("Audio")]
-    [SerializeField] private AudioClip hitSfx;   // assign in Inspector
-    [SerializeField] private float hitVolume = 1f;
+    [SerializeField] private AudioClip hitSfx;
+    [SerializeField] private AudioSource audioSource; // assign in Inspector
 
     // --- Backwards compatibility ---
     public int damage
@@ -26,10 +26,14 @@ public class Bullet : MonoBehaviour
     [HideInInspector] public float debugElementMult = 1f;
 
     private Rigidbody2D rb;
+    private Collider2D col;
+    private SpriteRenderer sr;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        col = GetComponent<Collider2D>();
+        sr = GetComponent<SpriteRenderer>();
         Destroy(gameObject, lifetime);
     }
 
@@ -52,12 +56,7 @@ public class Bullet : MonoBehaviour
         {
             var result = DamageCalculator.ComputeFinalDamage(baseDamage, DamageElement.Physical);
             enemy.TakeDamage(result.amount, result.element);
-            PlayHitSound();
-            LogDamage("Enemy", enemy.gameObject.name, result);
-
-            PlayerMana.Instance?.GainMana(manaOnHit); // mana refund on hit
-
-            Destroy(gameObject);
+            Hit("Enemy", enemy.gameObject.name, result);
             return;
         }
 
@@ -69,12 +68,7 @@ public class Bullet : MonoBehaviour
         {
             var result = DamageCalculator.ComputeFinalDamage(baseDamage, DamageElement.Physical);
             boss.TakeDamage(result.amount, result.element);
-            PlayHitSound();
-            LogDamage("Boss", boss.gameObject.name, result);
-
-            PlayerMana.Instance?.GainMana(manaOnHit); // mana refund on hit
-
-            Destroy(gameObject);
+            Hit("Boss", boss.gameObject.name, result);
             return;
         }
 
@@ -85,20 +79,26 @@ public class Bullet : MonoBehaviour
         }
     }
 
+    private void Hit(string targetType, string targetName, DamageResult result)
+    {
+        PlayHitSound();
+        LogDamage(targetType, targetName, result);
+
+        PlayerMana.Instance?.GainMana(manaOnHit);
+
+        // Disable visuals + collider immediately
+        if (col) col.enabled = false;
+        if (sr) sr.enabled = false;
+        if (rb) rb.linearVelocity = Vector2.zero;
+
+        // Destroy after sound finishes
+        Destroy(gameObject, hitSfx != null ? hitSfx.length : 0f);
+    }
+
     void PlayHitSound()
     {
-        if (hitSfx == null) return;
-
-        GameObject temp = new GameObject("BulletHitSound");
-        temp.transform.position = transform.position;
-
-        AudioSource src = temp.AddComponent<AudioSource>();
-        src.clip = hitSfx;
-        src.volume = hitVolume;
-        src.spatialBlend = 0f; // 2D sound
-        src.Play();
-
-        Destroy(temp, hitSfx.length);
+        if (hitSfx == null || audioSource == null) return;
+        audioSource.PlayOneShot(hitSfx);
     }
 
     void LogDamage(string targetType, string targetName, DamageResult result)
