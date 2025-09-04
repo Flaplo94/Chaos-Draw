@@ -282,20 +282,21 @@ public class WaveManager : MonoBehaviour
         reward += wavesCleared;
         reward += (wavesCleared / 10) * 5;
 
-        if (reward > 0)
+        if (reward > 0 && MetaProgressionManager.Instance != null)
             MetaProgressionManager.Instance.AddShards(reward);
 
-        
-
-        if ((currentWave + 1) >= 20 && !string.IsNullOrEmpty(afterWave20Scene))
-        {
-            SceneManager.LoadScene(afterWave20Scene);
-            return;
-        }
-
+        // Vis ALTID Game Over, uanset reward
         if (GameOverManager.Instance != null)
             GameOverManager.Instance.TriggerGameOver(wavesCleared, reward);
+
+        // Hvis der skal loades ny scene efter wave 20, så gør det EFTER Game Over
+        if ((currentWave + 1) >= 20 && !string.IsNullOrEmpty(afterWave20Scene))
+        {
+            // evt. delay for at spilleren kan se panelet et øjeblik
+            // SceneManager.LoadScene(afterWave20Scene);
+        }
     }
+
 
     private IEnumerator PauseDuringFocus(CameraFollow camFollow, Vector3 target, float duration)
     {
