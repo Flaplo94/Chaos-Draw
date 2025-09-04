@@ -47,18 +47,19 @@ public class SkillNodeUI : MonoBehaviour
         if (unlockedCheck != null)
             unlockedCheck.SetActive(isUnlocked);
 
-        //  overlay kun aktiv hvis skillen er låst OG man mangler prerequisites
+        // overlay kun aktiv hvis skillen er låst OG man mangler prerequisites
         if (lockedOverlay != null)
             lockedOverlay.SetActive(!isUnlocked && !prereqsMet);
 
-        //  glow altid aktiv på ikke-unlocked skills
+        // glow aktiv kun hvis ikke-unlocked og prerequisites er opfyldt
         if (availableGlow != null)
-            availableGlow.SetActive(!isUnlocked);
+            availableGlow.SetActive(!isUnlocked && prereqsMet);
 
-        //  knappen skal altid kunne åbne detailpanelet
+        // knappen skal altid kunne åbne detailpanelet
         if (button != null)
             button.interactable = true;
     }
+
 
     private bool CheckPrerequisites()
     {
