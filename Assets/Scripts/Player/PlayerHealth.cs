@@ -3,25 +3,27 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using TMPro;
 
-/// Simpel health-komponent med ekstra liv og helper-metoder
 public class PlayerHealth : MonoBehaviour
 {
-    public static PlayerHealth Instance;   // singleton
+    public static PlayerHealth Instance;
 
-    [Header("Health")]
-    public int maxHealth = 5;
+    [Header("Health Settings")]
+    public int maxHealth = 50;
     public int currentHealth;
-
-    [Header("Revive")]
     public int extraLives = 0;
 
-    [Header("UI")]
-    [SerializeField] private Slider healthSlider; // drag your Slider here in Inspector
+    [Header("UI References")]
+    [SerializeField] private Image healthFill;   // Rød fyld
+    [SerializeField] private Image hpEffect;     // Effekt ovenpå fyld
+    [SerializeField] private TMP_Text hpText;    // Tekst current/max
+    [SerializeField] private RectTransform edgeVfx; // Lys-streg
 
+    [Header("Other")]
     public Action OnDeath;
     [SerializeField] private Animator playerAnimator;
-    
+
     void Awake()
     {
         if (Instance == null) Instance = this;
@@ -31,34 +33,27 @@ public class PlayerHealth : MonoBehaviour
     void Start()
     {
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
-
-        if (healthSlider != null)
-        {
-            healthSlider.maxValue = maxHealth;
-            healthSlider.value = currentHealth;
-        }
+        UpdateUI();
     }
 
     public void TakeDamage(int amount)
     {
         if (amount <= 0) return;
 
-        // check for any active shield
         var shield = FindFirstObjectByType<Shield>();
         if (shield != null)
         {
             shield.ConsumeHit();
-            return; // a shield absorbed the hit
+            return;
         }
 
         currentHealth -= amount;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
-        var flash = GetComponent<HitFlash>();
-        if (flash != null)
-            flash.PlayFlash();
 
-        if (healthSlider != null)
-            healthSlider.value = currentHealth;
+        var flash = GetComponent<HitFlash>();
+        if (flash != null) flash.PlayFlash();
+
+        UpdateUI();
 
         if (currentHealth <= 0) Die();
     }
@@ -66,14 +61,10 @@ public class PlayerHealth : MonoBehaviour
     public void Heal(int amount)
     {
         if (amount <= 0) return;
-
         currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
-
-        if (healthSlider != null)
-            healthSlider.value = currentHealth;
+        UpdateUI();
     }
 
-    // Kravet fra artifacts: sæt alt til 1 HP
     public void ForceSetToOneHP()
     {
         maxHealth = 1;
@@ -87,7 +78,6 @@ public class PlayerHealth : MonoBehaviour
         }
     }
 
-    // Ekstra liv (Spare Rib artifact)
     public void AddExtraLife(int n)
     {
         extraLives += Mathf.Max(0, n);
@@ -111,46 +101,33 @@ public class PlayerHealth : MonoBehaviour
         }
         return false;
     }
-    // --- Death + Game Over flow ---
+
     public void Die()
     {
         if (TryConsumeExtraLife())
             return;
 
         int wavesCleared = WaveManager.Instance != null ? WaveManager.Instance.CurrentWave : 0;
-
-        // Beregn reward shards
         int reward = wavesCleared / 5;
-        if (wavesCleared >= 10 && wavesCleared % 10 == 0)
-            reward += 5;
+        if (wavesCleared >= 10 && wavesCleared % 10 == 0) reward += 5;
 
         if (MetaProgressionManager.Instance != null)
             MetaProgressionManager.Instance.AddShards(reward);
-        if (healthSlider != null)
-        {
-            healthSlider.value = 0;   // slider shows empty
-            if (healthSlider.fillRect != null)
-                healthSlider.fillRect.gameObject.SetActive(false);
-        }
-        // Play death animation instead of instantly popping UI
+
+        if (healthFill != null) healthFill.fillAmount = 0;
+        if (hpEffect != null) hpEffect.fillAmount = 0;
+
         if (playerAnimator != null)
-        {
             playerAnimator.SetTrigger("Die");
-        }
 
         OnDeath?.Invoke();
 
-        // Disable player controls/collider immediately (but not the GameObject yet)
         var col = GetComponent<Collider2D>();
         if (col) col.enabled = false;
         var rb = GetComponent<Rigidbody2D>();
         if (rb) rb.simulated = false;
-
-        // GameOverManager.TriggerGameOver will be called by animation event
-        // (see below)
     }
 
-    // This will be called from the animation event at the right frame
     public void OnDeathAnimationFinished()
     {
         int wavesCleared = WaveManager.Instance != null ? WaveManager.Instance.CurrentWave : 0;
@@ -168,41 +145,43 @@ public class PlayerHealth : MonoBehaviour
         if (GameOverManager.Instance != null)
             GameOverManager.Instance.TriggerGameOver(wavesCleared, reward);
 
-        // Now disable the player object entirely
         gameObject.SetActive(false);
     }
-
-    private IEnumerator ShowGameOverDelayed(int wavesCleared, int reward)
-    {
-        yield return new WaitForSeconds(1.5f); // delay in seconds, tweak as you like
-
-        if (GameOverManager.Instance != null)
-            GameOverManager.Instance.TriggerGameOver(wavesCleared, reward);
-        else
-            Debug.LogWarning("[PlayerHealth] GameOverManager mangler!");
-    }
-
 
     public void SetMaxHealthTemporary(int newMax, bool clampCurrent = true)
     {
         maxHealth = Mathf.Max(1, newMax);
-        if (clampCurrent)
-            currentHealth = Mathf.Min(currentHealth, maxHealth);
-
-        if (healthSlider != null)
-        {
-            healthSlider.maxValue = maxHealth;
-            healthSlider.value = currentHealth;
-        }
+        if (clampCurrent) currentHealth = Mathf.Min(currentHealth, maxHealth);
+        UpdateUI();
     }
 
     public void SetCurrentHealth(int hp)
     {
         currentHealth = Mathf.Clamp(hp, 0, maxHealth);
-
-        if (healthSlider != null)
-            healthSlider.value = currentHealth;
-
+        UpdateUI();
         if (currentHealth <= 0) Die();
+    }
+
+    private void UpdateUI()
+    {
+        float ratio = (float)currentHealth / maxHealth;
+
+        if (healthFill != null)
+            healthFill.fillAmount = ratio;
+
+        if (hpEffect != null)
+            hpEffect.fillAmount = ratio;
+
+        if (hpText != null)
+            hpText.text = $"{currentHealth}/{maxHealth}";
+
+        if (edgeVfx != null && healthFill != null)
+        {
+            float height = ((RectTransform)healthFill.transform).rect.height;
+            edgeVfx.anchoredPosition = new Vector2(
+                edgeVfx.anchoredPosition.x,
+                -height / 2f + height * ratio
+            );
+        }
     }
 }

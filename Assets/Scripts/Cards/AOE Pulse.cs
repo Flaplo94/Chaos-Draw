@@ -25,13 +25,17 @@ public class AOEPulse : MonoBehaviour, IAbilityBehavior
             ? Physics2D.OverlapCircleAll(transform.position, radius)
             : Physics2D.OverlapCircleAll(transform.position, radius, enemyLayer);
 
+        // Fire element damage skal igennem DamageCalculator
+        DamageResult result = DamageCalculator.ComputeFinalDamage(damage, DamageElement.Fire);
+
         foreach (var h in hits)
         {
             if (!h) continue;
-            if (h.TryGetComponent(out EnemyHealth eh)) eh.TakeDamage(damage, DamageElement.Fire);
-            if (h.TryGetComponent(out BossHealth bh)) bh.TakeDamage(damage, DamageElement.Fire);
+            if (h.TryGetComponent(out EnemyHealth eh)) eh.TakeDamage(result.amount, result.element);
+            if (h.TryGetComponent(out BossHealth bh)) bh.TakeDamage(result.amount, result.element);
         }
     }
+
     public void OnImpactFinished() => Destroy(gameObject);
 
 #if UNITY_EDITOR

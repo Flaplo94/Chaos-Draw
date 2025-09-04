@@ -426,6 +426,7 @@ GameObject:
   - component: {fileID: 7022175745586873101}
   - component: {fileID: 7644308533381601714}
   - component: {fileID: 1339389101623232785}
+  - component: {fileID: 2111140788689546827}
   m_Layer: 5
   m_Name: CardButtonLightning
   m_TagString: Untagged
@@ -559,6 +560,18 @@ MonoBehaviour:
   dmgText: {fileID: 2389567598563887312}
   manaText: {fileID: 48982700255607861}
   tagRow: {fileID: 1329714720719335505}
+--- !u!114 &2111140788689546827
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4058608401127393656}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b2ef199a71ff827488a7a02b65ccbec9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4964823316257817482
 GameObject:
   m_ObjectHideFlags: 0

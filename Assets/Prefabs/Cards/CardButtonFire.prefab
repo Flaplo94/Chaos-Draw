@@ -498,6 +498,7 @@ GameObject:
   - component: {fileID: 7022175745586873101}
   - component: {fileID: 7644308533381601714}
   - component: {fileID: 5727269635333265911}
+  - component: {fileID: 3502654897310584050}
   m_Layer: 5
   m_Name: CardButtonFire
   m_TagString: Untagged
@@ -631,6 +632,18 @@ MonoBehaviour:
   dmgText: {fileID: 7905980575797733195}
   manaText: {fileID: 5041190258588889730}
   tagRow: {fileID: 7232375843366374869}
+--- !u!114 &3502654897310584050
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4058608401127393656}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b2ef199a71ff827488a7a02b65ccbec9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4964823316257817482
 GameObject:
   m_ObjectHideFlags: 0

@@ -67,8 +67,16 @@ public class CardSlotUI : MonoBehaviour
             artImage.preserveAspect = true;
         }
 
-        if (dmgValueText) dmgValueText.text = a.damage > 0 ? a.damage.ToString() : "—";
+        if (dmgValueText) dmgValueText.text = a.damage > 0 ? a.damage.ToString() : "ï¿½";
         if (manaValueText) manaValueText.text = a.manaCost.ToString("0");
+
+        //  Hover support
+        var hover = activeFace.GetComponent<CardHoverTrigger>();
+        if (hover != null)
+        {
+            hover.SetAbility(a);
+            Debug.Log("[CardSlotUI] Hover ability sat: " + a.abilityName);
+        }
 
         ForceLayout();
     }

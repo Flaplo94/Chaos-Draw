@@ -1,42 +1,59 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class PlayerMana : MonoBehaviour
 {
-    [Header("Mana Settings")]
-    [SerializeField] private float maxMana = 100f;
-    [SerializeField] private float regenRate = 5f;
-    [SerializeField] private Slider manaBar;
-
-    private float currentMana;
-
     public static PlayerMana Instance { get; private set; }
 
-    private void Awake()
+    [Header("Mana Settings")]
+    public float maxMana = 100f;
+    public float regenRate = 5f;
+    public float currentMana;
+
+    [Header("UI References")]
+    [SerializeField] private Image manaFill;    // Blå fyld
+    [SerializeField] private Image manaEffect;  // Effekt ovenpå fyld
+    [SerializeField] private TMP_Text manaText; // Tekst current/max
+    [SerializeField] private RectTransform edgeVfx; // Lys-streg
+
+    void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
         Instance = this;
+
         currentMana = maxMana;
         UpdateUI();
     }
 
-    private void Update()
+    void Update()
     {
         if (currentMana < maxMana)
         {
             currentMana += regenRate * Time.deltaTime;
-            currentMana = Mathf.Min(currentMana, maxMana);
+            if (currentMana > maxMana)
+                currentMana = maxMana;
+
             UpdateUI();
         }
     }
 
     public bool TrySpend(float amount)
     {
-        if (currentMana < amount)
-            return false;
+        if (currentMana >= amount)
+        {
+            currentMana -= amount;
+            UpdateUI();
+            Debug.Log($"[Mana] Spent {amount}, now {currentMana:F2}");
+            return true;
+        }
 
-        currentMana -= amount;
-        UpdateUI();
-        return true;
+        Debug.Log("[Mana] Not enough mana!");
+        return false;
     }
 
     public void GainMana(float amount)
@@ -47,9 +64,24 @@ public class PlayerMana : MonoBehaviour
 
     private void UpdateUI()
     {
-        if (manaBar != null)
+        float ratio = currentMana / maxMana;
+
+        if (manaFill != null)
+            manaFill.fillAmount = ratio;
+
+        if (manaEffect != null)
+            manaEffect.fillAmount = ratio;
+
+        if (manaText != null)
+            manaText.text = $"{Mathf.FloorToInt(currentMana)}/{Mathf.FloorToInt(maxMana)}";
+
+        if (edgeVfx != null && manaFill != null)
         {
-            manaBar.value = currentMana / maxMana;
+            float height = ((RectTransform)manaFill.transform).rect.height;
+            edgeVfx.anchoredPosition = new Vector2(
+                edgeVfx.anchoredPosition.x,
+                -height / 2f + height * ratio
+            );
         }
     }
     public float GetMana() => currentMana;
