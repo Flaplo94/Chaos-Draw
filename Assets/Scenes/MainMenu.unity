@@ -417,7 +417,7 @@ PrefabInstance:
       objectReference: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
     - target: {fileID: 521782760944547206, guid: a6d732b8be0a652479d1641a86f0e487, type: 3}
       propertyPath: m_Color.a
-      value: 0.7882353
+      value: 0.9607843
       objectReference: {fileID: 0}
     - target: {fileID: 571864649434321688, guid: a6d732b8be0a652479d1641a86f0e487, type: 3}
       propertyPath: m_Pivot.x
@@ -1373,6 +1373,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5193663870209016388, guid: cc935207a9f233147bebf5e8a3ff64b8, type: 3}
+      propertyPath: m_Color.a
+      value: 0.9607843
+      objectReference: {fileID: 0}
     - target: {fileID: 5301851773694034343, guid: cc935207a9f233147bebf5e8a3ff64b8, type: 3}
       propertyPath: m_Name
       value: LightningChainTarget+1
@@ -1656,7 +1660,19 @@ PrefabInstance:
       objectReference: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
     - target: {fileID: 521782760944547206, guid: a6d732b8be0a652479d1641a86f0e487, type: 3}
       propertyPath: m_Color.a
-      value: 0.7882353
+      value: 0.9607843
+      objectReference: {fileID: 0}
+    - target: {fileID: 521782760944547206, guid: a6d732b8be0a652479d1641a86f0e487, type: 3}
+      propertyPath: m_Color.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 521782760944547206, guid: a6d732b8be0a652479d1641a86f0e487, type: 3}
+      propertyPath: m_Color.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 521782760944547206, guid: a6d732b8be0a652479d1641a86f0e487, type: 3}
+      propertyPath: m_Color.r
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 571864649434321688, guid: a6d732b8be0a652479d1641a86f0e487, type: 3}
       propertyPath: m_Pivot.x
@@ -2073,7 +2089,7 @@ PrefabInstance:
       objectReference: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
     - target: {fileID: 521782760944547206, guid: a6d732b8be0a652479d1641a86f0e487, type: 3}
       propertyPath: m_Color.a
-      value: 0.7882353
+      value: 0.9607843
       objectReference: {fileID: 0}
     - target: {fileID: 571864649434321688, guid: a6d732b8be0a652479d1641a86f0e487, type: 3}
       propertyPath: m_Pivot.x
@@ -9195,7 +9211,7 @@ PrefabInstance:
       objectReference: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
     - target: {fileID: 521782760944547206, guid: a6d732b8be0a652479d1641a86f0e487, type: 3}
       propertyPath: m_Color.a
-      value: 0.7882353
+      value: 0.9607843
       objectReference: {fileID: 0}
     - target: {fileID: 571864649434321688, guid: a6d732b8be0a652479d1641a86f0e487, type: 3}
       propertyPath: m_Pivot.x
@@ -10001,6 +10017,10 @@ PrefabInstance:
     - target: {fileID: 3158408692239973093, guid: cc935207a9f233147bebf5e8a3ff64b8, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5193663870209016388, guid: cc935207a9f233147bebf5e8a3ff64b8, type: 3}
+      propertyPath: m_Color.a
+      value: 0.9607843
       objectReference: {fileID: 0}
     - target: {fileID: 5301851773694034343, guid: cc935207a9f233147bebf5e8a3ff64b8, type: 3}
       propertyPath: m_Name
@@ -15807,6 +15827,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5193663870209016388, guid: cc935207a9f233147bebf5e8a3ff64b8, type: 3}
+      propertyPath: m_Color.a
+      value: 0.9607843
+      objectReference: {fileID: 0}
     - target: {fileID: 5301851773694034343, guid: cc935207a9f233147bebf5e8a3ff64b8, type: 3}
       propertyPath: m_Name
       value: MovementSpeed+5%
@@ -16016,7 +16040,7 @@ PrefabInstance:
       objectReference: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
     - target: {fileID: 521782760944547206, guid: a6d732b8be0a652479d1641a86f0e487, type: 3}
       propertyPath: m_Color.a
-      value: 0.7882353
+      value: 0.9607843
       objectReference: {fileID: 0}
     - target: {fileID: 571864649434321688, guid: a6d732b8be0a652479d1641a86f0e487, type: 3}
       propertyPath: m_Pivot.x
@@ -16421,6 +16445,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5193663870209016388, guid: cc935207a9f233147bebf5e8a3ff64b8, type: 3}
+      propertyPath: m_Color.a
+      value: 0.9607843
+      objectReference: {fileID: 0}
+    - target: {fileID: 5193663870209016388, guid: cc935207a9f233147bebf5e8a3ff64b8, type: 3}
+      propertyPath: m_Color.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5193663870209016388, guid: cc935207a9f233147bebf5e8a3ff64b8, type: 3}
+      propertyPath: m_Color.g
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5193663870209016388, guid: cc935207a9f233147bebf5e8a3ff64b8, type: 3}
+      propertyPath: m_Color.r
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5301851773694034343, guid: cc935207a9f233147bebf5e8a3ff64b8, type: 3}
       propertyPath: m_Name
       value: LightningDamage+10%
@@ -16506,7 +16546,7 @@ PrefabInstance:
       objectReference: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
     - target: {fileID: 521782760944547206, guid: a6d732b8be0a652479d1641a86f0e487, type: 3}
       propertyPath: m_Color.a
-      value: 0.7882353
+      value: 0.9607843
       objectReference: {fileID: 0}
     - target: {fileID: 571864649434321688, guid: a6d732b8be0a652479d1641a86f0e487, type: 3}
       propertyPath: m_Pivot.x
@@ -17267,7 +17307,7 @@ PrefabInstance:
       objectReference: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
     - target: {fileID: 521782760944547206, guid: a6d732b8be0a652479d1641a86f0e487, type: 3}
       propertyPath: m_Color.a
-      value: 0.7882353
+      value: 0.9607843
       objectReference: {fileID: 0}
     - target: {fileID: 571864649434321688, guid: a6d732b8be0a652479d1641a86f0e487, type: 3}
       propertyPath: m_Pivot.x
@@ -17762,7 +17802,7 @@ PrefabInstance:
       objectReference: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
     - target: {fileID: 521782760944547206, guid: a6d732b8be0a652479d1641a86f0e487, type: 3}
       propertyPath: m_Color.a
-      value: 0.7882353
+      value: 0.9607843
       objectReference: {fileID: 0}
     - target: {fileID: 571864649434321688, guid: a6d732b8be0a652479d1641a86f0e487, type: 3}
       propertyPath: m_Pivot.x
@@ -18527,6 +18567,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -1.8106
       objectReference: {fileID: 0}
+    - target: {fileID: 5193663870209016388, guid: cc935207a9f233147bebf5e8a3ff64b8, type: 3}
+      propertyPath: m_Color.a
+      value: 0.9607843
+      objectReference: {fileID: 0}
     - target: {fileID: 5301851773694034343, guid: cc935207a9f233147bebf5e8a3ff64b8, type: 3}
       propertyPath: m_Name
       value: LegacyDeckUnlock
@@ -18648,7 +18692,7 @@ PrefabInstance:
       objectReference: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
     - target: {fileID: 521782760944547206, guid: a6d732b8be0a652479d1641a86f0e487, type: 3}
       propertyPath: m_Color.a
-      value: 0.7882353
+      value: 0.9607843
       objectReference: {fileID: 0}
     - target: {fileID: 571864649434321688, guid: a6d732b8be0a652479d1641a86f0e487, type: 3}
       propertyPath: m_Pivot.x
@@ -19077,6 +19121,10 @@ PrefabInstance:
     - target: {fileID: 3158408692239973093, guid: cc935207a9f233147bebf5e8a3ff64b8, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5193663870209016388, guid: cc935207a9f233147bebf5e8a3ff64b8, type: 3}
+      propertyPath: m_Color.a
+      value: 0.9607843
       objectReference: {fileID: 0}
     - target: {fileID: 5301851773694034343, guid: cc935207a9f233147bebf5e8a3ff64b8, type: 3}
       propertyPath: m_Name
