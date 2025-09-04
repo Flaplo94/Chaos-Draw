@@ -1,46 +1,45 @@
 using UnityEngine;
-using UnityEngine.SceneManagement; // til Quit -> MainMenu
+using UnityEngine.SceneManagement;
 
 public class PauseMenu : MonoBehaviour
 {
-    public static bool GameIsPaused = false;
+    [SerializeField] private GameObject pauseMenuUI; // assign PauseMenu panel
 
-    [Header("Refs")]
-    [SerializeField] private GameObject pauseMenuUI;
+    private bool isPaused = false;
 
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (GameIsPaused)
-                Resume();
-            else
-                Pause();
+            if (isPaused) Resume();
+            else Pause();
         }
-    }
-
-    public void Resume()
-    {
-        pauseMenuUI.SetActive(false);
-        Time.timeScale = 1f; // spillet kører igen
-        GameIsPaused = false;
     }
 
     public void Pause()
     {
         pauseMenuUI.SetActive(true);
-        Time.timeScale = 0f; // spillet fryser
-        GameIsPaused = true;
+        Time.timeScale = 0f;
+        isPaused = true;
     }
 
-    public void QuitToMenu()
+    public void Resume()
     {
-        Time.timeScale = 1f; // reset tidsfrys
-        SceneManager.LoadScene("MainMenu"); // skift navnet hvis din menu hedder noget andet
+        pauseMenuUI.SetActive(false);
+        Time.timeScale = 1f;
+        isPaused = false;
     }
 
     public void OpenOptions()
     {
-        Debug.Log("Options menu open – her kan vi bygge videre senere");
+        Debug.Log("TODO: Show options menu");
+        // Replace with your options UI when ready
+    }
+
+    public void ExitToMainMenu()
+    {
+        Debug.Log("TODO: Show Main menu");
+        Time.timeScale = 1f;
+        SceneManager.LoadScene("MainMenu"); // <-- replace with your main menu scene name
     }
 }
