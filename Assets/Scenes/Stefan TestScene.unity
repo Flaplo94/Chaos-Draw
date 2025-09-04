@@ -5667,6 +5667,7 @@ MonoBehaviour:
   extraProjectiles: 0
   fireRateMult: 1
   projectileSpeedMult: 1
+  cooldownIndicator: {fileID: 0}
 --- !u!114 &838277003
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8763,6 +8764,7 @@ GameObject:
   - component: {fileID: 1484783533}
   - component: {fileID: 1484783534}
   - component: {fileID: 1484783535}
+  - component: {fileID: 1484783536}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -8984,6 +8986,22 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &1484783536
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1484783529}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7458eff8ff6be204b94f0b86d0f098ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  waveManager: {fileID: 127433414}
+  basePerWave: 1
+  perWaveScale: 0.1
+  bossBonus: 10
 --- !u!1 &1487545838
 GameObject:
   m_ObjectHideFlags: 0

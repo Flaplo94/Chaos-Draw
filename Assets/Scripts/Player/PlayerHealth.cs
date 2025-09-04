@@ -127,23 +127,19 @@ public class PlayerHealth : MonoBehaviour
 
     public void OnDeathAnimationFinished()
     {
-        int wavesCleared = WaveManager.Instance != null ? WaveManager.Instance.CurrentWave : 0;
-
-        int reward = wavesCleared / 5;
-        if (wavesCleared >= 10 && wavesCleared % 10 == 0)
-            reward += 5;
-
-        if (WaveManager.Instance != null && WaveManager.Instance.CurrentWave >= 20)
+        if (WaveManager.Instance != null)
         {
-            SceneManager.LoadScene(WaveManager.Instance.afterWave20Scene);
-            return;
+            WaveManager.Instance.EndRun();
         }
-
-        if (GameOverManager.Instance != null)
-            GameOverManager.Instance.TriggerGameOver(wavesCleared, reward);
+        else
+        {
+            if (GameOverManager.Instance != null)
+                GameOverManager.Instance.TriggerGameOver(0, 0);
+        }
 
         gameObject.SetActive(false);
     }
+
 
     private IEnumerator ShowGameOverDelayed(int wavesCleared, int reward)
     {
