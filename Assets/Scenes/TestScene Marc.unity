@@ -366,7 +366,7 @@ MonoBehaviour:
   minSpawnDistance: 5
   spawnRadius: 10
   enemyPrefabs:
-  - {fileID: 7502241114002446682, guid: 142aa5be84e910d4d9bf9b2a7d7e2612, type: 3}
+  - {fileID: 5679082729230498780, guid: c25de75b8a76d504aa0ed013b1634e16, type: 3}
   enemySpawnWeights:
   - 1
   - 1
@@ -4502,7 +4502,7 @@ MonoBehaviour:
   otherBack: {fileID: -8678478477245134283, guid: 6d4b27b0e0e21a74ca4a873b74eab1b9, type: 3}
   emptyBack: {fileID: 0}
   startingDeckList:
-  - abilityName: Fireball
+  - abilityName: PlaceWall
     count: 4
   rewardUI: {fileID: 1045093887}
   rewardCardsParent: {fileID: 1045093888}
