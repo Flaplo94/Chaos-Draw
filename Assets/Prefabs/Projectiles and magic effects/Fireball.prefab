@@ -207,7 +207,7 @@ AudioSource:
   m_audioClip: {fileID: 8300000, guid: 099302f5c0ce19b4c8c4895bca4d7c80, type: 3}
   m_Resource: {fileID: 8300000, guid: 099302f5c0ce19b4c8c4895bca4d7c80, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 1
+  m_Volume: 0.5
   m_Pitch: 1
   Loop: 0
   Mute: 0
