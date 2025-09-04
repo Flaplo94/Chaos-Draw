@@ -19,14 +19,14 @@ public class PauseMenu : MonoBehaviour
     public void Pause()
     {
         pauseMenuUI.SetActive(true);
-        Time.timeScale = 0f;
+        PauseManager.RequestPause();
         isPaused = true;
     }
 
     public void Resume()
     {
         pauseMenuUI.SetActive(false);
-        Time.timeScale = 1f;
+        PauseManager.ReleasePause();
         isPaused = false;
     }
 
@@ -39,7 +39,7 @@ public class PauseMenu : MonoBehaviour
     public void ExitToMainMenu()
     {
         Debug.Log("TODO: Show Main menu");
-        Time.timeScale = 1f;
+        PauseManager.ReleasePause();
         SceneManager.LoadScene("MainMenu"); // <-- replace with your main menu scene name
     }
 }

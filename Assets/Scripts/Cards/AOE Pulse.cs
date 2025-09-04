@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Audio;
 
 public class AOEPulse : MonoBehaviour, IAbilityBehavior
 {
@@ -7,6 +8,17 @@ public class AOEPulse : MonoBehaviour, IAbilityBehavior
     [SerializeField] private int damage = 5;
     [SerializeField] private LayerMask enemyLayer;
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip impactSound;
+    [SerializeField] private AudioSource audioSource;
+    void Awake()
+    {
+        audioSource = GetComponent<AudioSource>();
+        audioSource.playOnAwake = false;
+        audioSource.loop = false;
+        audioSource.spatialBlend = 0f; // 2D sound
+        audioSource.clip = impactSound;
+    }
     public bool Initialize(Vector2 dir, Rarity rarity)
     {
         switch (rarity)
@@ -37,6 +49,11 @@ public class AOEPulse : MonoBehaviour, IAbilityBehavior
     }
 
     public void OnImpactFinished() => Destroy(gameObject);
+
+    public void PlayImpactSound()
+    {
+        if (audioSource != null && impactSound != null) audioSource.Play();
+    }
 
 #if UNITY_EDITOR
     private void OnDrawGizmosSelected()
