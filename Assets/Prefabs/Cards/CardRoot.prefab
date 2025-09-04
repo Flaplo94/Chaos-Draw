@@ -305,7 +305,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2022224563834813301
 RectTransform:
   m_ObjectHideFlags: 0
@@ -322,7 +322,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.000061035156, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 84.0374, y: 77.4645}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8018341881520854186
@@ -1322,7 +1322,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.7, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 84.0374, y: 77.4645}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &8047430878539621625
@@ -1420,7 +1420,9 @@ MonoBehaviour:
   faceLightning: {fileID: 8999933884999500702}
   faceOther: {fileID: 5273908769366224489}
   faceEmpty: {fileID: 0}
-  manaOverlay: {fileID: 0}
+  overlayFire: {fileID: 5445362895133683085}
+  overlayLightning: {fileID: 5501934292232831686}
+  overlayOther: {fileID: 5776793997016377387}
 --- !u!1 &4298571166048278434
 GameObject:
   m_ObjectHideFlags: 0
@@ -2769,7 +2771,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &3605814223091036052
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2786,7 +2788,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.7000122, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 84.0374, y: 77.4645}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3187616945655953502
