@@ -12,6 +12,8 @@ public class PlayerHealth : MonoBehaviour
     [Header("Health Settings")]
     public int maxHealth = 50;
     public int currentHealth;
+
+    [Header("Revive")]
     public int extraLives = 0;
 
     [Header("UI References")]
@@ -61,6 +63,7 @@ public class PlayerHealth : MonoBehaviour
     public void Heal(int amount)
     {
         if (amount <= 0) return;
+
         currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
         UpdateUI();
     }
@@ -68,20 +71,15 @@ public class PlayerHealth : MonoBehaviour
     public void ForceSetToOneHP()
     {
         maxHealth = 1;
-        if (currentHealth > 1) currentHealth = 1;
-        
-
-        if (healthSlider != null)
-        {
-            healthSlider.maxValue = maxHealth;
-            healthSlider.value = currentHealth;
-        }
+        currentHealth = 1;
+        Debug.Log("[PlayerHealth] ForceSetToOneHP");
+        UpdateUI();
     }
 
     public void AddExtraLife(int n)
     {
         extraLives += Mathf.Max(0, n);
-        
+        Debug.Log("[PlayerHealth] AddExtraLife: +" + n);
     }
 
     public bool TryConsumeExtraLife()
@@ -90,13 +88,7 @@ public class PlayerHealth : MonoBehaviour
         {
             extraLives--;
             currentHealth = maxHealth;
-
-            if (healthSlider != null)
-            {
-                healthSlider.maxValue = maxHealth;
-                healthSlider.value = currentHealth;
-            }
-
+            UpdateUI();
             return true;
         }
         return false;
@@ -108,8 +100,11 @@ public class PlayerHealth : MonoBehaviour
             return;
 
         int wavesCleared = WaveManager.Instance != null ? WaveManager.Instance.CurrentWave : 0;
+
+        // Beregn reward shards
         int reward = wavesCleared / 5;
-        if (wavesCleared >= 10 && wavesCleared % 10 == 0) reward += 5;
+        if (wavesCleared >= 10 && wavesCleared % 10 == 0)
+            reward += 5;
 
         if (MetaProgressionManager.Instance != null)
             MetaProgressionManager.Instance.AddShards(reward);
@@ -119,6 +114,8 @@ public class PlayerHealth : MonoBehaviour
 
         if (playerAnimator != null)
             playerAnimator.SetTrigger("Die");
+
+        Debug.Log($"[PlayerHealth] Dead - Game Over. Waves: {wavesCleared}, Shards: {reward}");
 
         OnDeath?.Invoke();
 
@@ -135,9 +132,9 @@ public class PlayerHealth : MonoBehaviour
         int reward = wavesCleared / 5;
         if (wavesCleared >= 10 && wavesCleared % 10 == 0)
             reward += 5;
+
         if (WaveManager.Instance != null && WaveManager.Instance.CurrentWave >= 20)
         {
-            
             SceneManager.LoadScene(WaveManager.Instance.afterWave20Scene);
             return;
         }
@@ -146,6 +143,16 @@ public class PlayerHealth : MonoBehaviour
             GameOverManager.Instance.TriggerGameOver(wavesCleared, reward);
 
         gameObject.SetActive(false);
+    }
+
+    private IEnumerator ShowGameOverDelayed(int wavesCleared, int reward)
+    {
+        yield return new WaitForSeconds(1.5f);
+
+        if (GameOverManager.Instance != null)
+            GameOverManager.Instance.TriggerGameOver(wavesCleared, reward);
+        else
+            Debug.LogWarning("[PlayerHealth] GameOverManager mangler!");
     }
 
     public void SetMaxHealthTemporary(int newMax, bool clampCurrent = true)

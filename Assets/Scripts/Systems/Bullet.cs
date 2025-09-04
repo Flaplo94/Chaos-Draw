@@ -5,10 +5,13 @@ public class Bullet : MonoBehaviour
     public int baseDamage = 1;
     public float lifetime = 5f;
 
+    [Header("Mana")]
+    [SerializeField] private float manaOnHit = 5f;   // mana gain per hit
+
     [Header("Audio")]
     [SerializeField] private AudioClip hitSfx;   // assign in Inspector
     [SerializeField] private float hitVolume = 1f;
-    [SerializeField] private float ManaOnHit = 5f;
+
     // --- Backwards compatibility ---
     public int damage
     {
@@ -41,17 +44,18 @@ public class Bullet : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        var enemy = other.GetComponent<EnemyHealth>();
+        var enemy = other.GetComponent<EnemyHealth>()
+                 ?? other.GetComponentInParent<EnemyHealth>()
+                 ?? other.GetComponentInChildren<EnemyHealth>();
 
         if (enemy != null)
         {
             var result = DamageCalculator.ComputeFinalDamage(baseDamage, DamageElement.Physical);
             enemy.TakeDamage(result.amount, result.element);
             PlayHitSound();
-            LogDamage("Enemy", enemy.gameObject.name);
+            LogDamage("Enemy", enemy.gameObject.name, result);
 
-            // --- Mana Gain on enemy hit ---
-            PlayerMana.Instance?.GainMana(ManaOnHit); // adjust amount per hit
+            PlayerMana.Instance?.GainMana(manaOnHit); // mana refund on hit
 
             Destroy(gameObject);
             return;
@@ -63,12 +67,12 @@ public class Bullet : MonoBehaviour
 
         if (boss != null)
         {
-            boss.TakeDamage(baseDamage, DamageElement.Physical);
+            var result = DamageCalculator.ComputeFinalDamage(baseDamage, DamageElement.Physical);
+            boss.TakeDamage(result.amount, result.element);
             PlayHitSound();
-            LogDamage("Boss", boss.gameObject.name);
+            LogDamage("Boss", boss.gameObject.name, result);
 
-            // --- Mana Gain on boss hit ---
-            PlayerMana.Instance?.GainMana(ManaOnHit); // adjust amount per hit
+            PlayerMana.Instance?.GainMana(manaOnHit); // mana refund on hit
 
             Destroy(gameObject);
             return;
@@ -77,7 +81,7 @@ public class Bullet : MonoBehaviour
         if (logDamage)
         {
             string layerName = LayerMask.LayerToName(other.gameObject.layer);
-            
+            Debug.Log("[DMG?] Hit '" + other.gameObject.name + "' (layer=" + layerName + ") but no EnemyHealth/BossHealth found.");
         }
     }
 
