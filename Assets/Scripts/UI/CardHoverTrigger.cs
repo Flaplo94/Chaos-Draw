@@ -33,7 +33,7 @@ public class CardHoverTrigger : MonoBehaviour, IPointerEnterHandler, IPointerExi
 
     private bool IsDimmerActive()
     {
-        var dim = FindObjectOfType<Dimmer>();
+        var dim = FindFirstObjectByType<Dimmer>();
         if (dim == null) return false;
 
         var cg = dim.GetComponent<CanvasGroup>();
