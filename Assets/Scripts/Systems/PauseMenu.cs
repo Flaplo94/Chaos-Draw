@@ -29,7 +29,7 @@ public class PauseMenu : MonoBehaviour
         var dimmer = FindAnyObjectByType<Dimmer>();
         if (dimmer) dimmer.Show();
     }
-
+    
     public void Resume()
     {
         pauseMenuUI.SetActive(false);
