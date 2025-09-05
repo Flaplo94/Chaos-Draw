@@ -27,8 +27,11 @@ public class PlayerThrowing : MonoBehaviour
 
     [SerializeField] private AttackCooldownIndicator cooldownIndicator; // assign prefab in inspector
 
+    private Dimmer dimmer;
+
     void Awake()
     {
+        dimmer = FindFirstObjectByType<Dimmer>();
         // fallback if not assigned
         if (audioSource == null)
             audioSource = GetComponent<AudioSource>();
@@ -41,21 +44,25 @@ public class PlayerThrowing : MonoBehaviour
 
         if (Input.GetMouseButton(0) && cooldown <= 0f)
         {
-            ThrowTowardMouse();
-
-            // play attack sound
-            if (attackSfx != null && audioSource != null)
-                audioSource.PlayOneShot(attackSfx);
-
-            float effective = baseCooldown / Mathf.Max(0.01f, fireRateMult);
-            cooldown = effective;
-            if (cooldownIndicator != null)
+            if (dimmer != null && !dimmer.dimmerOn)
             {
-                cooldownIndicator.StartCooldown(effective, transform);
-            }
-            else
-            {
-                Debug.LogWarning("[PlayerThrowing] cooldownIndicator not assigned!");
+
+                ThrowTowardMouse();
+
+                // play attack sound
+                if (attackSfx != null && audioSource != null)
+                    audioSource.PlayOneShot(attackSfx);
+
+                float effective = baseCooldown / Mathf.Max(0.01f, fireRateMult);
+                cooldown = effective;
+                if (cooldownIndicator != null)
+                {
+                    cooldownIndicator.StartCooldown(effective, transform);
+                }
+                else
+                {
+                    Debug.LogWarning("[PlayerThrowing] cooldownIndicator not assigned!");
+                }
             }
         }
 

@@ -51,6 +51,8 @@ public class CardHandUI : MonoBehaviour
     [SerializeField] private float manualShuffleBaseTime = 4f;
     private float currentManualShuffleTime;
 
+    private Dimmer dimmer;
+
     [System.Serializable]
     public class StartingCard
     {
@@ -58,8 +60,11 @@ public class CardHandUI : MonoBehaviour
         public int count;
     }
 
+    
+
     private void Start()
     {
+        dimmer = FindFirstObjectByType<Dimmer>();
         currentManualShuffleTime = manualShuffleBaseTime;
 
         if (!handParent) return;
@@ -84,11 +89,32 @@ public class CardHandUI : MonoBehaviour
     {
         if (Keyboard.current == null) return;
 
-        if (Keyboard.current.digit1Key.wasPressedThisFrame && hand.Length > 0) TryUseCard(0);
-        if (Keyboard.current.digit2Key.wasPressedThisFrame && hand.Length > 1) TryUseCard(1);
-        if (Keyboard.current.digit3Key.wasPressedThisFrame && hand.Length > 2) TryUseCard(2);
-        if (Keyboard.current.digit4Key.wasPressedThisFrame && hand.Length > 3) TryUseCard(3);
-        if (Keyboard.current.rKey.wasPressedThisFrame) StartCoroutine(ManualShuffle());
+        if (Keyboard.current.digit1Key.wasPressedThisFrame && hand.Length > 0)
+        {
+            if (dimmer != null && !dimmer.dimmerOn)
+                TryUseCard(0);
+        }
+        if (Keyboard.current.digit2Key.wasPressedThisFrame && hand.Length > 1)
+        {
+            if (dimmer != null && !dimmer.dimmerOn)
+                TryUseCard(1);
+        }
+        if (Keyboard.current.digit3Key.wasPressedThisFrame && hand.Length > 2)
+        {
+            if (dimmer != null && !dimmer.dimmerOn)
+                TryUseCard(2);
+        }
+        if (Keyboard.current.digit4Key.wasPressedThisFrame && hand.Length > 3)
+        {
+            if (dimmer != null && !dimmer.dimmerOn)
+                TryUseCard(3);
+        }
+        if (Keyboard.current.rKey.wasPressedThisFrame)
+        {
+            if (dimmer != null && !dimmer.dimmerOn)
+                StartCoroutine(ManualShuffle());
+        }
+        
 
         UpdateCardOverlays(); // keep overlays in sync with mana
     }
@@ -186,21 +212,22 @@ public class CardHandUI : MonoBehaviour
 
     private void TryUseCard(int index)
     {
-        if (hand == null || index < 0 || index >= hand.Length) return;
-        if (hand[index] == null) return;
+            if (hand == null || index < 0 || index >= hand.Length) return;
+            if (hand[index] == null) return;
 
-        bool success = hand[index].Activate();
-        if (!success) return;
+            bool success = hand[index].Activate();
+            if (!success) return;
 
-        discardPile.Add(hand[index]);
-        hand[index] = null;
+            discardPile.Add(hand[index]);
+            hand[index] = null;
 
-        if (cardSlots != null && index < cardSlots.Length && cardSlots[index] != null)
-            cardSlots[index].Clear();
+            if (cardSlots != null && index < cardSlots.Length && cardSlots[index] != null)
+                cardSlots[index].Clear();
 
-        UpdateDiscardText();
-        UpdatePileUIs();
-        DrawCard(index);
+            UpdateDiscardText();
+            UpdatePileUIs();
+            DrawCard(index);
+        
     }
 
     // -------------------- UI helpers --------------------

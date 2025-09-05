@@ -10,6 +10,7 @@ public class Dimmer : MonoBehaviour
     public float fadeDuration = 0.25f;
     public bool blockClicks = true;
     public bool startHidden = true;
+    public bool dimmerOn = false;
 
     CanvasGroup cg;
     Coroutine current;
@@ -44,6 +45,7 @@ public class Dimmer : MonoBehaviour
         Debug.Log("[Dimmer] Show()");
         if (current != null) StopCoroutine(current);
         current = StartCoroutine(FadeTo(targetAlpha, true));
+        dimmerOn = true;
     }
 
     public void Hide()
@@ -54,6 +56,7 @@ public class Dimmer : MonoBehaviour
         Debug.Log("[Dimmer] Hide()");
         if (current != null) StopCoroutine(current);
         current = StartCoroutine(FadeTo(0f, false));
+        dimmerOn = false;
     }
 
     public void InstantOn()
