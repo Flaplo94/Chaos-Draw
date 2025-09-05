@@ -84,10 +84,10 @@ public class CardHandUI : MonoBehaviour
     {
         if (Keyboard.current == null) return;
 
-        if (Keyboard.current.qKey.wasPressedThisFrame && hand.Length > 0) TryUseCard(0);
+        if (Keyboard.current.digit1Key.wasPressedThisFrame && hand.Length > 0) TryUseCard(0);
         if (Keyboard.current.digit2Key.wasPressedThisFrame && hand.Length > 1) TryUseCard(1);
         if (Keyboard.current.digit3Key.wasPressedThisFrame && hand.Length > 2) TryUseCard(2);
-        if (Keyboard.current.eKey.wasPressedThisFrame && hand.Length > 3) TryUseCard(3);
+        if (Keyboard.current.digit4Key.wasPressedThisFrame && hand.Length > 3) TryUseCard(3);
         if (Keyboard.current.rKey.wasPressedThisFrame) StartCoroutine(ManualShuffle());
 
         UpdateCardOverlays(); // keep overlays in sync with mana

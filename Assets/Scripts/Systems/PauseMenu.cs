@@ -25,6 +25,9 @@ public class PauseMenu : MonoBehaviour
         pauseMenuUI.SetActive(true);
         PauseManager.RequestPause();
         isPaused = true;
+
+        var dimmer = FindAnyObjectByType<Dimmer>();
+        if (dimmer) dimmer.Show();
     }
 
     public void Resume()
@@ -33,6 +36,9 @@ public class PauseMenu : MonoBehaviour
         optionsMenu.SetActive(false);
         PauseManager.ReleasePause();
         isPaused = false;
+
+        var dimmer = FindAnyObjectByType<Dimmer>();
+        if (dimmer) dimmer.Hide();
     }
 
     public void OpenOptions()
@@ -40,14 +46,20 @@ public class PauseMenu : MonoBehaviour
         pauseMenu.SetActive(false);
         optionsMenu.SetActive(true);
     }
+
     public void CloseOptions()
     {
         optionsMenu.SetActive(false);
         pauseMenu.SetActive(true);
     }
+
     public void ExitToMainMenu()
     {
         PauseManager.ReleasePause();
+
+        var dimmer = FindAnyObjectByType<Dimmer>();
+        if (dimmer) dimmer.Hide();
+
         SceneManager.LoadScene("MainMenu"); // <-- replace with your main menu scene name
     }
 }

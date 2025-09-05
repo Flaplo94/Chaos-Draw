@@ -14,7 +14,7 @@ public class CardHoverTrigger : MonoBehaviour, IPointerEnterHandler, IPointerExi
     {
         Debug.Log("[HoverTrigger] ENTER " + ability?.abilityName);
 
-        if (ability != null)
+        if (ability != null && IsDimmerActive())
         {
             Debug.Log("[HoverTrigger] SHOW card: " + ability.abilityName);
             CardHoverUI.Instance.Show(ability, transform.position);
@@ -24,6 +24,21 @@ public class CardHoverTrigger : MonoBehaviour, IPointerEnterHandler, IPointerExi
     public void OnPointerExit(PointerEventData eventData)
     {
         Debug.Log("[HoverTrigger] EXIT " + ability?.abilityName);
-        CardHoverUI.Instance.Hide();
+
+        if (IsDimmerActive())
+        {
+            CardHoverUI.Instance.Hide();
+        }
+    }
+
+    private bool IsDimmerActive()
+    {
+        var dim = FindObjectOfType<Dimmer>();
+        if (dim == null) return false;
+
+        var cg = dim.GetComponent<CanvasGroup>();
+        if (cg == null) return false;
+
+        return cg.alpha > 0.01f; // hover kun hvis dimmeren faktisk er synlig
     }
 }
