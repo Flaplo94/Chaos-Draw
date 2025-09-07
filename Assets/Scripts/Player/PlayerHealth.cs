@@ -134,19 +134,18 @@ public class PlayerHealth : MonoBehaviour
         else
         {
             if (GameOverManager.Instance != null)
-                GameOverManager.Instance.TriggerGameOver(0, 0);
+                GameOverManager.Instance.TriggerGameOver(0, 0, 0);
         }
 
         gameObject.SetActive(false);
     }
-
 
     private IEnumerator ShowGameOverDelayed(int wavesCleared, int reward)
     {
         yield return new WaitForSeconds(1.5f);
 
         if (GameOverManager.Instance != null)
-            GameOverManager.Instance.TriggerGameOver(wavesCleared, reward);
+            GameOverManager.Instance.TriggerGameOver(wavesCleared, reward, 0);
         else
             Debug.LogWarning("[PlayerHealth] GameOverManager mangler!");
     }

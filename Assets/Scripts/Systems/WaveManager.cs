@@ -22,8 +22,8 @@ public class WaveManager : MonoBehaviour
     [SerializeField] private float[] enemySpawnWeights = new float[] { 1f, 1f, 0.3f, 0.1f };
 
     [Header("Boss Prefabs")]
-    [SerializeField] private GameObject bossPrefab;        // First boss (wave 10, 30, 40, …)
-    [SerializeField] private GameObject secondBossPrefab;  // Special boss at wave 20
+    [SerializeField] private GameObject bossPrefab;
+    [SerializeField] private GameObject secondBossPrefab;
     public GameObject bossHealthBarUI;
 
     [Header("Music")]
@@ -51,15 +51,17 @@ public class WaveManager : MonoBehaviour
     public event Action<int> OnWaveChanged;
 
     [Header("Scene Transition")]
-    [SerializeField] public string afterWave20Scene = "TYscene"; // set in Inspector
+    [SerializeField] public string afterWave20Scene = "TYscene";
+
+    private int bossesKilled = 0; // 🔥 track bosses killed
 
     public int CurrentWave => currentWave;
+    public int BossesKilled => bossesKilled;
 
     void Awake()
     {
         if (Instance == null) Instance = this;
         else { Destroy(gameObject); return; }
-        
     }
 
     void Start()
@@ -72,34 +74,6 @@ public class WaveManager : MonoBehaviour
 
     void Update()
     {
-        // === TEST CHEATS ===
-        if (Input.GetKeyDown(KeyCode.L))
-        {
-            Debug.Log("[WaveManager] CHEAT: Skipping to wave 10 boss");
-            currentWave = 9;
-            StartCoroutine(NextWave());
-        }
-
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            Debug.Log("[WaveManager] CHEAT: Skipping to wave 20 boss");
-            currentWave = 19;
-            StartCoroutine(NextWave());
-        }
-
-        if (Input.GetKeyDown(KeyCode.U))
-        {
-            Debug.Log("[WaveManager] CHEAT: Force unlock Legacy Deck");
-            MetaProgressionManager.Instance.UnlockLegacy();
-        }
-
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            Debug.Log("FORCE LOADING TEST SCENE");
-            SceneManager.LoadScene(afterWave20Scene);
-        }
-
-        // ===== Unified wave end check =====
         if (waveInProgress && enemiesInWave.Count == 0)
         {
             waveInProgress = false;
@@ -148,7 +122,6 @@ public class WaveManager : MonoBehaviour
         {
             bossHealthBarUI.SetActive(true);
 
-            // pick a spawn offset further away than normal enemies
             Vector2 bossSpawnOffset;
             float bossMinDistance = minSpawnDistance + 20f;
             float bossRadius = spawnRadius + 20f;
@@ -164,11 +137,17 @@ public class WaveManager : MonoBehaviour
             GameObject bossPrefabToUse = (currentWave == 20) ? secondBossPrefab : bossPrefab;
             GameObject boss = Instantiate(bossPrefabToUse, spawnPosition, Quaternion.identity);
 
-            // 🔥 Register boss just like a minion
             enemiesInWave.Add(boss);
 
             var bh = boss.GetComponent<BossHealth>();
-            if (bh != null) bh.OnDeath += () => enemiesInWave.Remove(boss);
+            if (bh != null)
+            {
+                bh.OnDeath += () =>
+                {
+                    enemiesInWave.Remove(boss);
+                    bossesKilled++; // 🔥 increment bosses killed
+                };
+            }
 
             if (musicManager != null)
             {
@@ -185,7 +164,6 @@ public class WaveManager : MonoBehaviour
             BossHealth bossHealth = boss.GetComponent<BossHealth>();
             bossHealth.AssignHealthBar(bossSlider, bossNameText);
 
-            // Camera focus on boss spawn position
             var camFollow = Camera.main.GetComponent<CameraFollow>();
             if (camFollow != null)
             {
@@ -285,31 +263,18 @@ public class WaveManager : MonoBehaviour
         if (reward > 0 && MetaProgressionManager.Instance != null)
             MetaProgressionManager.Instance.AddShards(reward);
 
-        // Vis ALTID Game Over, uanset reward
         if (GameOverManager.Instance != null)
-            GameOverManager.Instance.TriggerGameOver(wavesCleared, reward);
-
-        // Hvis der skal loades ny scene efter wave 20, så gør det EFTER Game Over
-        if ((currentWave + 1) >= 20 && !string.IsNullOrEmpty(afterWave20Scene))
-        {
-            // evt. delay for at spilleren kan se panelet et øjeblik
-            // SceneManager.LoadScene(afterWave20Scene);
-        }
+            GameOverManager.Instance.TriggerGameOver(wavesCleared, reward, bossesKilled);
     }
-
 
     private IEnumerator PauseDuringFocus(CameraFollow camFollow, Vector3 target, float duration)
     {
-        // Pause game
         Time.timeScale = 0f;
 
-        // Start camera focus
         camFollow.FocusTemporarily(target, duration);
 
-        // Wait in realtime (ignores timescale)
         yield return new WaitForSecondsRealtime(duration);
 
-        // Resume game
         Time.timeScale = 1f;
     }
 }
