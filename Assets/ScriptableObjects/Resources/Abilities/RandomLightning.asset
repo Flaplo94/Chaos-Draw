@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: RandomLightning
   m_EditorClassIdentifier: 
   abilityName: Random Lightning
-  icon: {fileID: -855298285791758126, guid: bddb5ed8dbac1284295117214b569c24, type: 3}
+  icon: {fileID: 21300000, guid: 4c490a87e5119574686afff89f3f953a, type: 3}
   effectPrefab: {fileID: 4804991577932546782, guid: 89338cd98ad037d4cb5b37ec702a2efe, type: 3}
   spawnAtMousePosition: 0
   damage: 5

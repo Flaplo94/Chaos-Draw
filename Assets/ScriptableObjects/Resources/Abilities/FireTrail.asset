@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: FireTrail
   m_EditorClassIdentifier: 
   abilityName: Fire Trail
-  icon: {fileID: -7352255774374889779, guid: e1d293d58ccd9e6449a3ba6cd60827c2, type: 3}
+  icon: {fileID: -2947526863502713391, guid: 369b1e1d3514a7b4d85ac2233615de27, type: 3}
   effectPrefab: {fileID: 4804991577932546782, guid: 3c18a37447b62754498692a052d80e02, type: 3}
   spawnAtMousePosition: 0
   damage: 2

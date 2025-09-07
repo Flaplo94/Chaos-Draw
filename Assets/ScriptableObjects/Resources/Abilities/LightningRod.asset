@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: LightningRod
   m_EditorClassIdentifier: 
   abilityName: Lightning Rod
-  icon: {fileID: -1783808350427418317, guid: d815f599388e98c458b574eaef833fbe, type: 3}
+  icon: {fileID: -2966200626249415253, guid: 17c072ab59c72ce4094de2f7dc8ab6d9, type: 3}
   effectPrefab: {fileID: 4804991577932546782, guid: 604a5d0f1ce92474d909e6c86dbe5acd, type: 3}
   spawnAtMousePosition: 1
   damage: 1

@@ -4,130 +4,139 @@ using TMPro;
 
 public class CardSlotUI : MonoBehaviour
 {
-    [Header("Per-type face containers (parents)")]
-    [SerializeField] private RectTransform faceFire;       // child: "Face_Fire"
-    [SerializeField] private RectTransform faceLightning;  // child: "Face_Lightning"
-    [SerializeField] private RectTransform faceOther;      // child: "Face_Other"
-    [SerializeField] private RectTransform faceEmpty;      // child: "Face_Empty"
+    [Header("UI References (already assigned in prefab)")]
+    [SerializeField] private Image cardArt;        // shows brown frame (filled) or blue empty (empty)
+    [SerializeField] private Image iconImage;      // AbilityArt/Icon (circle image)
+    [SerializeField] private TMP_Text nameText;    // AbilityName
+    [SerializeField] private TMP_Text dmgText;     // DamageValue
+    [SerializeField] private TMP_Text manaText;    // ManaValue
+    [SerializeField] private Image rarityIcon;     // RarityIcon
+    [SerializeField] private TMP_Text descriptionText; // Description (kept empty for hand)
+    [SerializeField] private Image manaOverlay;    // ManaOverlay (grey-out)
 
-    [Header("Overlay Images (per face)")]
-    [SerializeField] private Image overlayFire;       // child inside Face_Fire
-    [SerializeField] private Image overlayLightning;  // child inside Face_Lightning
-    [SerializeField] private Image overlayOther;      // child inside Face_Other
+    // Cached prefab frame sprite so we never need to wire it in Inspector
+    private Sprite defaultFrameSprite;
 
-    private RectTransform activeFace;
-    private Image activeOverlay;
+    // Groups we toggle on/off so empty slot shows ONLY the blue board
+    private GameObject goCardFrame;   // "CardFrame"
+    private GameObject goAbilityArt;  // "AbilityArt"
+    private GameObject goStatsRow;    // "StatsRow"
+    private GameObject goDescription; // "Description"
+    private GameObject goRarityIcon;  // "RarityIcon"
+
     private Ability currentAbility;
 
     private void Awake()
     {
-        if (!faceFire) faceFire = transform.Find("Face_Fire") as RectTransform;
-        if (!faceLightning) faceLightning = transform.Find("Face_Lightning") as RectTransform;
-        if (!faceOther) faceOther = transform.Find("Face_Other") as RectTransform;
-        if (!faceEmpty) faceEmpty = transform.Find("Face_Empty") as RectTransform;
+        // cache default brown frame from prefab
+        defaultFrameSprite = cardArt ? cardArt.sprite : null;
 
-        DeactivateAllFaces();
+        // auto-find groups by name (matches your prefab hierarchy)
+        goCardFrame = transform.Find("CardFrame")?.gameObject;
+        goAbilityArt = transform.Find("AbilityArt")?.gameObject;
+        goStatsRow = transform.Find("StatsRow")?.gameObject;
+        goDescription = transform.Find("Description")?.gameObject;
+        goRarityIcon = transform.Find("RarityIcon")?.gameObject;
 
-        if (faceEmpty) SetActive(faceEmpty);
-        else if (faceOther) SetActive(faceOther);
-
-        if (activeOverlay != null)
-            activeOverlay.enabled = false;
+        if (manaOverlay)
+        {
+            manaOverlay.enabled = false;
+            manaOverlay.raycastTarget = false; // never block clicks
+        }
+        if (rarityIcon) rarityIcon.enabled = false;
     }
 
     public void Show(Ability a)
     {
         currentAbility = a;
+        if (a == null) return;
 
-        // pick correct face
-        var next = a.magicType switch
+        // --- show full card ---
+        if (cardArt)
         {
-            MagicType.Fire => faceFire ? faceFire : faceOther,
-            MagicType.Lightning => faceLightning ? faceLightning : faceOther,
-            _ => faceOther
-        };
+            cardArt.sprite = defaultFrameSprite;   // back to brown frame
+            cardArt.color = Color.white;
+        }
 
-        if (!next && faceEmpty) next = faceEmpty;
-        SetActive(next);
+        SetContentActive(true);
 
-        // Bind UI
-        var nameText = activeFace.Find("AbilityName")?.GetComponent<TextMeshProUGUI>();
-        var rarityText = activeFace.Find("AbilityRarity")?.GetComponent<TextMeshProUGUI>();
-        var artImage = activeFace.Find("AbilityArt")?.GetComponent<Image>();
-        var dmgValueText = activeFace.Find("StatsRow/DamageIcon/DamageValue")?.GetComponent<TextMeshProUGUI>();
-        var manaValueText = activeFace.Find("StatsRow/ManaIcon/ManaValue")?.GetComponent<TextMeshProUGUI>();
-
+        // text & values
         if (nameText) nameText.text = a.abilityName;
-        if (rarityText) rarityText.text = a.rarity.ToString();
+        if (dmgText) dmgText.text = a.damage > 0 ? a.damage.ToString() : "—";
+        if (manaText) manaText.text = a.manaCost.ToString("0");
+        if (descriptionText) descriptionText.text = ""; // no description in hand
 
-        if (artImage)
+        // icon
+        if (iconImage)
         {
-            artImage.sprite = a.icon;
-            artImage.color = a.icon ? Color.white : Color.clear;
-            artImage.preserveAspect = true;
+            iconImage.sprite = a.icon;
+            iconImage.color = a.icon ? Color.white : Color.clear;
+            iconImage.preserveAspect = true;
         }
 
-        if (dmgValueText) dmgValueText.text = a.damage > 0 ? a.damage.ToString() : "�";
-        if (manaValueText) manaValueText.text = a.manaCost.ToString("0");
-
-        //  Hover support
-        var hover = activeFace.GetComponent<CardHoverTrigger>();
-        if (hover != null)
+        // rarity
+        var hand = FindFirstObjectByType<CardHandUI>();
+        if (rarityIcon && hand != null)
         {
-            hover.SetAbility(a);
-            Debug.Log("[CardSlotUI] Hover ability sat: " + a.abilityName);
+            rarityIcon.enabled = true;
+            rarityIcon.sprite = hand.GetRarityIcon(a.rarity);
         }
 
-        ForceLayout();
+        // hover payload
+        var hover = GetComponent<CardHoverTrigger>();
+        if (hover != null) hover.SetAbility(a);
+
+        // mana overlay state will be updated from CardHandUI.UpdateCardOverlays()
+        // via SetGreyedOut()
     }
 
     public void Clear()
     {
         currentAbility = null;
-        if (faceEmpty) SetActive(faceEmpty);
-        else DeactivateAllFaces();
 
-        if (activeOverlay != null)
-            activeOverlay.enabled = false;
+        var hand = FindFirstObjectByType<CardHandUI>();
+        if (cardArt)
+        {
+            // show blue empty board; fallback to prefab frame if not set
+            Sprite empty = hand ? hand.emptySlotSprite : null;
+            cardArt.sprite = empty ? empty : defaultFrameSprite;
+            cardArt.color = Color.white;
+        }
+
+        // hide ALL other visuals so only the empty board remains
+        SetContentActive(false);
+
+        // clean fields
+        if (nameText) nameText.text = "";
+        if (iconImage) { iconImage.sprite = null; iconImage.color = Color.clear; }
+        if (dmgText) dmgText.text = "";
+        if (manaText) manaText.text = "";
+        if (descriptionText) descriptionText.text = "";
+        if (rarityIcon) rarityIcon.enabled = false;
+
+        // ensure overlay is off for empty slots
+        if (manaOverlay) manaOverlay.enabled = false;
+
+        // prevent hover from showing stale data
+        var hover = GetComponent<CardHoverTrigger>();
+        if (hover != null) hover.SetAbility(null);
     }
 
     public void SetGreyedOut(bool grey)
     {
-        if (activeOverlay != null)
-            activeOverlay.enabled = grey;
+        // Called by CardHandUI.UpdateCardOverlays()
+        if (manaOverlay) manaOverlay.enabled = grey && currentAbility != null;
     }
 
     public Ability GetAbility() => currentAbility;
 
-    private void SetActive(RectTransform face)
+    // helper to toggle all content groups except CardArt itself
+    private void SetContentActive(bool on)
     {
-        DeactivateAllFaces();
-        activeFace = face;
-        if (activeFace) activeFace.gameObject.SetActive(true);
-
-        // pick the right overlay for this face
-        if (face == faceFire) activeOverlay = overlayFire;
-        else if (face == faceLightning) activeOverlay = overlayLightning;
-        else if (face == faceOther) activeOverlay = overlayOther;
-
-        if (activeOverlay != null)
-            activeOverlay.enabled = false;
-    }
-
-    private void DeactivateAllFaces()
-    {
-        if (faceFire) faceFire.gameObject.SetActive(false);
-        if (faceLightning) faceLightning.gameObject.SetActive(false);
-        if (faceOther) faceOther.gameObject.SetActive(false);
-        if (faceEmpty) faceEmpty.gameObject.SetActive(false);
-        activeFace = null;
-        activeOverlay = null;
-    }
-
-    private void ForceLayout()
-    {
-        Canvas.ForceUpdateCanvases();
-        var rt = GetComponent<RectTransform>();
-        if (rt) LayoutRebuilder.ForceRebuildLayoutImmediate(rt);
+        if (goCardFrame) goCardFrame.SetActive(on);
+        if (goAbilityArt) goAbilityArt.SetActive(on);
+        if (goStatsRow) goStatsRow.SetActive(on);
+        if (goDescription) goDescription.SetActive(on);
+        if (goRarityIcon) goRarityIcon.SetActive(on);
     }
 }

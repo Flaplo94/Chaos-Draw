@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: ChainLightning
   m_EditorClassIdentifier: 
   abilityName: Chain Lightning
-  icon: {fileID: 7680820834086852892, guid: 67b23ed8c815a7d448851a76cb376c64, type: 3}
+  icon: {fileID: 21300000, guid: 02b34b9712f3ed34fbfe14d63ac8d4f7, type: 3}
   effectPrefab: {fileID: 4804991577932546782, guid: 8b4dd582ffba7ce4ea20ff06f1199905, type: 3}
   spawnAtMousePosition: 0
   damage: 5

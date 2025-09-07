@@ -1,5 +1,4 @@
 using UnityEngine;
-using TMPro;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(Canvas))]
@@ -9,13 +8,13 @@ public class CardHoverUI : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private Transform previewParent;
-    [SerializeField] private GameObject rewardCardPrefab; // drag jeres reward card prefab ind her
+    [SerializeField] private GameObject rewardCardPrefab; // brug CardRewardRoot
 
     [Header("Sorting")]
     [SerializeField] private int sortingOrder = 200;
 
     [Header("Hover Card Size")]
-    [SerializeField] private Vector2 hoverCardSize = new Vector2(600, 900); // kan justeres i Inspector
+    [SerializeField] private Vector2 hoverCardSize = new Vector2(600, 900);
 
     private GameObject currentPreview;
 
@@ -34,10 +33,6 @@ public class CardHoverUI : MonoBehaviour
 
     public void Show(Ability ability, Vector3 worldPos)
     {
-        Debug.Log("[CardHoverUI] Show start. ability=" + (ability != null) +
-          " prefab=" + (rewardCardPrefab != null) +
-          " parent=" + (previewParent != null));
-
         if (!ability || !rewardCardPrefab || !previewParent) return;
 
         // ryd tidligere preview
@@ -55,36 +50,22 @@ public class CardHoverUI : MonoBehaviour
             rt.anchorMax = new Vector2(0.5f, 0.5f);
             rt.pivot = new Vector2(0.5f, 0.5f);
             rt.anchoredPosition = Vector2.zero;
-
-            // Skalering i stedet for sizeDelta
-            rt.localScale = Vector3.one * 2f; // 2x størrelse (kan justeres)
+            rt.localScale = Vector3.one * 2f; // forstørret preview
         }
 
-        // udfyld UI med ability-data
+        // udfyld UI med Setup
         var ui = currentPreview.GetComponent<CardRewardUI>();
         if (ui != null)
         {
-            ui.nameText.text = ability.abilityName;
-            ui.artImage.sprite = ability.icon;
-            ui.artImage.color = ability.icon ? Color.white : Color.clear;
-            ui.artImage.preserveAspect = true;
-
-            ui.rarityText.text = ability.rarity.ToString();
-            ui.dmgText.text = ability.damage > 0 ? ability.damage.ToString() : "—";
-            ui.manaText.text = ability.manaCost.ToString("0");
-
-            var desc = currentPreview.transform.Find("AbilityDescription")?.GetComponent<TMP_Text>();
-            if (desc != null)
-                desc.text = ability.description;
+            ui.Setup(ability, CardHandUIInstance()?.GetRarityIcon(ability.rarity));
         }
 
-        // Fjern evt. interaktivitet (knappen skal ikke virke i hover-preview)
+        // Fjern interaktivitet i hover-preview
         var btn = currentPreview.GetComponent<Button>();
         if (btn) Destroy(btn);
 
         gameObject.SetActive(true);
     }
-
 
     public void Hide()
     {
@@ -95,5 +76,10 @@ public class CardHoverUI : MonoBehaviour
         }
 
         gameObject.SetActive(false);
+    }
+
+    private CardHandUI CardHandUIInstance()
+    {
+        return FindFirstObjectByType<CardHandUI>();
     }
 }

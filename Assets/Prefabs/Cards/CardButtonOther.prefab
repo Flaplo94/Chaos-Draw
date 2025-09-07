@@ -430,10 +430,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nameText: {fileID: 2503603611321082773}
   artImage: {fileID: 2890312669624910815}
-  rarityText: {fileID: 6132601185743134228}
+  rarityIcon: {fileID: 0}
   dmgText: {fileID: 4022912901742000492}
-  manaText: {fileID: 4022912901742000492}
-  tagRow: {fileID: 7303962206705668257}
+  manaText: {fileID: 7787059033741633982}
+  descriptionText: {fileID: 0}
 --- !u!114 &954258015401340952
 MonoBehaviour:
   m_ObjectHideFlags: 0

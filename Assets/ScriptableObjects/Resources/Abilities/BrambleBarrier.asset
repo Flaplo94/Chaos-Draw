@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 810580b0db5b0e84587b09ccac852a30, type: 3}
-  m_Name: PlaceWall
+  m_Name: BrambleBarrier
   m_EditorClassIdentifier: 
-  abilityName: Place Wall
-  icon: {fileID: 7496959465385436309, guid: 54ae97eef3af8724c8592582e12798b2, type: 3}
+  abilityName: Bramble Barrier
+  icon: {fileID: 21300000, guid: f33a4381d55d5e843a8a89960c855e0b, type: 3}
   effectPrefab: {fileID: 4804991577932546782, guid: a5939ed10f5cedb4eb4f7b4d5fb39f3b, type: 3}
   spawnAtMousePosition: 1
   damage: 0

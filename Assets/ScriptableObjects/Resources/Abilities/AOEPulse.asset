@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: AOEPulse
   m_EditorClassIdentifier: 
   abilityName: AOE Pulse
-  icon: {fileID: -2381029641354267749, guid: 70a254eb20c4e53499fd31bbd43ebea6, type: 3}
+  icon: {fileID: 21300000, guid: d283d5f1750c2c843a441148cd965d0c, type: 3}
   effectPrefab: {fileID: 4804991577932546782, guid: c565b68d628f8594cbcfa5a6ef25b890, type: 3}
   spawnAtMousePosition: 0
   damage: 10

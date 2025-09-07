@@ -7,7 +7,7 @@ using System.Collections;
 
 public class CardHandUI : MonoBehaviour
 {
-    [Header("Hand (static children under parent)")]
+    [Header("Hand (slots under parent)")]
     [SerializeField] private Transform handParent;
     [SerializeField] private CardSlotUI[] cardSlots;
 
@@ -20,22 +20,29 @@ public class CardHandUI : MonoBehaviour
     [SerializeField] private DeckSlotUI discardPileUI;
 
     [Header("Card Backs (per magic type)")]
-    [SerializeField] private Sprite fireBack;
-    [SerializeField] private Sprite lightningBack;
-    [SerializeField] private Sprite otherBack;
-    [SerializeField] private Sprite emptyBack;
+    public Sprite fireBack;
+    public Sprite lightningBack;
+    public Sprite otherBack;
+    public Sprite emptyBack;
+
+    public Sprite emptySlotSprite; // sprite som vises i hånden, når slot er tomt
 
     [Header("Card Pool")]
     [SerializeField] private List<StartingCard> startingDeckList = new();
     private List<Ability> allAbilities = new();
 
-    [Header("Reward UI (parent + per-type prefabs)")]
+    [Header("Reward UI (parent + prefab)")]
     [SerializeField] private GameObject rewardUI;
     [SerializeField] private Transform rewardCardsParent;
-    [SerializeField] private GameObject fireRewardCardPrefab;
-    [SerializeField] private GameObject lightningRewardCardPrefab;
-    [SerializeField] private GameObject otherRewardCardPrefab;
+    [SerializeField] private GameObject rewardCardPrefab;
     [SerializeField] private Button skipButton;
+
+    [Header("Rarity Icons")]
+    [SerializeField] private Sprite commonIcon;
+    [SerializeField] private Sprite uncommonIcon;
+    [SerializeField] private Sprite rareIcon;
+    [SerializeField] private Sprite epicIcon;
+    [SerializeField] private Sprite legendaryIcon;
 
     [Header("Audio")]
     [SerializeField] private AudioSource audioSource;
@@ -52,6 +59,7 @@ public class CardHandUI : MonoBehaviour
     private float currentManualShuffleTime;
 
     private Dimmer dimmer;
+    internal Sprite cardFrameSprite;
 
     [System.Serializable]
     public class StartingCard
@@ -59,8 +67,6 @@ public class CardHandUI : MonoBehaviour
         public string abilityName;
         public int count;
     }
-
-    
 
     private void Start()
     {
@@ -90,33 +96,21 @@ public class CardHandUI : MonoBehaviour
         if (Keyboard.current == null) return;
 
         if (Keyboard.current.digit1Key.wasPressedThisFrame && hand.Length > 0)
-        {
-            if (dimmer != null && !dimmer.dimmerOn)
-                TryUseCard(0);
-        }
-        if (Keyboard.current.digit2Key.wasPressedThisFrame && hand.Length > 1)
-        {
-            if (dimmer != null && !dimmer.dimmerOn)
-                TryUseCard(1);
-        }
-        if (Keyboard.current.digit3Key.wasPressedThisFrame && hand.Length > 2)
-        {
-            if (dimmer != null && !dimmer.dimmerOn)
-                TryUseCard(2);
-        }
-        if (Keyboard.current.digit4Key.wasPressedThisFrame && hand.Length > 3)
-        {
-            if (dimmer != null && !dimmer.dimmerOn)
-                TryUseCard(3);
-        }
-        if (Keyboard.current.rKey.wasPressedThisFrame)
-        {
-            if (dimmer != null && !dimmer.dimmerOn)
-                StartCoroutine(ManualShuffle());
-        }
-        
+            if (dimmer != null && !dimmer.dimmerOn) TryUseCard(0);
 
-        UpdateCardOverlays(); // keep overlays in sync with mana
+        if (Keyboard.current.digit2Key.wasPressedThisFrame && hand.Length > 1)
+            if (dimmer != null && !dimmer.dimmerOn) TryUseCard(1);
+
+        if (Keyboard.current.digit3Key.wasPressedThisFrame && hand.Length > 2)
+            if (dimmer != null && !dimmer.dimmerOn) TryUseCard(2);
+
+        if (Keyboard.current.digit4Key.wasPressedThisFrame && hand.Length > 3)
+            if (dimmer != null && !dimmer.dimmerOn) TryUseCard(3);
+
+        if (Keyboard.current.rKey.wasPressedThisFrame)
+            if (dimmer != null && !dimmer.dimmerOn) StartCoroutine(ManualShuffle());
+
+        UpdateCardOverlays();
     }
 
     // -------------------- Deck / Draw / Use --------------------
@@ -162,9 +156,7 @@ public class CardHandUI : MonoBehaviour
         if (drawPile.Count == 0)
         {
             hand[slotIndex] = null;
-            if (cardSlots != null && slotIndex < cardSlots.Length && cardSlots[slotIndex] != null)
-                cardSlots[slotIndex].Clear();
-
+            cardSlots[slotIndex].Clear();
             UpdateDeckText();
             UpdatePileUIs();
             return;
@@ -176,9 +168,7 @@ public class CardHandUI : MonoBehaviour
         UpdatePileUIs();
 
         hand[slotIndex] = card;
-
-        if (cardSlots != null && slotIndex < cardSlots.Length && cardSlots[slotIndex] != null)
-            cardSlots[slotIndex].Show(card);
+        cardSlots[slotIndex].Show(card);
     }
 
     private IEnumerator ShuffleWithDelay(List<Ability> list)
@@ -212,35 +202,31 @@ public class CardHandUI : MonoBehaviour
 
     private void TryUseCard(int index)
     {
-            if (hand == null || index < 0 || index >= hand.Length) return;
-            if (hand[index] == null) return;
+        if (hand == null || index < 0 || index >= hand.Length) return;
+        if (hand[index] == null) return;
 
-            bool success = hand[index].Activate();
-            if (!success) return;
+        bool success = hand[index].Activate();
+        if (!success) return;
 
-            discardPile.Add(hand[index]);
-            hand[index] = null;
+        discardPile.Add(hand[index]);
+        hand[index] = null;
 
-            if (cardSlots != null && index < cardSlots.Length && cardSlots[index] != null)
-                cardSlots[index].Clear();
+        cardSlots[index].Clear();
 
-            UpdateDiscardText();
-            UpdatePileUIs();
-            DrawCard(index);
-        
+        UpdateDiscardText();
+        UpdatePileUIs();
+        DrawCard(index);
     }
 
     // -------------------- UI helpers --------------------
     private void UpdateDiscardText()
     {
-        if (discardCounterText != null)
-            discardCounterText.text = discardPile.Count.ToString();
+        if (discardCounterText) discardCounterText.text = discardPile.Count.ToString();
     }
 
     private void UpdateDeckText()
     {
-        if (deckCounterText != null)
-            deckCounterText.text = drawPile.Count.ToString();
+        if (deckCounterText) deckCounterText.text = drawPile.Count.ToString();
     }
 
     private void Shuffle<T>(List<T> list)
@@ -272,6 +258,14 @@ public class CardHandUI : MonoBehaviour
         }
     }
 
+    private Sprite GetTopBackFromPile(List<Ability> pile)
+    {
+        if (pile == null || pile.Count == 0)
+            return emptyBack ? emptyBack : otherBack;
+
+        var top = ReferenceEquals(pile, discardPile) ? pile[^1] : pile[0];
+        return GetBackFor(top.magicType);
+    }
 
     private Sprite GetBackFor(MagicType type)
     {
@@ -281,18 +275,6 @@ public class CardHandUI : MonoBehaviour
             MagicType.Lightning => lightningBack,
             _ => otherBack
         };
-    }
-
-    private Sprite GetTopBackFromPile(List<Ability> pile)
-    {
-        if (pile == null || pile.Count == 0)
-            return emptyBack ? emptyBack : otherBack;
-
-        var top = ReferenceEquals(pile, discardPile)
-            ? pile[pile.Count - 1]
-            : pile[0];
-
-        return GetBackFor(top.magicType);
     }
 
     private void UpdatePileUIs()
@@ -305,16 +287,6 @@ public class CardHandUI : MonoBehaviour
     }
 
     // -------------------- Rewards --------------------
-    private GameObject GetRewardCardPrefab(MagicType type)
-    {
-        switch (type)
-        {
-            case MagicType.Fire: return fireRewardCardPrefab ? fireRewardCardPrefab : otherRewardCardPrefab;
-            case MagicType.Lightning: return lightningRewardCardPrefab ? lightningRewardCardPrefab : otherRewardCardPrefab;
-            default: return otherRewardCardPrefab;
-        }
-    }
-
     private void ClearRewardCardsParent()
     {
         if (!rewardCardsParent) return;
@@ -324,36 +296,11 @@ public class CardHandUI : MonoBehaviour
 
     private void BuildRewardCard(Ability ability)
     {
-        var prefab = GetRewardCardPrefab(ability.magicType);
-        var cardGO = Instantiate(prefab, rewardCardsParent);
+        var cardGO = Instantiate(rewardCardPrefab, rewardCardsParent);
 
         var ui = cardGO.GetComponent<CardRewardUI>();
-        if (ui == null) return;
-
-        ui.nameText.text = ability.abilityName;
-        ui.artImage.sprite = ability.icon;
-        ui.artImage.color = Color.white;
-        ui.artImage.preserveAspect = true;
-        ui.rarityText.text = ability.rarity.ToString();
-
-        ui.dmgText.text = ability.damage > 0 ? ability.damage.ToString() : "—";
-        ui.manaText.text = ability.manaCost.ToString("0");
-
-        var desc = cardGO.transform.Find("AbilityDescription")?.GetComponent<TextMeshProUGUI>();
-        if (desc != null) desc.text = ability.description;
-
-        if (ui.tagRow != null)
-        {
-            foreach (Transform child in ui.tagRow)
-                Destroy(child.gameObject);
-
-            var badge = new GameObject("TagBadge", typeof(RectTransform), typeof(TextMeshProUGUI));
-            badge.transform.SetParent(ui.tagRow, false);
-            var txt = badge.GetComponent<TextMeshProUGUI>();
-            txt.text = ability.magicType.ToString();
-            txt.fontSize = 14;
-            txt.alignment = TextAlignmentOptions.Center;
-        }
+        if (ui != null)
+            ui.Setup(ability, GetRarityIcon(ability.rarity));
 
         var button = cardGO.GetComponent<Button>();
         if (button)
@@ -367,13 +314,26 @@ public class CardHandUI : MonoBehaviour
         }
     }
 
+    public Sprite GetRarityIcon(Rarity rarity)
+    {
+        return rarity switch
+        {
+            Rarity.Common => commonIcon,
+            Rarity.Uncommon => uncommonIcon,
+            Rarity.Rare => rareIcon,
+            Rarity.Epic => epicIcon,
+            Rarity.Legendary => legendaryIcon,
+            _ => null
+        };
+    }
+
     private void ShowRewardUI()
     {
         PauseManager.RequestPause();
         rewardUI.SetActive(true);
         ClearRewardCardsParent();
 
-        List<Ability> pool = new List<Ability>(allAbilities);
+        List<Ability> pool = new(allAbilities);
         Shuffle(pool);
 
         for (int i = 0; i < 3 && i < pool.Count; i++)
@@ -387,10 +347,7 @@ public class CardHandUI : MonoBehaviour
         {
             skipButton.gameObject.SetActive(true);
             skipButton.onClick.RemoveAllListeners();
-            skipButton.onClick.AddListener(() =>
-            {
-                CloseRewardUI();
-            });
+            skipButton.onClick.AddListener(CloseRewardUI);
         }
     }
 
@@ -413,7 +370,6 @@ public class CardHandUI : MonoBehaviour
     private Rarity RollRarity()
     {
         float roll = Random.value;
-
         if (roll < 0.005f) return Rarity.Legendary;
         if (roll < 0.03f) return Rarity.Epic;
         if (roll < 0.10f) return Rarity.Rare;
@@ -423,7 +379,7 @@ public class CardHandUI : MonoBehaviour
 
     private IEnumerator ManualShuffle()
     {
-        List<Ability> allCards = new List<Ability>();
+        List<Ability> allCards = new();
         allCards.AddRange(drawPile);
         allCards.AddRange(discardPile);
 
@@ -433,8 +389,7 @@ public class CardHandUI : MonoBehaviour
             {
                 allCards.Add(hand[i]);
                 hand[i] = null;
-                if (cardSlots != null && cardSlots[i] != null)
-                    cardSlots[i].Clear();
+                cardSlots[i].Clear();
             }
         }
 
@@ -468,9 +423,7 @@ public class CardHandUI : MonoBehaviour
         UpdatePileUIs();
 
         for (int i = 0; i < hand.Length; i++)
-        {
             DrawCard(i);
-        }
 
         currentManualShuffleTime += 2f;
     }

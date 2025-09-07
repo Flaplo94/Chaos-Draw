@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: GodSpeed
   m_EditorClassIdentifier: 
   abilityName: God Speed
-  icon: {fileID: -963791335356448533, guid: 2eb521d373827fb409bbc6051444afb1, type: 3}
+  icon: {fileID: -8419024768148562069, guid: 9224b4ebc875b3a4ebf5b856ae7ec93d, type: 3}
   effectPrefab: {fileID: 4804991577932546782, guid: 8bc3f8327a435c842a89e756c90fcd79, type: 3}
   spawnAtMousePosition: 0
   damage: 8

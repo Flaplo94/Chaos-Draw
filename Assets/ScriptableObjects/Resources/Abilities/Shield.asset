@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Shield
   m_EditorClassIdentifier: 
   abilityName: Shield
-  icon: {fileID: 4482472655010951195, guid: c4d6c725894e20445ac5aaaa73e0f5ce, type: 3}
+  icon: {fileID: -8211498793997775287, guid: 265884911a5b8984d8bc3f7871817b11, type: 3}
   effectPrefab: {fileID: 4804991577932546782, guid: 3e664dbe6b27497478539814cece0f6d, type: 3}
   spawnAtMousePosition: 0
   damage: 0
