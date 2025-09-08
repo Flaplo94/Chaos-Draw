@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: e6bc162209b8a3b409e4a4c89d3362df
+guid: acb813d15c0af8945b133fcd7681c8f0
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 5396587850919566051
-    second: crystal_Gold_0
+      213: 6905277003593830246
+    second: crystal_Gold 1_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -152,7 +152,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: crystal_Gold_0
+      name: crystal_Gold 1_0
       rect:
         serializedVersion: 2
         x: 0
@@ -167,8 +167,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 3eadf3dde0884ea40800000000000000
-      internalID: 5396587850919566051
+      spriteID: 66f42ea59d874df50800000000000000
+      internalID: 6905277003593830246
       vertices: []
       indices: 
       edges: []
