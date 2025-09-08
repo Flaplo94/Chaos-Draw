@@ -33,10 +33,10 @@ public class FireTrail : MonoBehaviour, IAbilityBehavior
         rarityApplied = rarity;
         switch (rarity)
         {
-            case Rarity.Uncommon: duration *= 1.10f; radius *= 1.10f; break;
-            case Rarity.Rare: duration *= 1.25f; radius *= 1.25f; damagePerTick += 1; break;
-            case Rarity.Epic: duration *= 1.35f; radius *= 1.35f; damagePerTick += 2; break;
-            case Rarity.Legendary: duration *= 1.50f; radius *= 1.50f; damagePerTick += 3; break;
+            case Rarity.Uncommon: duration *= 1.10f; radius *= 1.10f; damagePerTick += 1; break;
+            case Rarity.Rare: duration *= 1.25f; radius *= 1.25f; damagePerTick += 2; break;
+            case Rarity.Epic: duration *= 1.35f; radius *= 1.35f; damagePerTick += 3; break;
+            case Rarity.Legendary: duration *= 1.50f; radius *= 1.50f; damagePerTick += 4; break;
         }
         return true;
     }

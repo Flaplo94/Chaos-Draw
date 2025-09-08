@@ -20,5 +20,5 @@ MonoBehaviour:
   manaCost: 15
   description: Launch a blazing fireball that explodes on impact, dealing heavy damage
     in a small radius.
-  rarity: 0
+  rarity: 1
   magicType: 0

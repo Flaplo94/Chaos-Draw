@@ -23,10 +23,10 @@ public class FireOnGround : MonoBehaviour, IAbilityBehavior
     {
         switch (rarity)
         {
-            case Rarity.Uncommon: radius *= 1.2f; break;
-            case Rarity.Rare: radius *= 1.4f; damagePerTick += 1; break;
-            case Rarity.Epic: radius *= 1.6f; damagePerTick += 2; break;
-            case Rarity.Legendary: radius *= 2.0f; damagePerTick += 3; break;
+            case Rarity.Uncommon: radius *= 1.2f; damagePerTick += 1; break;
+            case Rarity.Rare: radius *= 1.4f; damagePerTick += 2; break;
+            case Rarity.Epic: radius *= 1.6f; damagePerTick += 3; break;
+            case Rarity.Legendary: radius *= 2.0f; damagePerTick += 4; break;
         }
         return true;
     }

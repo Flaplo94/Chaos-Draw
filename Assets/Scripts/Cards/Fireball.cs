@@ -24,7 +24,7 @@ public class Fireball : MonoBehaviour, IAbilityBehavior
 
         switch (rarity)
         {
-            case Rarity.Uncommon: aoeRadius *= 1.2f; break;
+            case Rarity.Uncommon: aoeRadius *= 1.2f; damage += 2; break;
             case Rarity.Rare: aoeRadius *= 1.4f; damage += 5; break;
             case Rarity.Epic: aoeRadius *= 1.6f; damage += 10; break;
             case Rarity.Legendary: aoeRadius *= 2f; damage += 20; break;
