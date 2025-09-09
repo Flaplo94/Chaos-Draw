@@ -1,12 +1,12 @@
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.UI;
+using TMPro;
 
-public class OptionsMenu : MonoBehaviour
+public class SettingsMenu : MonoBehaviour
 {
     [Header("Audio")]
     [SerializeField] private AudioMixer audioMixer;
-
     [SerializeField] private Slider masterSlider;
     [SerializeField] private Toggle masterMuteToggle;
 
@@ -16,15 +16,18 @@ public class OptionsMenu : MonoBehaviour
     [SerializeField] private Slider sfxSlider;
     [SerializeField] private Toggle sfxMuteToggle;
 
+    [Header("Display")]
+    [SerializeField] private Toggle fullscreenToggle;
+    [SerializeField] private TMP_Dropdown resolutionDropdown;
+
+    [Header("Controls")]
+    [SerializeField] private Slider mouseSensitivitySlider;
+
+    private Resolution[] resolutions;
+
     private float lastMaster = 1f;
     private float lastMusic = 1f;
     private float lastSfx = 1f;
-
-    void OnEnable()
-    {
-        // When pause menu opens, load settings so sliders/toggles match
-        LoadSettings();
-    }
 
     void Start()
     {
@@ -37,6 +40,32 @@ public class OptionsMenu : MonoBehaviour
 
         sfxSlider.onValueChanged.AddListener(SetSFXVolume);
         sfxMuteToggle.onValueChanged.AddListener(ToggleSFXMute);
+
+        fullscreenToggle.onValueChanged.AddListener(SetFullscreen);
+
+        resolutions = Screen.resolutions;
+        resolutionDropdown.ClearOptions();
+        var options = new System.Collections.Generic.List<string>();
+        int currentResolutionIndex = 0;
+        for (int i = 0; i < resolutions.Length; i++)
+        {
+            string option = resolutions[i].width + " x " + resolutions[i].height;
+            options.Add(option);
+            if (resolutions[i].width == Screen.currentResolution.width &&
+                resolutions[i].height == Screen.currentResolution.height)
+            {
+                currentResolutionIndex = i;
+            }
+        }
+        resolutionDropdown.AddOptions(options);
+        resolutionDropdown.value = currentResolutionIndex;
+        resolutionDropdown.RefreshShownValue();
+        resolutionDropdown.onValueChanged.AddListener(SetResolution);
+
+        mouseSensitivitySlider.onValueChanged.AddListener(v => { PlayerPrefs.SetFloat("MouseSensitivity", v); SaveSettings(); });
+
+        // Load saved / current settings
+        LoadSettings();
     }
 
     // --- Audio ---
@@ -97,7 +126,25 @@ public class OptionsMenu : MonoBehaviour
         SaveSettings();
     }
 
-    // --- Save to PlayerPrefs ---
+    // --- Display ---
+    private void SetResolution(int index)
+    {
+        Resolution res = resolutions[index];
+        Screen.SetResolution(res.width, res.height, Screen.fullScreen);
+
+        PlayerPrefs.SetInt("ResolutionIndex", index);
+        SaveSettings();
+    }
+
+    private void SetFullscreen(bool isFullscreen)
+    {
+        Screen.fullScreen = isFullscreen;
+
+        PlayerPrefs.SetInt("Fullscreen", isFullscreen ? 1 : 0);
+        SaveSettings();
+    }
+
+    // --- Save all settings ---
     private void SaveSettings()
     {
         PlayerPrefs.SetFloat("MasterVol", lastMaster);
@@ -109,10 +156,12 @@ public class OptionsMenu : MonoBehaviour
         PlayerPrefs.SetFloat("SFXVol", lastSfx);
         PlayerPrefs.SetInt("SFXMute", sfxMuteToggle.isOn ? 1 : 0);
 
+        PlayerPrefs.SetFloat("MouseSensitivity", mouseSensitivitySlider.value);
+
         PlayerPrefs.Save();
     }
 
-    // --- Load current values ---
+    // --- Load saved / current values ---
     private void LoadSettings()
     {
         float value;
@@ -158,5 +207,23 @@ public class OptionsMenu : MonoBehaviour
                 SetSFXVolume(lastSfx);
             }
         }
+
+        // Fullscreen
+        bool fullscreen = PlayerPrefs.GetInt("Fullscreen", Screen.fullScreen ? 1 : 0) == 1;
+        fullscreenToggle.isOn = fullscreen;
+        Screen.fullScreen = fullscreen;
+
+        // Resolution
+        int resIndex = PlayerPrefs.GetInt("ResolutionIndex", resolutionDropdown.value);
+        if (resIndex >= 0 && resIndex < resolutions.Length)
+        {
+            resolutionDropdown.value = resIndex;
+            resolutionDropdown.RefreshShownValue();
+            Resolution res = resolutions[resIndex];
+            Screen.SetResolution(res.width, res.height, fullscreen);
+        }
+
+        // Mouse Sensitivity
+        mouseSensitivitySlider.value = PlayerPrefs.GetFloat("MouseSensitivity", 1f);
     }
 }
