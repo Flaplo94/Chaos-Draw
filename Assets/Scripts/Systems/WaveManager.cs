@@ -98,6 +98,16 @@ public class WaveManager : MonoBehaviour
                 TryOpenShopOrStartNextWave();
             }
         }
+#if UNITY_EDITOR
+        if (Input.GetKeyDown(KeyCode.B))
+        {
+            currentWave = 9;               // eller 19 for boss 2
+            enemiesInWave.Clear();
+            waveInProgress = false;
+            StopAllCoroutines();
+            StartCoroutine(NextWave());
+        }
+#endif
     }
 
     IEnumerator NextWave()
