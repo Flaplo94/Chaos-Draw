@@ -6,7 +6,7 @@ using TMPro;
 public class MainMenu : MonoBehaviour
 {
     [Header("Scene Names")]
-    public string gameScene = "Stefan TestScene"; // din testscene
+    public string gameScene = "GameScene"; // din testscene
     public string legacyDeckScene = "LegacyDeck";
     public string skillTreeScene = "SkillTree";
     public string optionsScene = "Options";
@@ -56,7 +56,7 @@ public class MainMenu : MonoBehaviour
     }
 
     // --- Button events ---
-    public void PlayGame() => SceneManager.LoadScene(gameScene);
+    public void PlayGame() => SceneManager.LoadScene("GameScene");
 
     public void OpenLegacyDeck()
     {
