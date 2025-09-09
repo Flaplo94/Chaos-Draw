@@ -362,7 +362,7 @@ GameObject:
   m_Component:
   - component: {fileID: 691859070891586599}
   m_Layer: 5
-  m_Name: BossHealthBarPanel
+  m_Name: RPG_line
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

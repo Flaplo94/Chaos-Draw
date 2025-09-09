@@ -179,7 +179,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 100
   flashOnLethalHit: 1
-  displayName: Chaos Golem
+  displayName: CHAOS GOLEM
 --- !u!114 &5539912987140092156
 MonoBehaviour:
   m_ObjectHideFlags: 0
