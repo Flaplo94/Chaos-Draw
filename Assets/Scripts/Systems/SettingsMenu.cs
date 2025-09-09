@@ -64,7 +64,6 @@ public class SettingsMenu : MonoBehaviour
 
         mouseSensitivitySlider.onValueChanged.AddListener(v => { PlayerPrefs.SetFloat("MouseSensitivity", v); SaveSettings(); });
 
-        // Load saved / current settings
         LoadSettings();
     }
 
@@ -73,18 +72,15 @@ public class SettingsMenu : MonoBehaviour
     {
         lastMaster = value;
         if (!masterMuteToggle.isOn)
-            audioMixer.SetFloat("Master", Mathf.Log10(Mathf.Max(value, 0.0001f)) * 20f);
-
+            ApplyChannel("Master", value, false);
+        PlayerPrefs.SetFloat("MasterVol", value);
         SaveSettings();
     }
 
     private void ToggleMasterMute(bool mute)
     {
-        if (mute)
-            audioMixer.SetFloat("Master", -80f);
-        else
-            SetMasterVolume(lastMaster);
-
+        ApplyChannel("Master", lastMaster, mute);
+        PlayerPrefs.SetInt("MasterMute", mute ? 1 : 0);
         SaveSettings();
     }
 
@@ -92,18 +88,15 @@ public class SettingsMenu : MonoBehaviour
     {
         lastMusic = value;
         if (!musicMuteToggle.isOn)
-            audioMixer.SetFloat("Music", Mathf.Log10(Mathf.Max(value, 0.0001f)) * 20f);
-
+            ApplyChannel("Music", value, false);
+        PlayerPrefs.SetFloat("MusicVol", value);
         SaveSettings();
     }
 
     private void ToggleMusicMute(bool mute)
     {
-        if (mute)
-            audioMixer.SetFloat("Music", -80f);
-        else
-            SetMusicVolume(lastMusic);
-
+        ApplyChannel("Music", lastMusic, mute);
+        PlayerPrefs.SetInt("MusicMute", mute ? 1 : 0);
         SaveSettings();
     }
 
@@ -111,19 +104,24 @@ public class SettingsMenu : MonoBehaviour
     {
         lastSfx = value;
         if (!sfxMuteToggle.isOn)
-            audioMixer.SetFloat("SFX", Mathf.Log10(Mathf.Max(value, 0.0001f)) * 20f);
-
+            ApplyChannel("SFX", value, false);
+        PlayerPrefs.SetFloat("SFXVol", value);
         SaveSettings();
     }
 
     private void ToggleSFXMute(bool mute)
     {
-        if (mute)
-            audioMixer.SetFloat("SFX", -80f);
-        else
-            SetSFXVolume(lastSfx);
-
+        ApplyChannel("SFX", lastSfx, mute);
+        PlayerPrefs.SetInt("SFXMute", mute ? 1 : 0);
         SaveSettings();
+    }
+
+    private void ApplyChannel(string parameter, float value, bool mute)
+    {
+        if (mute)
+            audioMixer.SetFloat(parameter, -80f);
+        else
+            audioMixer.SetFloat(parameter, Mathf.Log10(Mathf.Max(value, 0.0001f)) * 20f);
     }
 
     // --- Display ---
@@ -131,7 +129,6 @@ public class SettingsMenu : MonoBehaviour
     {
         Resolution res = resolutions[index];
         Screen.SetResolution(res.width, res.height, Screen.fullScreen);
-
         PlayerPrefs.SetInt("ResolutionIndex", index);
         SaveSettings();
     }
@@ -139,91 +136,45 @@ public class SettingsMenu : MonoBehaviour
     private void SetFullscreen(bool isFullscreen)
     {
         Screen.fullScreen = isFullscreen;
-
         PlayerPrefs.SetInt("Fullscreen", isFullscreen ? 1 : 0);
         SaveSettings();
     }
 
-    // --- Save all settings ---
+    // --- Save ---
     private void SaveSettings()
     {
-        PlayerPrefs.SetFloat("MasterVol", lastMaster);
-        PlayerPrefs.SetInt("MasterMute", masterMuteToggle.isOn ? 1 : 0);
-
-        PlayerPrefs.SetFloat("MusicVol", lastMusic);
-        PlayerPrefs.SetInt("MusicMute", musicMuteToggle.isOn ? 1 : 0);
-
-        PlayerPrefs.SetFloat("SFXVol", lastSfx);
-        PlayerPrefs.SetInt("SFXMute", sfxMuteToggle.isOn ? 1 : 0);
-
-        PlayerPrefs.SetFloat("MouseSensitivity", mouseSensitivitySlider.value);
-
         PlayerPrefs.Save();
     }
 
-    // --- Load saved / current values ---
+    // --- Load ---
     private void LoadSettings()
     {
-        float value;
+        lastMaster = PlayerPrefs.GetFloat("MasterVol", 1f);
+        masterSlider.value = lastMaster;
+        masterMuteToggle.isOn = PlayerPrefs.GetInt("MasterMute", 0) == 1;
+        ApplyChannel("Master", lastMaster, masterMuteToggle.isOn);
 
-        // Master
-        if (PlayerPrefs.HasKey("MasterVol"))
-            lastMaster = PlayerPrefs.GetFloat("MasterVol", 1f);
-        if (audioMixer.GetFloat("Master", out value))
-        {
-            bool muted = PlayerPrefs.GetInt("MasterMute", 0) == 1 || value <= -79f;
-            masterMuteToggle.isOn = muted;
-            if (!muted)
-            {
-                masterSlider.value = lastMaster;
-                SetMasterVolume(lastMaster);
-            }
-        }
+        lastMusic = PlayerPrefs.GetFloat("MusicVol", 1f);
+        musicSlider.value = lastMusic;
+        musicMuteToggle.isOn = PlayerPrefs.GetInt("MusicMute", 0) == 1;
+        ApplyChannel("Music", lastMusic, musicMuteToggle.isOn);
 
-        // Music
-        if (PlayerPrefs.HasKey("MusicVol"))
-            lastMusic = PlayerPrefs.GetFloat("MusicVol", 1f);
-        if (audioMixer.GetFloat("Music", out value))
-        {
-            bool muted = PlayerPrefs.GetInt("MusicMute", 0) == 1 || value <= -79f;
-            musicMuteToggle.isOn = muted;
-            if (!muted)
-            {
-                musicSlider.value = lastMusic;
-                SetMusicVolume(lastMusic);
-            }
-        }
+        lastSfx = PlayerPrefs.GetFloat("SFXVol", 1f);
+        sfxSlider.value = lastSfx;
+        sfxMuteToggle.isOn = PlayerPrefs.GetInt("SFXMute", 0) == 1;
+        ApplyChannel("SFX", lastSfx, sfxMuteToggle.isOn);
 
-        // SFX
-        if (PlayerPrefs.HasKey("SFXVol"))
-            lastSfx = PlayerPrefs.GetFloat("SFXVol", 1f);
-        if (audioMixer.GetFloat("SFX", out value))
-        {
-            bool muted = PlayerPrefs.GetInt("SFXMute", 0) == 1 || value <= -79f;
-            sfxMuteToggle.isOn = muted;
-            if (!muted)
-            {
-                sfxSlider.value = lastSfx;
-                SetSFXVolume(lastSfx);
-            }
-        }
+        fullscreenToggle.isOn = PlayerPrefs.GetInt("Fullscreen", Screen.fullScreen ? 1 : 0) == 1;
 
-        // Fullscreen
-        bool fullscreen = PlayerPrefs.GetInt("Fullscreen", Screen.fullScreen ? 1 : 0) == 1;
-        fullscreenToggle.isOn = fullscreen;
-        Screen.fullScreen = fullscreen;
-
-        // Resolution
         int resIndex = PlayerPrefs.GetInt("ResolutionIndex", resolutionDropdown.value);
         if (resIndex >= 0 && resIndex < resolutions.Length)
         {
             resolutionDropdown.value = resIndex;
             resolutionDropdown.RefreshShownValue();
             Resolution res = resolutions[resIndex];
-            Screen.SetResolution(res.width, res.height, fullscreen);
+            Screen.SetResolution(res.width, res.height, fullscreenToggle.isOn);
         }
 
-        // Mouse Sensitivity
         mouseSensitivitySlider.value = PlayerPrefs.GetFloat("MouseSensitivity", 1f);
     }
 }
