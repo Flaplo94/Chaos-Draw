@@ -20,6 +20,7 @@ public class RandomLightning : MonoBehaviour, IAbilityBehavior
 
     private int bonusStrikes = 0;
     private float damageMultiplier = 1f;
+    private bool luckyWasDuplicated = false;
 
     public bool Initialize(Vector2 _, Rarity rarity)
     {
@@ -70,6 +71,19 @@ public class RandomLightning : MonoBehaviour, IAbilityBehavior
 
             if (lightningVisual != null)
                 SpawnStrikeAt(t.position + (Vector3)strikeOffset);
+        }
+
+        if (!luckyWasDuplicated)
+        {
+            LuckyShotSystem.OnSpellCast(this, () =>
+            {
+                var p2 = transform.position;
+                if (LuckyShotSystem.TryConsumeSpawnOffset(out var off)) p2 += (Vector3)off;
+
+                var dup = Instantiate(gameObject, p2, transform.rotation);
+                var comp = dup.GetComponent<RandomLightning>();
+                if (comp != null) comp.luckyWasDuplicated = true;
+            });
         }
 
         Destroy(gameObject);

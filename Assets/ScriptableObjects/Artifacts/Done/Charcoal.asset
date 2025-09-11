@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a73ad28a0c1ec464b9c7f2bada0c5158, type: 3}
-  m_Name: Zap Stick 3000
+  m_Name: Charcoal
   m_EditorClassIdentifier: 
-  artifactName: Zap Stick 3000
-  description: Lightning damage +40%. Worthy or not, you're zapping stuff now.
-  icon: {fileID: 8555668886070539820, guid: 3a07b41969849b14da5d81da13955a4a, type: 3}
-  rarity: 0
-  internalID: 
+  artifactName: charcoal
+  description: +40% Fire Damage. Because everything tastes better slightly burnt.
+  icon: {fileID: -1540426309290004842, guid: 8ee82538437f8824589d09115c2ad56c, type: 3}
+  rarity: 1
+  internalID: Charcoal

@@ -27,6 +27,7 @@ public class FireTrail : MonoBehaviour, IAbilityBehavior
 
     private float patchLifeTimer;
     private float tickTimer;
+    private bool luckyWasDuplicated = false;
 
     public bool Initialize(Vector2 _, Rarity rarity)
     {
@@ -63,6 +64,22 @@ public class FireTrail : MonoBehaviour, IAbilityBehavior
 
             player = playerObj.transform;
             StartCoroutine(LeaveTrail());
+            if (!luckyWasDuplicated)
+            {
+                LuckyShotSystem.OnSpellCast(this, () =>
+                {
+                    var p2 = transform.position;
+                    if (LuckyShotSystem.TryConsumeSpawnOffset(out var off)) p2 += (Vector3)off;
+
+                    var dup = Instantiate(gameObject, p2, transform.rotation);
+                    var comp = dup.GetComponent<FireTrail>();
+                    if (comp != null)
+                    {
+                        comp.luckyWasDuplicated = true;
+                        comp.isController = true;
+                    }
+                });
+            }
         }
         else
         {

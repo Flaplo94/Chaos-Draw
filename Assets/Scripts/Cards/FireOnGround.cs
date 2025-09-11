@@ -18,6 +18,7 @@ public class FireOnGround : MonoBehaviour, IAbilityBehavior
 
     private float tickTimer;
     private float lifeTimer;
+    private bool luckyWasDuplicated = false;
 
     public bool Initialize(Vector2 dir, Rarity rarity)
     {
@@ -36,6 +37,18 @@ public class FireOnGround : MonoBehaviour, IAbilityBehavior
         tickTimer = 0f;
         lifeTimer = duration;
         SpawnTilesFillCircle();
+        if (!luckyWasDuplicated)
+        {
+            LuckyShotSystem.OnSpellCast(this, () =>
+            {
+                var p2 = transform.position;
+                if (LuckyShotSystem.TryConsumeSpawnOffset(out var off)) p2 += (Vector3)off;
+
+                var dup = Instantiate(gameObject, p2, transform.rotation);
+                var comp = dup.GetComponent<FireOnGround>();
+                if (comp != null) comp.luckyWasDuplicated = true;
+            });
+        }
     }
 
     private void Update()
