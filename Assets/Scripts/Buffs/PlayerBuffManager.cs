@@ -4,6 +4,7 @@ using UnityEngine;
 public class PlayerBuffManager : MonoBehaviour
 {
     public static PlayerBuffManager Instance;
+    public event System.Action OnValuesChanged;
 
     [Header("Damage")]
     [SerializeField] private float genericDamageMult = 1f;
@@ -96,6 +97,7 @@ public class PlayerBuffManager : MonoBehaviour
             case BuffData.BuffType.GoldGain: goldGainMult += sign * data.value; break;
             case BuffData.BuffType.ChaosShardGain: chaosShardGainMult += sign * data.value; break;
         }
+        OnValuesChanged?.Invoke();
     }
 
     // --- Getters (til andre systemer) ---
@@ -128,4 +130,5 @@ public class PlayerBuffManager : MonoBehaviour
             this.timeLeft = duration;
         }
     }
+
 }

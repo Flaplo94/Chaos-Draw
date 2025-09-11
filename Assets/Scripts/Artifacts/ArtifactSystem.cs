@@ -52,6 +52,9 @@ public class ArtifactSystem : MonoBehaviour
                     PlayerBuffManager.Instance.AddRuntimeBonus(BuffData.BuffType.Damage, 0.10f);       // +10% global dmg
                     PlayerBuffManager.Instance.AddRuntimeBonus(BuffData.BuffType.Speed, 0.10f);        // +10% move speed
                     PlayerBuffManager.Instance.AddRuntimeBonus(BuffData.BuffType.AttackSpeed, 0.10f);  // +10% attack speed
+                    PlayerBuffManager.Instance.AddRuntimeBonus(BuffData.BuffType.FireDamage, 0.10f);
+                    PlayerBuffManager.Instance.AddRuntimeBonus(BuffData.BuffType.ThunderDamage, 0.10f);
+                    PlayerBuffManager.Instance.AddRuntimeBonus(BuffData.BuffType.BurnDamage, 0.10f);
                 }
                 if (throwingRef != null)
                 {
