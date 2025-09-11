@@ -10598,6 +10598,9 @@ MonoBehaviour:
   startingDeckList:
   - abilityName: Fireball
     count: 5
+  fireStartAbilityName: Fireball
+  lightningStartAbilityName: LightningBall
+  startCopies: 4
   rewardUI: {fileID: 118609471}
   rewardCardsParent: {fileID: 118609472}
   rewardCardPrefab: {fileID: 4060490641503446627, guid: 3cdad6f5b5173fd44b42f5fdc87dc86a, type: 3}

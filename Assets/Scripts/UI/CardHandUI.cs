@@ -4,6 +4,7 @@ using TMPro;
 using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using System.Collections;
+using System.Linq; //  NY: til reward-filter
 
 public class CardHandUI : MonoBehaviour
 {
@@ -30,6 +31,12 @@ public class CardHandUI : MonoBehaviour
     [Header("Card Pool")]
     [SerializeField] private List<StartingCard> startingDeckList = new();
     private List<Ability> allAbilities = new();
+
+    // --- NYT: Start-spells pr. deck (kan sættes i Inspector) ---
+    [Header("Start Spells pr. Deck")]
+    [SerializeField] private string fireStartAbilityName = "Fireball";
+    [SerializeField] private string lightningStartAbilityName = "LightningBall";
+    [SerializeField][Min(1)] private int startCopies = 4;
 
     [Header("Reward UI (parent + prefab)")]
     [SerializeField] private GameObject rewardUI;
@@ -90,6 +97,10 @@ public class CardHandUI : MonoBehaviour
         hand = new Ability[cardSlots.Length];
 
         allAbilities = new List<Ability>(Resources.LoadAll<Ability>(""));
+
+        // --- NY: Overskriv start-listen ud fra valgt element (Fire/Lightning) ---
+        OverrideStartingDeckFromSelectedElement();
+
         CreateStartingDeck();
         Shuffle(drawPile);
 
@@ -388,7 +399,12 @@ public class CardHandUI : MonoBehaviour
         rewardUI.SetActive(true);
         ClearRewardCardsParent();
 
-        List<Ability> pool = new(allAbilities);
+        // --- NY: filtrér pool efter valgt element før vi vælger 3 ---
+        var element = SessionData.SelectedElement; // MagicType.Fire / MagicType.Lightning
+        List<Ability> pool = allAbilities
+            .Where(a => a != null && a.magicType == element)
+            .ToList();
+
         Shuffle(pool);
 
         for (int i = 0; i < 3 && i < pool.Count; i++)
@@ -488,5 +504,18 @@ public class CardHandUI : MonoBehaviour
         waveCount++;
         if (waveCount % 2 == 0)
             ShowRewardUI();
+    }
+
+    // ------------ NY Hjælper: vælg start-deck ud fra valgt element ------------
+    private void OverrideStartingDeckFromSelectedElement()
+    {
+        var element = SessionData.SelectedElement; // sat i ChooseDeckMenu ved Start
+
+        string startName = (element == MagicType.Lightning)
+            ? lightningStartAbilityName
+            : fireStartAbilityName;
+
+        startingDeckList.Clear();
+        startingDeckList.Add(new StartingCard { abilityName = startName, count = startCopies });
     }
 }
