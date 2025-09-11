@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerThrowing : MonoBehaviour
 {
@@ -15,67 +16,87 @@ public class PlayerThrowing : MonoBehaviour
     public PlayerStats stats;
 
     [Header("Audio")]
-    [SerializeField] private AudioClip attackSfx;  // <-- assign in Inspector
-    [SerializeField] private AudioSource audioSource; // <-- assign in Inspector (or GetComponent in Awake)
+    [SerializeField] private AudioClip attackSfx;
+    [SerializeField] private AudioSource audioSource;
+
+    [Header("Input System")]
+    [SerializeField] private InputActionAsset inputActions;
 
     // Artifact hooks
     [HideInInspector] public int extraProjectiles = 0;
     [HideInInspector] public float fireRateMult = 1f;
     [HideInInspector] public float projectileSpeedMult = 1f;
 
-    float cooldown;
-
-    [SerializeField] private AttackCooldownIndicator cooldownIndicator; // assign prefab in inspector
+    private float cooldown;
+    [SerializeField] private AttackCooldownIndicator cooldownIndicator;
 
     private Dimmer dimmer;
+    private InputAction attackAction;
 
     void Awake()
     {
         dimmer = FindFirstObjectByType<Dimmer>();
-        // fallback if not assigned
         if (audioSource == null)
             audioSource = GetComponent<AudioSource>();
+    }
+
+    void OnEnable()
+    {
+        if (inputActions != null)
+        {
+            var playerMap = inputActions.FindActionMap("Player");
+            attackAction = playerMap.FindAction("Attack");
+
+            if (attackAction != null)
+            {
+                attackAction.performed += OnAttackPerformed;
+                attackAction.Enable();
+            }
+        }
+    }
+
+    void OnDisable()
+    {
+        if (attackAction != null)
+        {
+            attackAction.performed -= OnAttackPerformed;
+            attackAction.Disable();
+        }
     }
 
     void Update()
     {
         if (cooldown > 0f) cooldown -= Time.unscaledDeltaTime;
         if (cooldown < 0f) cooldown = 0f;
+    }
 
-        if (Input.GetMouseButton(0) && cooldown <= 0f)
-        {
-            if (dimmer != null && !dimmer.dimmerOn)
-            {
+    private void OnAttackPerformed(InputAction.CallbackContext ctx)
+    {
+        if (cooldown > 0f) return;
+        if (dimmer != null && dimmer.dimmerOn) return;
 
-                ThrowTowardMouse();
+        ThrowTowardMouse();
 
-                // play attack sound
-                if (attackSfx != null && audioSource != null)
-                    audioSource.PlayOneShot(attackSfx);
+        if (attackSfx != null && audioSource != null)
+            audioSource.PlayOneShot(attackSfx);
 
-                float effective = baseCooldown / Mathf.Max(0.01f, fireRateMult);
-                cooldown = effective;
-                if (cooldownIndicator != null)
-                {
-                    cooldownIndicator.StartCooldown(effective, transform);
-                }
-                else
-                {
-                    Debug.LogWarning("[PlayerThrowing] cooldownIndicator not assigned!");
-                }
-            }
-        }
+        float effective = baseCooldown / Mathf.Max(0.01f, fireRateMult);
+        cooldown = effective;
 
+        if (cooldownIndicator != null)
+            cooldownIndicator.StartCooldown(effective, transform);
     }
 
     void ThrowTowardMouse()
     {
-        if (!cardPrefab || !firePoint || Camera.main == null) return;
+        if (!cardPrefab || !firePoint) return;
 
-        Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        // Use new Input System to get mouse world position
+        Vector2 mouseScreen = Mouse.current.position.ReadValue();
+        Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(new Vector3(mouseScreen.x, mouseScreen.y, -Camera.main.transform.position.z));
         mouseWorld.z = 0f;
-        Vector2 dir = ((Vector2)(mouseWorld - firePoint.position)).normalized;
 
+        Vector2 dir = ((Vector2)(mouseWorld - firePoint.position)).normalized;
         SpawnCard(firePoint.position, dir);
 
         if (extraProjectiles > 0)

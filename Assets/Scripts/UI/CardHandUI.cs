@@ -49,6 +49,15 @@ public class CardHandUI : MonoBehaviour
     [SerializeField] private AudioClip shuffleClip;
     [SerializeField] private Vector2 shuffleDurationRange = new Vector2(1f, 2f);
 
+    [Header("Input System")]
+    [SerializeField] private InputActionAsset inputActions;
+
+    private InputAction card1Action;
+    private InputAction card2Action;
+    private InputAction card3Action;
+    private InputAction card4Action;
+    private InputAction reshuffleAction;
+
     private int waveCount = 0;
     private readonly List<Ability> deck = new();
     private readonly List<Ability> drawPile = new();
@@ -91,26 +100,72 @@ public class CardHandUI : MonoBehaviour
         DrawInitialHand();
     }
 
+    private void OnEnable()
+    {
+        if (inputActions == null) return;
+        var playerMap = inputActions.FindActionMap("Player");
+
+        card1Action = playerMap.FindAction("Card 1");
+        card2Action = playerMap.FindAction("Card 2");
+        card3Action = playerMap.FindAction("Card 3");
+        card4Action = playerMap.FindAction("Card 4");
+        reshuffleAction = playerMap.FindAction("Reshuffle");
+
+        if (card1Action != null)
+        {
+            card1Action.performed += _ => TryUseCardIfPossible(0);
+            card1Action.Enable();
+        }
+        if (card2Action != null)
+        {
+            card2Action.performed += _ => TryUseCardIfPossible(1);
+            card2Action.Enable();
+        }
+        if (card3Action != null)
+        {
+            card3Action.performed += _ => TryUseCardIfPossible(2);
+            card3Action.Enable();
+        }
+        if (card4Action != null)
+        {
+            card4Action.performed += _ => TryUseCardIfPossible(3);
+            card4Action.Enable();
+        }
+        if (reshuffleAction != null)
+        {
+            reshuffleAction.performed += _ =>
+            {
+                Debug.Log("Reshuffle pressed!");
+                if (dimmer != null && !dimmer.dimmerOn)
+                    StartCoroutine(ManualShuffle());
+            };
+            reshuffleAction.Enable();
+        }
+        else if (reshuffleAction == null)
+        {
+            Debug.LogWarning("Reshuffle action not found in InputActionAsset2.");
+        }
+
+    }
+
+    private void OnDisable()
+    {
+        if (card1Action != null) card1Action.Disable();
+        if (card2Action != null) card2Action.Disable();
+        if (card3Action != null) card3Action.Disable();
+        if (card4Action != null) card4Action.Disable();
+        if (reshuffleAction != null) reshuffleAction.Disable();
+    }
+
     private void Update()
     {
-        if (Keyboard.current == null) return;
-
-        if (Keyboard.current.digit1Key.wasPressedThisFrame && hand.Length > 0)
-            if (dimmer != null && !dimmer.dimmerOn) TryUseCard(0);
-
-        if (Keyboard.current.digit2Key.wasPressedThisFrame && hand.Length > 1)
-            if (dimmer != null && !dimmer.dimmerOn) TryUseCard(1);
-
-        if (Keyboard.current.digit3Key.wasPressedThisFrame && hand.Length > 2)
-            if (dimmer != null && !dimmer.dimmerOn) TryUseCard(2);
-
-        if (Keyboard.current.digit4Key.wasPressedThisFrame && hand.Length > 3)
-            if (dimmer != null && !dimmer.dimmerOn) TryUseCard(3);
-
-        if (Keyboard.current.rKey.wasPressedThisFrame)
-            if (dimmer != null && !dimmer.dimmerOn) StartCoroutine(ManualShuffle());
-
         UpdateCardOverlays();
+    }
+
+    private void TryUseCardIfPossible(int index)
+    {
+        if (dimmer != null && !dimmer.dimmerOn)
+            TryUseCard(index);
     }
 
     // -------------------- Deck / Draw / Use --------------------

@@ -4329,6 +4329,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 5
   rootedIcon: {fileID: 1687114297}
+  inputActions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
 --- !u!58 &838276996
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -4484,6 +4485,7 @@ MonoBehaviour:
   stats: {fileID: 838277007}
   attackSfx: {fileID: 8300000, guid: 708a1ca39b146634fa4dd9f840a05904, type: 3}
   audioSource: {fileID: 838277010}
+  inputActions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   extraProjectiles: 0
   fireRateMult: 1
   projectileSpeedMult: 1
@@ -8830,6 +8832,7 @@ MonoBehaviour:
   audioSource: {fileID: 1484783535}
   shuffleClip: {fileID: 8300000, guid: c70d0821648a38b4694e915db39c8ad8, type: 3}
   shuffleDurationRange: {x: 1, y: 2}
+  inputActions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   manualShuffleBaseTime: 4
 --- !u!114 &1484783534
 MonoBehaviour:

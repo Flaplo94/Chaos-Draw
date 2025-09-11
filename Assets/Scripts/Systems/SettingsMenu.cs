@@ -20,9 +20,6 @@ public class SettingsMenu : MonoBehaviour
     [SerializeField] private Toggle fullscreenToggle;
     [SerializeField] private TMP_Dropdown resolutionDropdown;
 
-    [Header("Controls")]
-    [SerializeField] private Slider mouseSensitivitySlider;
-
     private Resolution[] resolutions;
 
     private float lastMaster = 1f;
@@ -61,8 +58,6 @@ public class SettingsMenu : MonoBehaviour
         resolutionDropdown.value = currentResolutionIndex;
         resolutionDropdown.RefreshShownValue();
         resolutionDropdown.onValueChanged.AddListener(SetResolution);
-
-        mouseSensitivitySlider.onValueChanged.AddListener(v => { PlayerPrefs.SetFloat("MouseSensitivity", v); SaveSettings(); });
 
         LoadSettings();
     }
@@ -174,7 +169,5 @@ public class SettingsMenu : MonoBehaviour
             Resolution res = resolutions[resIndex];
             Screen.SetResolution(res.width, res.height, fullscreenToggle.isOn);
         }
-
-        mouseSensitivitySlider.value = PlayerPrefs.GetFloat("MouseSensitivity", 1f);
     }
 }
