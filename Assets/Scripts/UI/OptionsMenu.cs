@@ -22,13 +22,11 @@ public class OptionsMenu : MonoBehaviour
 
     void OnEnable()
     {
-        // When pause menu opens, load settings so sliders/toggles match
         LoadSettings();
     }
 
     void Start()
     {
-        // Hook up listeners
         masterSlider.onValueChanged.AddListener(SetMasterVolume);
         masterMuteToggle.onValueChanged.AddListener(ToggleMasterMute);
 
@@ -39,124 +37,77 @@ public class OptionsMenu : MonoBehaviour
         sfxMuteToggle.onValueChanged.AddListener(ToggleSFXMute);
     }
 
-    // --- Audio ---
     private void SetMasterVolume(float value)
     {
         lastMaster = value;
         if (!masterMuteToggle.isOn)
-            audioMixer.SetFloat("Master", Mathf.Log10(Mathf.Max(value, 0.0001f)) * 20f);
-
-        SaveSettings();
+            ApplyChannel("Master", value, false);
+        PlayerPrefs.SetFloat("MasterVol", value);
+        PlayerPrefs.Save();
     }
 
     private void ToggleMasterMute(bool mute)
     {
-        if (mute)
-            audioMixer.SetFloat("Master", -80f);
-        else
-            SetMasterVolume(lastMaster);
-
-        SaveSettings();
+        ApplyChannel("Master", lastMaster, mute);
+        PlayerPrefs.SetInt("MasterMute", mute ? 1 : 0);
+        PlayerPrefs.Save();
     }
 
     private void SetMusicVolume(float value)
     {
         lastMusic = value;
         if (!musicMuteToggle.isOn)
-            audioMixer.SetFloat("Music", Mathf.Log10(Mathf.Max(value, 0.0001f)) * 20f);
-
-        SaveSettings();
+            ApplyChannel("Music", value, false);
+        PlayerPrefs.SetFloat("MusicVol", value);
+        PlayerPrefs.Save();
     }
 
     private void ToggleMusicMute(bool mute)
     {
-        if (mute)
-            audioMixer.SetFloat("Music", -80f);
-        else
-            SetMusicVolume(lastMusic);
-
-        SaveSettings();
+        ApplyChannel("Music", lastMusic, mute);
+        PlayerPrefs.SetInt("MusicMute", mute ? 1 : 0);
+        PlayerPrefs.Save();
     }
 
     private void SetSFXVolume(float value)
     {
         lastSfx = value;
         if (!sfxMuteToggle.isOn)
-            audioMixer.SetFloat("SFX", Mathf.Log10(Mathf.Max(value, 0.0001f)) * 20f);
-
-        SaveSettings();
+            ApplyChannel("SFX", value, false);
+        PlayerPrefs.SetFloat("SFXVol", value);
+        PlayerPrefs.Save();
     }
 
     private void ToggleSFXMute(bool mute)
     {
-        if (mute)
-            audioMixer.SetFloat("SFX", -80f);
-        else
-            SetSFXVolume(lastSfx);
-
-        SaveSettings();
-    }
-
-    // --- Save to PlayerPrefs ---
-    private void SaveSettings()
-    {
-        PlayerPrefs.SetFloat("MasterVol", lastMaster);
-        PlayerPrefs.SetInt("MasterMute", masterMuteToggle.isOn ? 1 : 0);
-
-        PlayerPrefs.SetFloat("MusicVol", lastMusic);
-        PlayerPrefs.SetInt("MusicMute", musicMuteToggle.isOn ? 1 : 0);
-
-        PlayerPrefs.SetFloat("SFXVol", lastSfx);
-        PlayerPrefs.SetInt("SFXMute", sfxMuteToggle.isOn ? 1 : 0);
-
+        ApplyChannel("SFX", lastSfx, mute);
+        PlayerPrefs.SetInt("SFXMute", mute ? 1 : 0);
         PlayerPrefs.Save();
     }
 
-    // --- Load current values ---
+    private void ApplyChannel(string parameter, float value, bool mute)
+    {
+        if (mute)
+            audioMixer.SetFloat(parameter, -80f);
+        else
+            audioMixer.SetFloat(parameter, Mathf.Log10(Mathf.Max(value, 0.0001f)) * 20f);
+    }
+
     private void LoadSettings()
     {
-        float value;
+        lastMaster = PlayerPrefs.GetFloat("MasterVol", 1f);
+        masterSlider.value = lastMaster;
+        masterMuteToggle.isOn = PlayerPrefs.GetInt("MasterMute", 0) == 1;
+        ApplyChannel("Master", lastMaster, masterMuteToggle.isOn);
 
-        // Master
-        if (PlayerPrefs.HasKey("MasterVol"))
-            lastMaster = PlayerPrefs.GetFloat("MasterVol", 1f);
-        if (audioMixer.GetFloat("Master", out value))
-        {
-            bool muted = PlayerPrefs.GetInt("MasterMute", 0) == 1 || value <= -79f;
-            masterMuteToggle.isOn = muted;
-            if (!muted)
-            {
-                masterSlider.value = lastMaster;
-                SetMasterVolume(lastMaster);
-            }
-        }
+        lastMusic = PlayerPrefs.GetFloat("MusicVol", 1f);
+        musicSlider.value = lastMusic;
+        musicMuteToggle.isOn = PlayerPrefs.GetInt("MusicMute", 0) == 1;
+        ApplyChannel("Music", lastMusic, musicMuteToggle.isOn);
 
-        // Music
-        if (PlayerPrefs.HasKey("MusicVol"))
-            lastMusic = PlayerPrefs.GetFloat("MusicVol", 1f);
-        if (audioMixer.GetFloat("Music", out value))
-        {
-            bool muted = PlayerPrefs.GetInt("MusicMute", 0) == 1 || value <= -79f;
-            musicMuteToggle.isOn = muted;
-            if (!muted)
-            {
-                musicSlider.value = lastMusic;
-                SetMusicVolume(lastMusic);
-            }
-        }
-
-        // SFX
-        if (PlayerPrefs.HasKey("SFXVol"))
-            lastSfx = PlayerPrefs.GetFloat("SFXVol", 1f);
-        if (audioMixer.GetFloat("SFX", out value))
-        {
-            bool muted = PlayerPrefs.GetInt("SFXMute", 0) == 1 || value <= -79f;
-            sfxMuteToggle.isOn = muted;
-            if (!muted)
-            {
-                sfxSlider.value = lastSfx;
-                SetSFXVolume(lastSfx);
-            }
-        }
+        lastSfx = PlayerPrefs.GetFloat("SFXVol", 1f);
+        sfxSlider.value = lastSfx;
+        sfxMuteToggle.isOn = PlayerPrefs.GetInt("SFXMute", 0) == 1;
+        ApplyChannel("SFX", lastSfx, sfxMuteToggle.isOn);
     }
 }

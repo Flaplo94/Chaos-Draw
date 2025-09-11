@@ -1,21 +1,26 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Base speed (uden buffs)")]
     [SerializeField] public float moveSpeed = 5f;
 
-    private float baseSpeed;          // gemmer original v�rdi
+    private float baseSpeed;
     private Rigidbody2D rb;
     private Vector2 moveDir;
 
-    // Kun read?only adgang udefra (som du havde)
-    public Vector2 MoveDir { get { return moveDir; } }
-    // reference to CC lock state
+    public Vector2 MoveDir => moveDir;
+
     private PlayerCrowdControlReceiver crowdControlReceiver;
 
     [Header("Rooted Visual")]
     [SerializeField] private GameObject rootedIcon; // assign in inspector
+
+    [Header("Input System")]
+    [SerializeField] private InputActionAsset inputActions;
+
+    private InputAction moveAction;
 
     void Awake()
     {
@@ -34,14 +39,31 @@ public class PlayerMovement : MonoBehaviour
         }
 
         if (rootedIcon != null) rootedIcon.SetActive(false);
-        baseSpeed = moveSpeed; // l�s �grundfart� til det, du har sat i Inspector
+        baseSpeed = moveSpeed;
+    }
+
+    void OnEnable()
+    {
+        if (inputActions != null)
+        {
+            var playerMap = inputActions.FindActionMap("Player");
+            moveAction = playerMap.FindAction("Move");
+
+            if (moveAction != null)
+                moveAction.Enable();
+        }
+    }
+
+    void OnDisable()
+    {
+        if (moveAction != null)
+            moveAction.Disable();
     }
 
     void Update()
     {
         bool locked = (crowdControlReceiver != null && crowdControlReceiver.IsMovementLocked());
 
-        // toggle the visual
         if (rootedIcon != null)
             rootedIcon.SetActive(locked);
 
@@ -70,33 +92,30 @@ public class PlayerMovement : MonoBehaviour
 
     void HandleInput()
     {
-        float moveX = Input.GetAxisRaw("Horizontal");
-        float moveY = Input.GetAxisRaw("Vertical");
-        moveDir = new Vector2(moveX, moveY).normalized;
+        if (moveAction != null)
+            moveDir = moveAction.ReadValue<Vector2>().normalized;
+        else
+            moveDir = Vector2.zero;
     }
 
     void Move()
     {
-        // 1) Hent multiplier (default = 1 hvis manager mangler)
         float mult = 1f;
         if (PlayerBuffManager.Instance != null)
             mult = PlayerBuffManager.Instance.GetMoveSpeedMult();
 
-        // 2) Regn den endelige fart
         float finalSpeed = baseSpeed * mult;
 
-        // 3) S�t velocity (og nul n�r ingen input, for at undg� drift)
         if (moveDir.sqrMagnitude > 0f)
         {
-            rb.linearVelocity = moveDir * finalSpeed;   // brug rb.velocity hvis du bruger den klassiske 2D API
+            rb.linearVelocity = moveDir * finalSpeed;
         }
         else
         {
-            rb.linearVelocity = Vector2.zero;           // stop h�rdt n�r ingen input
+            rb.linearVelocity = Vector2.zero;
         }
     }
 
-    // (Valgfrit) hvis du senere vil �ndre grundfart fra andre systemer:
     public void SetBaseSpeed(float newBaseSpeed)
     {
         baseSpeed = Mathf.Max(0f, newBaseSpeed);

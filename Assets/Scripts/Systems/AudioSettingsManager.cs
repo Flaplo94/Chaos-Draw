@@ -13,8 +13,8 @@ public class AudioSettingsManager : MonoBehaviour
         float musicDb = (musicNorm > 0.0001f) ? Mathf.Log10(musicNorm) * 20f : -80f;
         float sfxDb = (sfxNorm > 0.0001f) ? Mathf.Log10(sfxNorm) * 20f : -80f;
 
-        audioMixer.SetFloat("MusicVol", musicDb);
-        audioMixer.SetFloat("SFXVol", sfxDb);
+        audioMixer.SetFloat("Music", musicDb);
+        audioMixer.SetFloat("SFX", sfxDb);
 
         Debug.Log($"[AudioSettingsManager] Loaded Music={musicNorm} SFX={sfxNorm}");
         
