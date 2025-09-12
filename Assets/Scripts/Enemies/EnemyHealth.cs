@@ -13,6 +13,7 @@ public class EnemyHealth : MonoBehaviour
     private EnemyAnimator enemyAnimator;
     public Action OnDeath;
     private CircleCollider2D hitbox;
+    
 
     // Globalt event (for alle enemies)
     public static event Action<EnemyHealth> OnAnyEnemyDied;
@@ -21,6 +22,7 @@ public class EnemyHealth : MonoBehaviour
 
     void Awake()
     {
+        
         currentHealth = maxHealth;
         flash = GetComponent<HitFlash>() ?? GetComponent<HitFlash>();
         if (enemyAnimator == null)
@@ -72,8 +74,8 @@ public class EnemyHealth : MonoBehaviour
             col.enabled = false;
 
         // === Gold Reward ===
-        if (Wallet.Instance != null)
-            Wallet.Instance.Add(goldReward);
+        //if (Wallet.Instance != null)
+        //    Wallet.Instance.Add(goldReward);
 
         OnAnyEnemyDied?.Invoke(this);
 

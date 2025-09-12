@@ -16,12 +16,24 @@ public class FireOnGround : MonoBehaviour, IAbilityBehavior
     [SerializeField] private bool randomizeRotation = true;
     [SerializeField] private string spawnTrigger = "Spawn";
 
+    [Header("Lucky Shot (independent forward offset)")]
+    [Tooltip("Minimum forward distance (world units) to place the duplicate in aim direction.")]
+    [SerializeField] private float duplicateForwardOffsetMin = 1.5f;
+    [Tooltip("Forward distance scales with radius (Final = max(Min, radius * Scale)).")]
+    [SerializeField] private float duplicateForwardOffsetScale = 1.20f;
+
     private float tickTimer;
     private float lifeTimer;
     private bool luckyWasDuplicated = false;
 
+    // store aim so we can place the duplicate forward
+    private Vector2 castDir = Vector2.right;
+
     public bool Initialize(Vector2 dir, Rarity rarity)
     {
+        // keep aim for forward placement
+        castDir = (dir.sqrMagnitude > 0.0001f) ? dir.normalized : Vector2.right;
+
         switch (rarity)
         {
             case Rarity.Uncommon: radius *= 1.2f; damagePerTick += 1; break;
@@ -37,16 +49,24 @@ public class FireOnGround : MonoBehaviour, IAbilityBehavior
         tickTimer = 0f;
         lifeTimer = duration;
         SpawnTilesFillCircle();
+
+        // Lucky Shot duplicate — forward in aim direction with a BIGGER, radius-scaled offset
         if (!luckyWasDuplicated)
         {
             LuckyShotSystem.OnSpellCast(this, () =>
             {
-                var p2 = transform.position;
-                if (LuckyShotSystem.TryConsumeSpawnOffset(out var off)) p2 += (Vector3)off;
+                Vector2 fwd = (castDir.sqrMagnitude > 0.0001f) ? castDir : Vector2.right;
+
+                float forwardDist = Mathf.Max(duplicateForwardOffsetMin, radius * duplicateForwardOffsetScale);
+                Vector3 p2 = transform.position + (Vector3)(fwd * forwardDist);
 
                 var dup = Instantiate(gameObject, p2, transform.rotation);
                 var comp = dup.GetComponent<FireOnGround>();
-                if (comp != null) comp.luckyWasDuplicated = true;
+                if (comp != null)
+                {
+                    comp.luckyWasDuplicated = true; // prevent chaining
+                    comp.castDir = this.castDir;    // keep same aim for consistent forward direction
+                }
             });
         }
     }
@@ -78,7 +98,6 @@ public class FireOnGround : MonoBehaviour, IAbilityBehavior
             }
         }
     }
-
 
     private void SpawnTilesFillCircle()
     {

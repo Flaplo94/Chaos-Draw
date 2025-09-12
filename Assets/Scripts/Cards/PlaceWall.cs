@@ -13,10 +13,24 @@ public class PlaceWall : MonoBehaviour, IAbilityBehavior
     [SerializeField] private int thornsDamage = 1;
     [SerializeField] private float thornsInterval = 0.5f;
 
+    [Header("Lucky Shot (perpendicular duplicate)")]
+    [Tooltip("Sideways distance (world units) to place the duplicate 90° to the aim.")]
+    [SerializeField] private float duplicateSideOffset = 1.5f;
+    [Tooltip("If true, spawn the duplicate to the RIGHT of aim; if false, to the LEFT.")]
+    [SerializeField] private bool offsetToRight = true;
+
     private readonly Dictionary<Collider2D, float> nextTickTime = new Dictionary<Collider2D, float>();
 
-    public bool Initialize(Vector2 _, Rarity rarity)
+    // Lucky Shot helpers
+    private bool luckyWasDuplicated = false;   // prevents the duplicate from duplicating again
+    private Vector2 castDir = Vector2.right;   // stored aim direction from Initialize
+
+    public bool Initialize(Vector2 dir, Rarity rarity)
     {
+        // keep aim so we know what "90 degrees" means
+        castDir = (dir.sqrMagnitude > 0.0001f) ? dir.normalized : Vector2.right;
+
+        // original rarity scaling
         switch (rarity)
         {
             case Rarity.Uncommon: lifetime *= 1.10f; break;
@@ -34,12 +48,33 @@ public class PlaceWall : MonoBehaviour, IAbilityBehavior
         if (wallCollider != null) wallCollider.enabled = true;
         if (visual != null) visual.SetActive(true);
         Invoke(nameof(DestroySelf), lifetime);
+
+        // Lucky Shot — spawn one more wall, 90° to aim, at inspector-set distance
+        if (!luckyWasDuplicated)
+        {
+            LuckyShotSystem.OnSpellCast(this, () =>
+            {
+                Vector2 dir = (castDir.sqrMagnitude > 0.0001f) ? castDir : Vector2.right;
+
+                // build perpendicular vectors: right/left of aim
+                Vector2 rightOfAim = new Vector2(dir.y, -dir.x);
+                Vector2 leftOfAim = new Vector2(-dir.y, dir.x);
+                Vector2 side = offsetToRight ? rightOfAim : leftOfAim;
+
+                Vector3 p2 = transform.position + (Vector3)(side.normalized * Mathf.Abs(duplicateSideOffset));
+
+                var dup = Instantiate(gameObject, p2, transform.rotation);
+                var comp = dup.GetComponent<PlaceWall>();
+                if (comp != null)
+                {
+                    comp.luckyWasDuplicated = true; // don’t chain
+                    comp.castDir = this.castDir;    // keep same aim for consistent side choice
+                }
+            });
+        }
     }
 
-    private void DestroySelf()
-    {
-        Destroy(gameObject);
-    }
+    private void DestroySelf() => Destroy(gameObject);
 
     private void OnCollisionStay2D(Collision2D collision)
     {

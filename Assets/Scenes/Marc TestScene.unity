@@ -6702,6 +6702,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damageMult: 1
   fireDamageMult: 1
+  lightningDamageMult: 1
 --- !u!114 &838277008
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10412,7 +10413,7 @@ MonoBehaviour:
   emptyBack: {fileID: 0}
   emptySlotSprite: {fileID: 21300000, guid: 43e39f2351196a44f87f11f1208df991, type: 3}
   startingDeckList:
-  - abilityName: AOEPulse
+  - abilityName: ChainLightning
     count: 5
   rewardUI: {fileID: 118609471}
   rewardCardsParent: {fileID: 118609472}

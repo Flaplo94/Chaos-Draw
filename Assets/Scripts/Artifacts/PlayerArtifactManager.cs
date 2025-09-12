@@ -59,6 +59,10 @@ public class PlayerArtifactManager : MonoBehaviour
                 buffs.AddRuntimeBonus(BuffData.BuffType.FireDamage, 0.40f);
                 break;
 
+            case "zapstick3000":
+                buffs.AddRuntimeBonus(BuffData.BuffType.ThunderDamage, 0.40f);
+                break;
+
             // GamersCap = +10% på alt
             case "gamerscap":
                 float v = 0.10f;

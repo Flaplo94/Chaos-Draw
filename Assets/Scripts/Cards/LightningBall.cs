@@ -60,18 +60,57 @@ public class LightningBall : MonoBehaviour, IAbilityBehavior
 
         rb.linearVelocity = direction * speed;
         lastVelocity = rb.linearVelocity;
+
+        // -------- Lucky Shot duplicate (side-by-side, same direction, immediate velocity) --------
         if (!luckyWasDuplicated)
         {
             LuckyShotSystem.OnSpellCast(this, () =>
             {
-                var p2 = transform.position;
-                if (LuckyShotSystem.TryConsumeSpawnOffset(out var off)) p2 += (Vector3)off;
+                // Perpendicular to current flight for side-by-side placement
+                Vector2 dir = (direction.sqrMagnitude > 0.0001f) ? direction.normalized : (Vector2)transform.right;
+                Vector2 side = new Vector2(-dir.y, dir.x).normalized;
+
+                Vector3 p2 = transform.position;
+                float dist = 0.75f; // fallback distance if no system offset is set
+                if (LuckyShotSystem.TryConsumeSpawnOffset(out var off))
+                    dist = (off.x != 0f) ? off.x : off.magnitude;
+
+                p2 += (Vector3)(side * dist);
 
                 var dup = Instantiate(gameObject, p2, transform.rotation);
                 var comp = dup.GetComponent<LightningBall>();
-                if (comp != null) comp.luckyWasDuplicated = true;
+                if (comp != null)
+                {
+                    comp.luckyWasDuplicated = true;   // don't chain again
+                    comp.direction = dir;             // ensure motion direction
+                    comp.lifeTimer = 0f;              // full lifetime for the duplicate
+
+                    // Kick it immediately so it moves this frame (before its Start runs)
+                    var rb2 = dup.GetComponent<Rigidbody2D>();
+                    if (rb2 != null)
+                    {
+                        rb2.gravityScale = 0f;
+                        rb2.linearDamping = 0f;
+                        rb2.freezeRotation = true;
+                        rb2.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+                        rb2.linearVelocity = dir * speed;
+                        comp.lastVelocity = rb2.linearVelocity;
+                    }
+
+                    // Immediately ignore player collisions to avoid sticking before duplicate's Start()
+                    var col2 = dup.GetComponent<Collider2D>();
+                    var pl = GameObject.FindGameObjectWithTag("Player");
+                    if (pl != null && col2 != null)
+                    {
+                        var pCols = pl.GetComponentsInChildren<Collider2D>(true);
+                        for (int i = 0; i < pCols.Length; i++)
+                            Physics2D.IgnoreCollision(col2, pCols[i], true);
+                        // Its Start() will re-enable via coroutine, same as the original
+                    }
+                }
             });
         }
+        // -----------------------------------------------------------------------------------------
     }
 
     private IEnumerator ReenablePlayerCollisionSoon(Collider2D[] playerCols)
@@ -115,12 +154,10 @@ public class LightningBall : MonoBehaviour, IAbilityBehavior
             if (!h) continue;
             Transform root = h.attachedRigidbody ? h.attachedRigidbody.transform : h.transform;
 
-            // never hit the player
             if (root.CompareTag("Player")) continue;
 
             bool isValidTarget = false;
 
-            // enemy damage
             if (h.TryGetComponent(out EnemyHealth eh))
             {
                 eh.TakeDamage(result.amount, result.element);
@@ -131,19 +168,15 @@ public class LightningBall : MonoBehaviour, IAbilityBehavior
                 bh.TakeDamage(result.amount, result.element);
                 isValidTarget = true;
             }
-            // rods are valid targets but not damaged
             else if (h.TryGetComponent(out LightningRod rod))
             {
                 isValidTarget = true;
             }
 
             if (isValidTarget && lightningVisual != null)
-            {
                 SpawnBolt(transform.position, root.position);
-            }
         }
     }
-
 
     private void SpawnBolt(Vector3 from, Vector3 to)
     {

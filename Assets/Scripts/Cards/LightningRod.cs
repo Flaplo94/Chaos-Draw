@@ -14,16 +14,27 @@ public class LightningRod : MonoBehaviour, IAbilityBehavior
     [SerializeField] private GameObject lightningVisual;
     [SerializeField] private float boltWidthScale = 1f;
 
+    [Header("Lucky Shot (perpendicular duplicate)")]
+    [Tooltip("Sideways distance (world units) to place the duplicate 90° to the aim.")]
+    [SerializeField] private float duplicateSideOffset = 1.5f;
+    [Tooltip("If true, place the duplicate to the RIGHT of the aim; otherwise to the LEFT.")]
+    [SerializeField] private bool offsetToRight = true;
+
     private float damageTimer = 0f;
     private Transform player;
-    private bool luckyWasDuplicated = false;
+    private bool luckyWasDuplicated = false;        // prevents re-duplication
+    private Vector2 castDir = Vector2.right;        // stored aim from Initialize
 
     private static readonly List<LightningRod> activeRods = new List<LightningRod>();
     private readonly Dictionary<ConnKey, GameObject> bolts = new Dictionary<ConnKey, GameObject>(32);
     private readonly HashSet<ConnKey> seenThisFrame = new HashSet<ConnKey>();
 
-    public bool Initialize(Vector2 _, Rarity rarity)
+    public bool Initialize(Vector2 dir, Rarity rarity)
     {
+        // store aim so we can place the duplicate perpendicular to it
+        castDir = (dir.sqrMagnitude > 0.0001f) ? dir.normalized : Vector2.right;
+
+        // your original rarity scaling
         switch (rarity)
         {
             case Rarity.Uncommon: rodRange *= 1.10f; damage *= 1.10f; damageTickRate *= 0.90f; break;
@@ -41,16 +52,27 @@ public class LightningRod : MonoBehaviour, IAbilityBehavior
         activeRods.Add(this);
         Invoke(nameof(DestroySelf), lifetime);
         damageTimer = 0f;
+
+        // Lucky Shot: spawn a duplicate 90° to the aim, with inspector-controlled distance
         if (!luckyWasDuplicated)
         {
             LuckyShotSystem.OnSpellCast(this, () =>
             {
-                var p2 = transform.position;
-                if (LuckyShotSystem.TryConsumeSpawnOffset(out var off)) p2 += (Vector3)off;
+                // Build perpendicular (right/left) of the aim
+                Vector2 dir = (castDir.sqrMagnitude > 0.0001f) ? castDir : Vector2.right;
+                Vector2 rightOfAim = new Vector2(dir.y, -dir.x);
+                Vector2 leftOfAim = new Vector2(-dir.y, dir.x);
+                Vector2 side = offsetToRight ? rightOfAim : leftOfAim;
+
+                Vector3 p2 = transform.position + (Vector3)(side.normalized * Mathf.Abs(duplicateSideOffset));
 
                 var dup = Instantiate(gameObject, p2, transform.rotation);
                 var comp = dup.GetComponent<LightningRod>();
-                if (comp != null) comp.luckyWasDuplicated = true;
+                if (comp != null)
+                {
+                    comp.luckyWasDuplicated = true; // don’t chain
+                    comp.castDir = this.castDir;    // keep same aim so “right side” is consistent
+                }
             });
         }
     }
@@ -103,7 +125,6 @@ public class LightningRod : MonoBehaviour, IAbilityBehavior
         bolts.Clear();
     }
 
-
     private void HandleConnection(Transform a, Transform b)
     {
         var key = new ConnKey(a, b);
@@ -145,7 +166,6 @@ public class LightningRod : MonoBehaviour, IAbilityBehavior
         }
     }
 
-
     private void DestroySelf()
     {
         CancelInvoke();
@@ -156,14 +176,18 @@ public class LightningRod : MonoBehaviour, IAbilityBehavior
     {
         private readonly int aId;
         private readonly int bId;
+
         public ConnKey(Transform a, Transform b)
         {
-            int ia = a ? a.GetInstanceID() : 0;
-            int ib = b ? b.GetInstanceID() : 0;
-            if (ia <= ib) { aId = ia; bId = ib; }
-            else { aId = ib; bId = ia; }
+            aId = a ? a.GetInstanceID() : 0;
+            bId = b ? b.GetInstanceID() : 0;
         }
-        public override int GetHashCode() => (aId * 486187739) ^ bId;
-        public override bool Equals(object obj) => obj is ConnKey k && k.aId == aId && k.bId == bId;
+
+        public override int GetHashCode() => (aId * 397) ^ bId;
+        public override bool Equals(object obj)
+        {
+            if (obj is ConnKey other) return aId == other.aId && bId == other.bId;
+            return false;
+        }
     }
 }

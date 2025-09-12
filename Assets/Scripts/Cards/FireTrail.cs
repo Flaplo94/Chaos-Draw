@@ -21,17 +21,31 @@ public class FireTrail : MonoBehaviour, IAbilityBehavior
     [SerializeField] private string spawnTrigger = "Spawn";
     [SerializeField] private string spawnStateName = "Spawn";
 
+    [Header("Lucky Shot (side-by-side)")]
+    [Tooltip("Sideways spacing between the two trails when Lucky Shot procs.")]
+    [SerializeField] private float duplicateSideDistance = 1.2f;
+
+    // Controller / state
     private bool isController = true;
     private Transform player;
     private Rarity rarityApplied = Rarity.Common;
 
     private float patchLifeTimer;
     private float tickTimer;
-    private bool luckyWasDuplicated = false;
 
-    public bool Initialize(Vector2 _, Rarity rarity)
+    // Lucky Shot bookkeeping
+    private bool luckyWasDuplicated = false;       // prevents re-duplication
+    private Vector2 castDir = Vector2.right;       // aim captured on Initialize
+    private Vector2 trailOffsetWorld = Vector2.zero; // this controller's lateral offset for patches
+
+    public bool Initialize(Vector2 dir, Rarity rarity)
     {
         rarityApplied = rarity;
+
+        // capture aim for left/right split; default to world-right
+        castDir = (dir.sqrMagnitude > 0.0001f) ? dir.normalized : Vector2.right;
+
+        // your original rarity scaling
         switch (rarity)
         {
             case Rarity.Uncommon: duration *= 1.10f; radius *= 1.10f; damagePerTick += 1; break;
@@ -52,37 +66,62 @@ public class FireTrail : MonoBehaviour, IAbilityBehavior
     {
         if (isController)
         {
+            // Controller is invisible; it just drops patches.
             if (animator) animator.enabled = false;
             if (spriteRenderer) spriteRenderer.enabled = false;
 
             var playerObj = GameObject.FindGameObjectWithTag("Player");
-            if (!playerObj)
-            {
-                Destroy(gameObject);
-                return;
-            }
-
+            if (!playerObj) { Destroy(gameObject); return; }
             player = playerObj.transform;
-            StartCoroutine(LeaveTrail());
+
+            // If Lucky Shot procs this cast  split into two controllers (left/right) and start both.
             if (!luckyWasDuplicated)
             {
-                LuckyShotSystem.OnSpellCast(this, () =>
-                {
-                    var p2 = transform.position;
-                    if (LuckyShotSystem.TryConsumeSpawnOffset(out var off)) p2 += (Vector3)off;
+                bool spawnedDouble = false;
 
-                    var dup = Instantiate(gameObject, p2, transform.rotation);
+                LuckyShotSystem.OnSpellCast(() =>
+                {
+                    spawnedDouble = true;
+
+                    // Perpendicular to aim (left/right)
+                    Vector2 dir = (castDir.sqrMagnitude > 0.0001f) ? castDir : Vector2.right;
+                    Vector2 side = new Vector2(-dir.y, dir.x).normalized;
+
+                    // Make the duplicate controller on +side
+                    var dup = Instantiate(gameObject, transform.position, transform.rotation);
                     var comp = dup.GetComponent<FireTrail>();
                     if (comp != null)
                     {
-                        comp.luckyWasDuplicated = true;
+                        comp.luckyWasDuplicated = true;      // no further split
                         comp.isController = true;
+                        comp.player = this.player;
+                        comp.rarityApplied = this.rarityApplied;
+                        comp.castDir = this.castDir;
+                        comp.trailOffsetWorld = side * (duplicateSideDistance * 0.5f);
+                        comp.StartCoroutine(comp.LeaveTrail()); // start the duplicate controller
                     }
+
+                    // Move THIS controller to the -side and start it
+                    this.trailOffsetWorld = -side * (duplicateSideDistance * 0.5f);
+                    StartCoroutine(LeaveTrail());
                 });
+
+                // If Lucky Shot did NOT proc (regular cast)  single centered trail.
+                if (!spawnedDouble)
+                {
+                    trailOffsetWorld = Vector2.zero;
+                    StartCoroutine(LeaveTrail());
+                }
+
+                return;
             }
+
+            // If this is the duplicate controller (flagged), just run normally
+            StartCoroutine(LeaveTrail());
         }
         else
         {
+            // Patch instance visuals
             if (spriteRenderer) spriteRenderer.enabled = true;
 
             if (animator)
@@ -109,11 +148,7 @@ public class FireTrail : MonoBehaviour, IAbilityBehavior
         if (isController) return;
 
         patchLifeTimer += Time.deltaTime;
-        if (patchLifeTimer >= patchLifetime)
-        {
-            Destroy(gameObject);
-            return;
-        }
+        if (patchLifeTimer >= patchLifetime) { Destroy(gameObject); return; }
 
         tickTimer += Time.deltaTime;
         if (tickTimer >= tickInterval)
@@ -130,12 +165,19 @@ public class FireTrail : MonoBehaviour, IAbilityBehavior
         {
             if (player != null)
             {
-                GameObject patch = Instantiate(gameObject, player.position, Quaternion.identity);
+                // spawn patch at player's current pos + this controller's side offset
+                Vector3 patchPos = player.position + (Vector3)trailOffsetWorld;
+
+                GameObject patch = Instantiate(gameObject, patchPos, Quaternion.identity);
                 var fireTrail = patch.GetComponent<FireTrail>();
                 fireTrail.isController = false;
                 fireTrail.player = null;
                 fireTrail.patchLifeTimer = 0f;
                 fireTrail.tickTimer = 0f;
+
+                // Patches don't need trail offset; they are static on spawn position.
+                fireTrail.trailOffsetWorld = Vector2.zero;
+                fireTrail.castDir = this.castDir;
 
                 if (fireTrail.spriteRenderer) fireTrail.spriteRenderer.enabled = true;
                 if (fireTrail.animator)
@@ -160,7 +202,7 @@ public class FireTrail : MonoBehaviour, IAbilityBehavior
             timer += dropInterval;
         }
 
-        Destroy(gameObject);
+        Destroy(gameObject); // controller ends after duration
     }
 
     private void DoTickDamage()
@@ -182,7 +224,6 @@ public class FireTrail : MonoBehaviour, IAbilityBehavior
             if (root.TryGetComponent(out BossHealth bh)) bh.TakeDamage(result.amount, result.element);
         }
     }
-
 
 #if UNITY_EDITOR
     private void OnDrawGizmosSelected()

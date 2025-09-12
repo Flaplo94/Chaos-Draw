@@ -18,6 +18,7 @@ public class FireBird : MonoBehaviour, IAbilityBehavior
     private int remainingPierces;
     private float lifeTimer;
 
+    // Lucky Shot: prevent duplicate from duplicating again
     private bool luckyWasDuplicated = false;
 
     // Track roots so multi-collider enemies don't get double-hit
@@ -44,18 +45,37 @@ public class FireBird : MonoBehaviour, IAbilityBehavior
         transform.localScale *= baseScale * scaleMul;
         return true;
     }
-    private void Start() // ADD
+
+    private void Start()
     {
         if (!luckyWasDuplicated)
         {
             LuckyShotSystem.OnSpellCast(this, () =>
             {
-                var p2 = transform.position;
-                if (LuckyShotSystem.TryConsumeSpawnOffset(out var off)) p2 += (Vector3)off;
+                // Side-by-side relative to flight direction (perpendicular offset)
+                Vector2 dir = (direction.sqrMagnitude > 0.0001f) ? direction.normalized : (Vector2)transform.right;
+                Vector2 side = new Vector2(-dir.y, dir.x).normalized;
 
+                // Base position = where the first bird spawned
+                Vector3 p2 = transform.position;
+
+                // Use the configured LuckyShot offset as the side distance
+                float dist = 0.75f; // fallback
+                if (LuckyShotSystem.TryConsumeSpawnOffset(out var off))
+                    dist = (off.x != 0f) ? off.x : off.magnitude;
+
+                p2 += (Vector3)(side * dist);
+
+                // Spawn duplicate and ensure it moves in the same direction
                 var dup = Instantiate(gameObject, p2, transform.rotation);
                 var comp = dup.GetComponent<FireBird>();
-                if (comp != null) comp.luckyWasDuplicated = true;
+                if (comp != null)
+                {
+                    comp.luckyWasDuplicated = true; // no chaining
+                    comp.direction = dir;           // <-- ensure movement
+                    comp.FaceDirection(dir);        // keep visuals facing
+                    // Note: remainingPierces/damage/scale are already cloned from this instance.
+                }
             });
         }
     }
@@ -84,7 +104,6 @@ public class FireBird : MonoBehaviour, IAbilityBehavior
         remainingPierces--;
         if (remainingPierces < 0) Destroy(gameObject);
     }
-
 
     private void FaceDirection(Vector2 dir)
     {

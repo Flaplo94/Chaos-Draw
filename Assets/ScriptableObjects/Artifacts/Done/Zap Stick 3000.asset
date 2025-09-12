@@ -16,4 +16,4 @@ MonoBehaviour:
   description: Lightning damage +40%. Worthy or not, you're zapping stuff now.
   icon: {fileID: 8555668886070539820, guid: 3a07b41969849b14da5d81da13955a4a, type: 3}
   rarity: 1
-  internalID: zapstick
+  internalID: zapstick3000

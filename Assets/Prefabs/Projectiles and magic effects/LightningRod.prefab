@@ -175,6 +175,8 @@ MonoBehaviour:
     m_Bits: 640
   lightningVisual: {fileID: 6422944563533170519, guid: d0b854a5cf35a654ab4ddee0a7959da7, type: 3}
   boltWidthScale: 1
+  duplicateSideOffset: 7
+  offsetToRight: 1
 --- !u!82 &888145028187807966
 AudioSource:
   m_ObjectHideFlags: 0
