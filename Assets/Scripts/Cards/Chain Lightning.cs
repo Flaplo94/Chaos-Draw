@@ -16,6 +16,8 @@ public class ChainLightning : MonoBehaviour, IAbilityBehavior
     [SerializeField] private string stateName = "Zap";
     [SerializeField] private float widthScale = 1f;
 
+    private bool luckyWasDuplicated = false;
+
     public bool Initialize(Vector2 dir, Rarity rarity)
     {
         switch (rarity)
@@ -69,6 +71,19 @@ public class ChainLightning : MonoBehaviour, IAbilityBehavior
 
             hitSet.Add(nearest);
             prevPos = nearest.transform.position;
+        }
+
+        if (!luckyWasDuplicated)
+        {
+            LuckyShotSystem.OnSpellCast(this, () =>
+            {
+                var p2 = transform.position;
+                if (LuckyShotSystem.TryConsumeSpawnOffset(out var off)) p2 += (Vector3)off;
+
+                var dup = Instantiate(gameObject, p2, transform.rotation);
+                var comp = dup.GetComponent<ChainLightning>();
+                if (comp != null) comp.luckyWasDuplicated = true;
+            });
         }
 
         Destroy(gameObject);

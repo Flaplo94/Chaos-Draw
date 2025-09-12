@@ -23,6 +23,7 @@ public class LightningBall : MonoBehaviour, IAbilityBehavior
     private Rigidbody2D rb;
     private Collider2D col;
     private Vector2 lastVelocity;
+    private bool luckyWasDuplicated = false;
 
     public bool Initialize(Vector2 dir, Rarity rarity)
     {
@@ -59,6 +60,18 @@ public class LightningBall : MonoBehaviour, IAbilityBehavior
 
         rb.linearVelocity = direction * speed;
         lastVelocity = rb.linearVelocity;
+        if (!luckyWasDuplicated)
+        {
+            LuckyShotSystem.OnSpellCast(this, () =>
+            {
+                var p2 = transform.position;
+                if (LuckyShotSystem.TryConsumeSpawnOffset(out var off)) p2 += (Vector3)off;
+
+                var dup = Instantiate(gameObject, p2, transform.rotation);
+                var comp = dup.GetComponent<LightningBall>();
+                if (comp != null) comp.luckyWasDuplicated = true;
+            });
+        }
     }
 
     private IEnumerator ReenablePlayerCollisionSoon(Collider2D[] playerCols)

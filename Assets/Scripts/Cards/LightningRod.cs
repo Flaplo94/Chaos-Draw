@@ -16,6 +16,7 @@ public class LightningRod : MonoBehaviour, IAbilityBehavior
 
     private float damageTimer = 0f;
     private Transform player;
+    private bool luckyWasDuplicated = false;
 
     private static readonly List<LightningRod> activeRods = new List<LightningRod>();
     private readonly Dictionary<ConnKey, GameObject> bolts = new Dictionary<ConnKey, GameObject>(32);
@@ -40,6 +41,18 @@ public class LightningRod : MonoBehaviour, IAbilityBehavior
         activeRods.Add(this);
         Invoke(nameof(DestroySelf), lifetime);
         damageTimer = 0f;
+        if (!luckyWasDuplicated)
+        {
+            LuckyShotSystem.OnSpellCast(this, () =>
+            {
+                var p2 = transform.position;
+                if (LuckyShotSystem.TryConsumeSpawnOffset(out var off)) p2 += (Vector3)off;
+
+                var dup = Instantiate(gameObject, p2, transform.rotation);
+                var comp = dup.GetComponent<LightningRod>();
+                if (comp != null) comp.luckyWasDuplicated = true;
+            });
+        }
     }
 
     private void Update()
