@@ -10,11 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a73ad28a0c1ec464b9c7f2bada0c5158, type: 3}
-  m_Name: Error 404 Name not found
+  m_Name: Holy Cheese
   m_EditorClassIdentifier: 
-  artifactName: Error 404 Name not found
-  description: This artifact doesn't exist. Ignore it. (Definitely not causing random
-    enemy explosions).
-  icon: {fileID: 7246689870275705222, guid: 2e00e0c4e5f529242b472e01985dc7e1, type: 3}
-  rarity: 1
-  internalID: 
+  artifactName: Holy Cheese
+  description: Summons a sacred cheese that orbits you and punishes the lactose intolerant.
+  icon: {fileID: 6582011127417039112, guid: 2845602743af60b4ebd7fb6880a4249e, type: 3}
+  rarity: 0
+  internalID: holycheese

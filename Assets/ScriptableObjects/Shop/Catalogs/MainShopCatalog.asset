@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: MainShopCatalog
   m_EditorClassIdentifier: 
   items:
-  - {fileID: 11400000, guid: 8029e49ef33a4734b987977675466b33, type: 2}
+  - {fileID: 11400000, guid: 6f9c658857902fb4e95aa354719286df, type: 2}
   - {fileID: 11400000, guid: e72fc747bae54ed40b09850932a4dc3d, type: 2}
   - {fileID: 11400000, guid: cdd44a4f42fcf4a40a01b07c74b5fb07, type: 2}

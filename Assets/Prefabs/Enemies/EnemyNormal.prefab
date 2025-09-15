@@ -24,6 +24,14 @@ PrefabInstance:
       propertyPath: m_CollisionDetection
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 289022092848225740, guid: af535699c9caddd418ddb82d17593458, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.013
+      objectReference: {fileID: 0}
+    - target: {fileID: 289022092848225740, guid: af535699c9caddd418ddb82d17593458, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.002
+      objectReference: {fileID: 0}
     - target: {fileID: 1849891846209710151, guid: af535699c9caddd418ddb82d17593458, type: 3}
       propertyPath: speed
       value: 2
@@ -86,11 +94,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4774877285035006597, guid: af535699c9caddd418ddb82d17593458, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -0.154
       objectReference: {fileID: 0}
     - target: {fileID: 4774877285035006597, guid: af535699c9caddd418ddb82d17593458, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.016
       objectReference: {fileID: 0}
     - target: {fileID: 4774877285035006597, guid: af535699c9caddd418ddb82d17593458, type: 3}
       propertyPath: m_LocalPosition.z
@@ -130,15 +138,15 @@ PrefabInstance:
       objectReference: {fileID: 9100000, guid: 1ec665e627bf549429c359dc0b8390c9, type: 2}
     - target: {fileID: 6706808530034103868, guid: af535699c9caddd418ddb82d17593458, type: 3}
       propertyPath: m_Radius
-      value: 0.09670935
+      value: 0.10485254
       objectReference: {fileID: 0}
     - target: {fileID: 6706808530034103868, guid: af535699c9caddd418ddb82d17593458, type: 3}
       propertyPath: m_Offset.x
-      value: -0.059452705
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6706808530034103868, guid: af535699c9caddd418ddb82d17593458, type: 3}
       propertyPath: m_Offset.y
-      value: 0.016694862
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6706808530034103868, guid: af535699c9caddd418ddb82d17593458, type: 3}
       propertyPath: m_IsTrigger
@@ -159,6 +167,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 7502241114002446682, guid: af535699c9caddd418ddb82d17593458, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3708896387171402036}
+    - targetCorrespondingSourceObject: {fileID: 7502241114002446682, guid: af535699c9caddd418ddb82d17593458, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7941462592110301646}
   m_SourcePrefab: {fileID: 100100000, guid: af535699c9caddd418ddb82d17593458, type: 3}
 --- !u!1 &5679082729230498780 stripped
 GameObject:
@@ -179,3 +190,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   baseGold: 2
   perWaveScale: 0.1
+--- !u!114 &7941462592110301646
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5679082729230498780}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea89865d8793cf94f8eed498f33c1d94, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

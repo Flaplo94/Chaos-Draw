@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a73ad28a0c1ec464b9c7f2bada0c5158, type: 3}
-  m_Name: Holy Cheese
+  m_Name: Kamikaze Banana
   m_EditorClassIdentifier: 
-  artifactName: Holy Cheese
-  description: Summons a sacred  cheese that orbits you and punishes the lactose
-    intolerant.
-  icon: {fileID: 6582011127417039112, guid: 2845602743af60b4ebd7fb6880a4249e, type: 3}
-  rarity: 0
-  internalID: 
+  artifactName: Kamikaze Banana
+  description: 'Every 15s, this emotionally unstable banana hurls itself at a random
+    enemy.. '
+  icon: {fileID: 7381965769198725172, guid: 00f0285a7bd80b94d9c54f7228a92329, type: 3}
+  rarity: 1
+  internalID: kamikazebanana

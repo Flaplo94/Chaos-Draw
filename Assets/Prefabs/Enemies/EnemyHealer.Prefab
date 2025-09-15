@@ -27,7 +27,7 @@ Transform:
   m_GameObject: {fileID: 2824500864519298573}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 4.2571425, y: 0.07142857, z: 0}
+  m_LocalPosition: {x: 0.005, y: 0.0239, z: 0}
   m_LocalScale: {x: 1.4285713, y: 1.4285713, z: 1.4285713}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -68,7 +68,7 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Radius: 0.5
+  m_Radius: 0.10169509
 --- !u!114 &4443959760379824981
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -103,6 +103,7 @@ GameObject:
   - component: {fileID: 3380281956299672159}
   - component: {fileID: 8856416947508852704}
   - component: {fileID: 9025832996168125021}
+  - component: {fileID: -6855651253175337950}
   m_Layer: 9
   m_Name: EnemyHealer
   m_TagString: Enemy
@@ -280,6 +281,14 @@ MonoBehaviour:
   maxHealth: 1
   flashOnLethalHit: 1
   goldReward: 1
+  showHitboxGizmos: 1
+  includeChildrenColliders: 1
+  onlyHitboxLayer: 0
+  hitboxLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  gizmoColor: {r: 0, g: 1, b: 0, a: 0.85}
+  selectedGizmoColor: {r: 1, g: 0.9, b: 0.1, a: 1}
 --- !u!114 &-3969978128227254662
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -456,3 +465,15 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &-6855651253175337950
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7502241114002446682}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea89865d8793cf94f8eed498f33c1d94, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

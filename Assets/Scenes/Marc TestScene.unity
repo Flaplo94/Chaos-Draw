@@ -788,7 +788,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &73424722
 RectTransform:
   m_ObjectHideFlags: 0
@@ -10238,7 +10238,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1479028461
 RectTransform:
   m_ObjectHideFlags: 0
@@ -10441,7 +10441,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5afedaf3f33c5d4c99bb9e081fbedcf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 838276999}
+  holyCheeseOrbPrefab: {fileID: 1468763482429411521, guid: 1f2a8517f54cfd7438c672de669a1a74, type: 3}
   ownedArtifacts: []
+  kamikazeBananaProjectilePrefab: {fileID: 1468763482429411521, guid: 2de4f3f641d591144bec26aec4838b25, type: 3}
+  bananaIntervalSeconds: 15
+  error404ExplosionPrefab: {fileID: 4804991577932546782, guid: ff92c6fee6293ac49a0e0dd27225d570, type: 3}
 --- !u!82 &1484783535
 AudioSource:
   m_ObjectHideFlags: 0
