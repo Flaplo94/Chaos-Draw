@@ -26,6 +26,11 @@ public class PlayerArtifactManager : MonoBehaviour
 
     [SerializeField] private GameObject error404ExplosionPrefab;
 
+    [SerializeField] private GameObject chickenAllyPrefab;
+
+    [SerializeField] private GameObject yeetCubeMinePrefab;
+
+
 
     void Awake()
     {
@@ -132,9 +137,10 @@ public class PlayerArtifactManager : MonoBehaviour
                 if (bananaLoop == null) bananaLoop = StartCoroutine(KamikazeBananaLoop());
                 break;
 
-            case "chickenegg":
-                PetEggSystem.Enable(this);
+            case "chickenoverlordegg": 
+                ChickenOverlordSystem.Enable(chickenAllyPrefab, threshold: 100, creditAllDeaths: true);
                 break;
+
 
             case "error404":
                 Error404ProcSystem.Enable(error404ExplosionPrefab);
@@ -145,12 +151,11 @@ public class PlayerArtifactManager : MonoBehaviour
                 break;
 
             case "braindamage":
-                buffs.AddRuntimeBonus(BuffData.BuffType.ManaCostReduction, 999f);
-                InputShuffleSystem.ShuffleKeys();
+                BrainDamageSystem.Enable(); // sets all card costs to 1 and shuffles 1/2/3/4
                 break;
 
             case "yeetcube":
-                YeetCubeSystem.Enable();
+                YeetCubeSystem.Enable(yeetCubeMinePrefab);
                 break;
 
             default:

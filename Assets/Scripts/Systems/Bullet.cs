@@ -56,6 +56,10 @@ public class Bullet : MonoBehaviour
         {
             var result = DamageCalculator.ComputeFinalDamage(baseDamage, DamageElement.Physical);
             enemy.TakeDamage(result.amount, result.element);
+
+            // Yeet Cube: count basic-attack hit (enemy)
+            YeetCubeSystem.ReportPlayerHit(enemy.transform.root, isBoss: false);
+
             Hit("Enemy", enemy.gameObject.name, result);
             return;
         }
@@ -68,6 +72,10 @@ public class Bullet : MonoBehaviour
         {
             var result = DamageCalculator.ComputeFinalDamage(baseDamage, DamageElement.Physical);
             boss.TakeDamage(result.amount, result.element);
+
+            // Yeet Cube: count basic-attack hit (boss)
+            YeetCubeSystem.ReportPlayerHit(boss.transform.root, isBoss: true);
+
             Hit("Boss", boss.gameObject.name, result);
             return;
         }

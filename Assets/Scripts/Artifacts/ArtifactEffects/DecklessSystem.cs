@@ -1,13 +1,21 @@
 using UnityEngine;
 
-/// Artifact: Deckless. Stub flag du kan tjekke i Deck/Wave logik.
-public static class DecklessSystem
+public class DecklessSystem : MonoBehaviour
 {
-    public static bool Enabled { get; private set; }
+    public static bool IsActive { get; private set; }
 
     public static void Enable()
     {
-        Enabled = true;
-        Debug.Log("[Deckless] Enabled - fjern deck og giv +2 random kort ved wave-end");
+        IsActive = true;
+
+        // Flip CardHandUI into deckless mode right away if it's around
+        var hand = FindFirstObjectByType<CardHandUI>(FindObjectsInactive.Exclude);
+        if (hand != null) hand.EnableDecklessRuntime();
+        Debug.Log("[Deckless] Enabled: deck cleared, waiting for post-wave grants.");
+    }
+
+    public static void Disable()
+    {
+        IsActive = false;
     }
 }

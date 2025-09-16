@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a73ad28a0c1ec464b9c7f2bada0c5158, type: 3}
-  m_Name: Yeet Cube
+  m_Name: Chicken Overlord Egg
   m_EditorClassIdentifier: 
-  artifactName: Yeet Cube
-  description: Roll a die at the start of each wave. Hit a 6? Godmode. Anything else?
-    Weird stuff happens.
-  icon: {fileID: -2205863333093305225, guid: 97e6f235542b9f445b12a3e0b9cb5cb2, type: 3}
-  rarity: 4
-  internalID: 
+  artifactName: Chicken Overlord Egg
+  description: Slay 100 enemies to hatch the Egg. Unleash the wrath of a divine chicken
+    that pecks your foes to death.
+  icon: {fileID: 7186739750386130996, guid: f1d69d31f70bbfa449c2afc81d74fba6, type: 3}
+  rarity: 3
+  internalID: chickenoverlordegg

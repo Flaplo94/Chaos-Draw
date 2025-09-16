@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: c46b87c59b226c5468ba724737db025f
+guid: 1c0794319606e3d4484c55c715ee651a
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
   defaultReferences:
-  - minePrefab: {fileID: 7826992868574095967, guid: 1d90ea87e40e2a74cb2c4a2d15d5055f, type: 3}
+  - chickenAllyPrefab: {fileID: 4064615449627284308, guid: 5d72b6138f64fa04696df0291c1210ee, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

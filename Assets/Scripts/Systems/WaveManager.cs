@@ -53,7 +53,7 @@ public class WaveManager : MonoBehaviour
     [Header("Scene Transition")]
     [SerializeField] public string afterWave20Scene = "TYscene";
 
-    private int bossesKilled = 0; // 🔥 track bosses killed
+    private int bossesKilled = 0; // track bosses killed
 
     public int CurrentWave => currentWave;
     public int BossesKilled => bossesKilled;
@@ -77,6 +77,9 @@ public class WaveManager : MonoBehaviour
         if (waveInProgress && enemiesInWave.Count == 0)
         {
             waveInProgress = false;
+
+            // YEETCUBE: wave just ended -> clear wave-long effects
+            YeetCubeSystem.OnWaveEnd();
 
             if (bossHealthBarUI.activeSelf)
                 bossHealthBarUI.SetActive(false);
@@ -120,6 +123,9 @@ public class WaveManager : MonoBehaviour
         OnWaveStarted?.Invoke(currentWave);
         OnWaveChanged?.Invoke(currentWave);
 
+        // YEETCUBE: new wave started -> roll & apply the new effect
+        YeetCubeSystem.OnWaveStart();
+
         if (currentWave % 5 == 0 && unlockedEnemyTypes < enemyPrefabs.Length)
             unlockedEnemyTypes++;
 
@@ -155,7 +161,7 @@ public class WaveManager : MonoBehaviour
                 bh.OnDeath += () =>
                 {
                     enemiesInWave.Remove(boss);
-                    bossesKilled++; // 🔥 increment bosses killed
+                    bossesKilled++; // increment bosses killed
                 };
             }
 

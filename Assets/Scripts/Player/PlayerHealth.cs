@@ -40,6 +40,11 @@ public class PlayerHealth : MonoBehaviour
 
     public void TakeDamage(int amount)
     {
+        if (YeetCubeSystem.IsGodmodeActive)
+        {
+            // optional: play a small ping FX/sound
+            return;
+        }
         if (amount <= 0) return;
 
         var shield = FindFirstObjectByType<Shield>();

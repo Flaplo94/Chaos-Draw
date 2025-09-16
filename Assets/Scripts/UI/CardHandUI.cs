@@ -70,6 +70,9 @@ public class CardHandUI : MonoBehaviour
     private Dimmer dimmer;
     internal Sprite cardFrameSprite;
 
+    // Deckless toggle
+    [HideInInspector] public bool decklessEnabled = false;
+
     [System.Serializable]
     public class StartingCard
     {
@@ -164,6 +167,7 @@ public class CardHandUI : MonoBehaviour
 
     private void TryUseCardIfPossible(int index)
     {
+        index = InputShuffleSystem.Map(index);
         if (dimmer != null && !dimmer.dimmerOn)
             TryUseCard(index);
     }
@@ -486,7 +490,81 @@ public class CardHandUI : MonoBehaviour
     public void OnWaveCompleted()
     {
         waveCount++;
+
+        if (decklessEnabled)
+        {
+            // Deckless: Every wave grant exactly 2 random cards, no reward UI
+            AddRandomCardsToDeck(2);
+            return;
+        }
+
+        // Original behavior: every 2 waves show reward UI :contentReference[oaicite:7]{index=7}
         if (waveCount % 2 == 0)
             ShowRewardUI();
     }
+    // Call when Deckless is enabled (clears deck/draw/discard/hand and UI)
+    public void EnableDecklessRuntime()
+    {
+        decklessEnabled = true;
+
+        // Clear deck piles
+        deck.Clear();
+        drawPile.Clear();
+        discardPile.Clear();
+        UpdateDiscardText();
+        UpdateDeckText();
+        UpdatePileUIs();
+
+        // Clear hand (same pattern you use in ManualShuffle) :contentReference[oaicite:0]{index=0}
+        ClearHandSlots();
+
+        Debug.Log("[Deckless] CardHandUI cleared.");
+    }
+
+    // Clear the visible hand & internal array
+    private void ClearHandSlots()
+    {
+        if (hand == null || cardSlots == null) return;
+        for (int i = 0; i < hand.Length; i++)
+        {
+            hand[i] = null;
+            if (cardSlots[i] != null) cardSlots[i].Clear();
+        }
+    }
+
+    // Add N random cards to the deck (instanced like your reward UI does) :contentReference[oaicite:1]{index=1}
+    public void AddRandomCardsToDeck(int count)
+    {
+        if (allAbilities == null || allAbilities.Count == 0) return;
+
+        // Lazy init hand array if needed (in case Deckless enabled before Start finished)
+        if (hand == null && handParent != null)
+        {
+            cardSlots = handParent.GetComponentsInChildren<CardSlotUI>(true);
+            hand = new Ability[cardSlots.Length];
+        }
+
+        for (int i = 0; i < count; i++)
+        {
+            int idx = Random.Range(0, allAbilities.Count);
+            Ability abilityCopy = Instantiate(allAbilities[idx]);
+            abilityCopy.rarity = RollRarity(); // reuse your rarity logic :contentReference[oaicite:2]{index=2}
+
+            deck.Add(abilityCopy);
+            drawPile.Add(abilityCopy);
+        }
+
+        // Shuffle draw pile then auto-fill empty hand slots
+        Shuffle(drawPile);                       // reuse your shuffle method :contentReference[oaicite:3]{index=3}
+        UpdateDeckText();                        // keeps counters correct :contentReference[oaicite:4]{index=4}
+        UpdatePileUIs();                         // updates pile sprites/counts :contentReference[oaicite:5]{index=5}
+
+        // Draw into empty hand slots so the new cards are playable
+        if (hand != null)
+        {
+            for (int i = 0; i < hand.Length; i++)
+                if (hand[i] == null) DrawCard(i); // reuse your existing draw flow :contentReference[oaicite:6]{index=6}
+        }
+    }
+
 }

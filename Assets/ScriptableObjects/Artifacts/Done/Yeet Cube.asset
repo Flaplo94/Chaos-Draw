@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a73ad28a0c1ec464b9c7f2bada0c5158, type: 3}
-  m_Name: Brain Damage
+  m_Name: Yeet Cube
   m_EditorClassIdentifier: 
-  artifactName: Brain Damage
-  description: "All spells cost 1 mana. But your muscle memory is toast \u2013 keybinds
-    shuffle like a toddler on sugar."
-  icon: {fileID: 6477366327749791160, guid: 8549990fdcdac3449a070c2aa63b2828, type: 3}
-  rarity: 2
-  internalID: 
+  artifactName: Yeet Cube
+  description: Roll a die at the start of each wave. Hit a 6? Godmode. Anything else?
+    Weird stuff happens.
+  icon: {fileID: -2205863333093305225, guid: 97e6f235542b9f445b12a3e0b9cb5cb2, type: 3}
+  rarity: 4
+  internalID: yeetcube
