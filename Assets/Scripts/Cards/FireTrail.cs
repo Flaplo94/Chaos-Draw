@@ -7,6 +7,7 @@ public class FireTrail : MonoBehaviour, IAbilityBehavior
     [Header("Trail Controller")]
     [SerializeField] private float duration = 3f;
     [SerializeField] private float dropInterval = 0.3f;
+    [SerializeField] private float range = 0.5f;
 
     [Header("Patch (each drop)")]
     [SerializeField] private float patchLifetime = 2f;

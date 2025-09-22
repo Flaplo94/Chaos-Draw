@@ -21,3 +21,4 @@ MonoBehaviour:
   description: Release a fiery shockwave that deals 10 DPS to all enemies in a smallradius.
   rarity: 0
   magicType: 0
+  previewMode: 2

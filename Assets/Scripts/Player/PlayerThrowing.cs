@@ -45,32 +45,31 @@ public class PlayerThrowing : MonoBehaviour
         if (inputActions != null)
         {
             var playerMap = inputActions.FindActionMap("Player");
-            attackAction = playerMap.FindAction("Attack");
-
+            attackAction = playerMap != null ? playerMap.FindAction("Attack") : null;
             if (attackAction != null)
-            {
-                attackAction.performed += OnAttackPerformed;
                 attackAction.Enable();
-            }
         }
     }
 
     void OnDisable()
     {
         if (attackAction != null)
-        {
-            attackAction.performed -= OnAttackPerformed;
             attackAction.Disable();
-        }
     }
 
     void Update()
     {
         if (cooldown > 0f) cooldown -= Time.unscaledDeltaTime;
         if (cooldown < 0f) cooldown = 0f;
+
+        // Continuous fire while held: if button is pressed and CD is ready, shoot now.
+        if (attackAction != null && attackAction.IsPressed())
+        {
+            TryFire();
+        }
     }
 
-    private void OnAttackPerformed(InputAction.CallbackContext ctx)
+    private void TryFire()
     {
         if (cooldown > 0f) return;
         if (dimmer != null && dimmer.dimmerOn) return;
@@ -91,9 +90,11 @@ public class PlayerThrowing : MonoBehaviour
     {
         if (!cardPrefab || !firePoint) return;
 
-        // Use new Input System to get mouse world position
+        // New Input System mouse position
         Vector2 mouseScreen = Mouse.current.position.ReadValue();
-        Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(new Vector3(mouseScreen.x, mouseScreen.y, -Camera.main.transform.position.z));
+        Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(
+            new Vector3(mouseScreen.x, mouseScreen.y, -Camera.main.transform.position.z)
+        );
         mouseWorld.z = 0f;
 
         Vector2 dir = ((Vector2)(mouseWorld - firePoint.position)).normalized;

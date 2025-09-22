@@ -1,3 +1,4 @@
+// GameMusicManager.cs
 using UnityEngine;
 
 public class GameMusicManager : MonoBehaviour
@@ -15,33 +16,43 @@ public class GameMusicManager : MonoBehaviour
 
     public void PlayMusic(AudioClip clip, bool loop = true)
     {
+        // If we're already playing this clip, don't restart it.
+        if (audioSource != null && audioSource.clip == clip && audioSource.isPlaying)
+        {
+            audioSource.loop = loop; // still allow loop flag updates
+            return;
+        }
+
         StopAllCoroutines();
         StartCoroutine(FadeInMusic(clip, loop));
     }
 
     private System.Collections.IEnumerator FadeInMusic(AudioClip clip, bool loop)
     {
-        // fade out
-        float startVol = audioSource.volume;
-        float t = 0f;
-        while (t < fadeTime)
+        // Only fade out if something is playing
+        if (audioSource.isPlaying && audioSource.clip != null)
         {
-            t += Time.deltaTime;
-            audioSource.volume = Mathf.Lerp(startVol, 0f, t / fadeTime);
-            yield return null;
+            float startVol = audioSource.volume;
+            float t = 0f;
+            while (t < fadeTime)
+            {
+                t += Time.deltaTime;
+                audioSource.volume = Mathf.Lerp(startVol, 0f, t / fadeTime);
+                yield return null;
+            }
+            audioSource.Stop();
         }
 
-        audioSource.Stop();
         audioSource.clip = clip;
         audioSource.loop = loop;
         audioSource.Play();
 
-        // fade in
-        t = 0f;
-        while (t < fadeTime)
+        // Fade in to full volume
+        float tIn = 0f;
+        while (tIn < fadeTime)
         {
-            t += Time.deltaTime;
-            audioSource.volume = Mathf.Lerp(0f, 1f, t / fadeTime);
+            tIn += Time.deltaTime;
+            audioSource.volume = Mathf.Lerp(0f, 1f, tIn / fadeTime);
             yield return null;
         }
     }

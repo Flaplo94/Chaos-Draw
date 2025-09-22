@@ -22,3 +22,4 @@ MonoBehaviour:
     in a small radius.
   rarity: 0
   magicType: 0
+  previewMode: 1

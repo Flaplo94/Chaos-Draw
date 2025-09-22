@@ -67,6 +67,33 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "PrevCard",
+                    "type": "Button",
+                    "id": "44ac2e98-b443-4acb-93fb-a9ea76002794",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "NextCard",
+                    "type": "Button",
+                    "id": "ad5733f2-acc4-488e-8ec0-24dc29cdda13",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Smartcast",
+                    "type": "Button",
+                    "id": "48a04920-5957-4745-a835-fb546dc59e57",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -199,6 +226,39 @@
                     "processors": "",
                     "groups": ";Keyboard&Mouse",
                     "action": "Reshuffle",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ca511f92-5550-43ae-bd59-97ac31e9558b",
+                    "path": "<Keyboard>/#(Q)",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "PrevCard",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "db5c9430-a1c6-45a8-b60b-eb303388b12e",
+                    "path": "<Keyboard>/#(E)",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "NextCard",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ebd5c8ea-1b79-4754-bc19-d54bf55fb521",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Smartcast",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

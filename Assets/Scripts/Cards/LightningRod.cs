@@ -9,7 +9,7 @@ public class LightningRod : MonoBehaviour, IAbilityBehavior
     [SerializeField] private float damage = 10f;
     [SerializeField] private float damageTickRate = 0.5f;
     [SerializeField] private LayerMask enemyLayer;
-
+    [SerializeField] private float radius = 10f;
     [Header("Visual")]
     [SerializeField] private GameObject lightningVisual;
     [SerializeField] private float boltWidthScale = 1f;

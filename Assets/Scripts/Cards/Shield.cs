@@ -5,12 +5,14 @@ public class Shield : MonoBehaviour, IAbilityBehavior
     private static int activeShieldCount = 0; // count how many shields are active
     private int myIndex = 0;
 
+
     // Lucky Shot: avoid re-trigger on the duplicate
     private bool luckyWasDuplicated = false;
     private Rarity myRarity = Rarity.Common;
 
     [Header("Base")]
     [SerializeField] private int baseShieldHealth = 1;
+    [SerializeField] private int range = 1;
 
     [Header("Reflect (Rare+)")]
     [SerializeField] private float reflectChance = 0f;

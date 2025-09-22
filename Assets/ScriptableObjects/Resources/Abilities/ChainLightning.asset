@@ -22,3 +22,4 @@ MonoBehaviour:
     up to 3 enemies (max 15 DPS)
   rarity: 0
   magicType: 1
+  previewMode: 2

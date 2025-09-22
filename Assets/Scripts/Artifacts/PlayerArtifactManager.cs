@@ -59,6 +59,13 @@ public class PlayerArtifactManager : MonoBehaviour
         string key = Normalize(artifact.internalID);
         if (appliedIDs.Contains(key)) { Debug.Log("[Artifact] ID already applied: " + key); return; }
 
+        if (ownedArtifacts.Exists(a => a != null && Normalize(a.internalID) == key))
+        {
+            appliedIDs.Add(key); // keep the fast-path guard in sync
+            Debug.Log("[Artifact] Already owned by ID: " + key);
+            return;
+        }
+
         if (!ownedArtifacts.Contains(artifact))
         {
             ownedArtifacts.Add(artifact);
@@ -138,7 +145,7 @@ public class PlayerArtifactManager : MonoBehaviour
                 break;
 
             case "chickenoverlordegg": 
-                ChickenOverlordSystem.Enable(chickenAllyPrefab, threshold: 100, creditAllDeaths: true);
+                ChickenOverlordSystem.Enable(chickenAllyPrefab, threshold: 1, creditAllDeaths: true);
                 break;
 
 

@@ -7,6 +7,7 @@ public class PlaceWall : MonoBehaviour, IAbilityBehavior
     [SerializeField] private float lifetime = 5f;
     [SerializeField] private Collider2D wallCollider;
     [SerializeField] private GameObject visual;
+    [SerializeField] private float radius = 1.5f;
 
     [Header("Thorns (enabled from Rare+)")]
     [SerializeField] private bool thornsEnabled = false;

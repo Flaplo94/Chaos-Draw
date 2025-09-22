@@ -3,7 +3,7 @@ using UnityEngine;
 public class AOEPulse : MonoBehaviour, IAbilityBehavior
 {
     [Header("Tuning")]
-    [SerializeField] private float radius = 3f;
+    [SerializeField] private float range = 3f;
     [SerializeField] private int damage = 5;
     [SerializeField] private LayerMask enemyLayer;
 
@@ -44,10 +44,10 @@ public class AOEPulse : MonoBehaviour, IAbilityBehavior
         // Your rarity scaling
         switch (rarity)
         {
-            case Rarity.Uncommon: radius *= 1.10f; damage += 1; break;
-            case Rarity.Rare: radius *= 1.25f; damage += 2; break;
-            case Rarity.Epic: radius *= 1.40f; damage += 3; break;
-            case Rarity.Legendary: radius *= 1.60f; damage += 5; break;
+            case Rarity.Uncommon: range *= 1.10f; damage += 1; break;
+            case Rarity.Rare: range *= 1.25f; damage += 2; break;
+            case Rarity.Epic: range *= 1.40f; damage += 3; break;
+            case Rarity.Legendary: range *= 1.60f; damage += 5; break;
         }
         return true;
     }
@@ -56,8 +56,8 @@ public class AOEPulse : MonoBehaviour, IAbilityBehavior
     {
         // 1) Apply the pulse damage immediately
         Collider2D[] hits = (enemyLayer.value == 0)
-            ? Physics2D.OverlapCircleAll(transform.position, radius)
-            : Physics2D.OverlapCircleAll(transform.position, radius, enemyLayer);
+            ? Physics2D.OverlapCircleAll(transform.position, range)
+            : Physics2D.OverlapCircleAll(transform.position, range, enemyLayer);
 
         DamageResult result = DamageCalculator.ComputeFinalDamage(damage, DamageElement.Fire);
         foreach (var h in hits)
@@ -75,7 +75,7 @@ public class AOEPulse : MonoBehaviour, IAbilityBehavior
                 Vector2 fwd = (castDir.sqrMagnitude > 0.0001f) ? castDir.normalized : Vector2.right;
 
                 // Bigger forward distance for AOEPulse
-                float fwdDist = Mathf.Max(duplicateForwardOffsetMin, radius * duplicateForwardOffsetScale);
+                float fwdDist = Mathf.Max(duplicateForwardOffsetMin, range * duplicateForwardOffsetScale);
 
                 Vector3 p2 = transform.position + (Vector3)(fwd * fwdDist);
 
@@ -102,7 +102,7 @@ public class AOEPulse : MonoBehaviour, IAbilityBehavior
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.white;
-        Gizmos.DrawWireSphere(transform.position, radius);
+        Gizmos.DrawWireSphere(transform.position, range);
     }
 #endif
 }

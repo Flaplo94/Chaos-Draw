@@ -20,6 +20,10 @@ public class Fireball : MonoBehaviour, IAbilityBehavior
     [Header("Audio")]
     [SerializeField] private AudioClip impactSound;
     [SerializeField] private AudioSource audioSource;
+    [Header("Range")]
+    public float range = 10f;                 // cast / travel range in world units
+    [SerializeField] private bool explodeAtMaxRange = true; // explode when max range is reached
+    private Vector2 spawnPos;                 // where the projectile started
 
     public bool Initialize(Vector2 dir, Rarity rarity)
     {
@@ -57,6 +61,7 @@ public class Fireball : MonoBehaviour, IAbilityBehavior
 
     void Start()
     {
+        spawnPos = transform.position;
         // --- Movement init: use RB if present, else fallback to transform movement ---
         if (rb != null)
         {
@@ -106,10 +111,23 @@ public class Fireball : MonoBehaviour, IAbilityBehavior
     {
         if (impacted) return;
 
+        // Max travel range check
+        if (range > 0f)
+        {
+            Vector2 d = (Vector2)transform.position - spawnPos;
+            if (d.sqrMagnitude >= range * range)
+            {
+                if (explodeAtMaxRange) DoImpact(); // optional: spawn the AoE
+                else Destroy(gameObject);          // or just despawn silently
+                return;
+            }
+        }
+
         // Only move via transform if NO Rigidbody2D is present
         if (rb == null)
             transform.position += (Vector3)direction * speed * Time.deltaTime;
     }
+
 
     void OnTriggerEnter2D(Collider2D other)
     {

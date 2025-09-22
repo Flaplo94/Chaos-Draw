@@ -4,7 +4,7 @@ using System.Collections.Generic;
 public class RandomLightning : MonoBehaviour, IAbilityBehavior
 {
     [Header("Targeting")]
-    [SerializeField] private float radius = 6f;
+    [SerializeField] private float range = 6f;
 
     [Header("Strikes")]
     [SerializeField] private int minStrikes = 1;
@@ -36,7 +36,7 @@ public class RandomLightning : MonoBehaviour, IAbilityBehavior
 
     private void Start()
     {
-        Collider2D[] inRange = Physics2D.OverlapCircleAll(transform.position, radius);
+        Collider2D[] inRange = Physics2D.OverlapCircleAll(transform.position, range);
         List<Collider2D> valid = new List<Collider2D>(inRange.Length);
         for (int i = 0; i < inRange.Length; i++)
         {
@@ -113,7 +113,7 @@ public class RandomLightning : MonoBehaviour, IAbilityBehavior
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.cyan;
-        Gizmos.DrawWireSphere(transform.position, radius);
+        Gizmos.DrawWireSphere(transform.position, range);
     }
 #endif
 }

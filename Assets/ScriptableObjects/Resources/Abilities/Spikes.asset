@@ -22,3 +22,4 @@ MonoBehaviour:
     thorn damage on those who collide with it.
   rarity: 0
   magicType: 2
+  previewMode: 3

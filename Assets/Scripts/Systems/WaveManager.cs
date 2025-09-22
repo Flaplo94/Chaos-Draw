@@ -84,8 +84,7 @@ public class WaveManager : MonoBehaviour
             if (bossHealthBarUI.activeSelf)
                 bossHealthBarUI.SetActive(false);
 
-            if (musicManager != null && normalMusic != null)
-                musicManager.PlayMusic(normalMusic);
+            
 
             if (cardHandUI != null) cardHandUI.OnWaveCompleted();
 
@@ -162,6 +161,9 @@ public class WaveManager : MonoBehaviour
                 {
                     enemiesInWave.Remove(boss);
                     bossesKilled++; // increment bosses killed
+
+                    if (musicManager != null && normalMusic != null)
+                        musicManager.PlayMusic(normalMusic);
                 };
             }
 

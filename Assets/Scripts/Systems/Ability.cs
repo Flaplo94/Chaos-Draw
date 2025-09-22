@@ -2,6 +2,7 @@ using UnityEngine;
 
 public enum Rarity { Common, Uncommon, Rare, Epic, Legendary }
 public enum MagicType { Fire, Lightning, Other }
+public enum SmartcastMode { Auto, LineFromPlayer, CircleOnPlayer, CircleOnMouse, ConeFromPlayer }
 
 [CreateAssetMenu(fileName = "NewAbility", menuName = "Abilities/Ability")]
 public class Ability : ScriptableObject
@@ -26,6 +27,8 @@ public class Ability : ScriptableObject
     [Header("Magic Type (informativ – bruges i ability scripts)")]
     public MagicType magicType = MagicType.Other;
 
+    [Header("Smartcast Preview (optional)")]
+    public SmartcastMode previewMode = SmartcastMode.Auto;
     public bool Activate()
     {
         // Find player + udgangspunkt

@@ -22,3 +22,4 @@ MonoBehaviour:
     Multiple patches can stack for higher damage.
   rarity: 0
   magicType: 0
+  previewMode: 2

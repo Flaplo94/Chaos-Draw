@@ -22,3 +22,4 @@ MonoBehaviour:
     1 DPS to all enemies caught in its arcs.
   rarity: 0
   magicType: 1
+  previewMode: 3

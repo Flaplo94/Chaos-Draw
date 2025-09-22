@@ -22,3 +22,4 @@ MonoBehaviour:
     and piercing up to 1 additional target for the same damage.
   rarity: 0
   magicType: 0
+  previewMode: 1

@@ -31,6 +31,10 @@ public class ArtifactSystem : MonoBehaviour
     {
         if (a == null || string.IsNullOrWhiteSpace(a.internalID)) return;
 
+        if (PlayerArtifactManager.Instance != null &&
+        PlayerArtifactManager.Instance.HasArtifact(a.internalID))
+            return;
+
         // Optional duplicate guard (per-session), helps if something calls Apply twice:
         string key = Normalize(a.internalID);
         if (applied.Contains(key)) return;

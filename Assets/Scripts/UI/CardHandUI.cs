@@ -70,6 +70,14 @@ public class CardHandUI : MonoBehaviour
     private Dimmer dimmer;
     internal Sprite cardFrameSprite;
 
+    private bool rewardOpen = false;
+    private bool shuffleActive = false;
+
+    public System.Action OnHandChanged;
+
+    [SerializeField] private RectTransform selectionHighlight; // assign an Image in inspector
+    private int selectedIndex = -1;
+
     // Deckless toggle
     [HideInInspector] public bool decklessEnabled = false;
 
@@ -168,8 +176,22 @@ public class CardHandUI : MonoBehaviour
     private void TryUseCardIfPossible(int index)
     {
         index = InputShuffleSystem.Map(index);
+
         if (dimmer != null && !dimmer.dimmerOn)
+        {
+            var ability = (index >= 0 && hand != null && index < hand.Length) ? hand[index] : null;
+            if (ability != null && PlayerMana.Instance != null && PlayerMana.Instance.GetMana() < ability.manaCost)
+            {
+                // Optional: on-screen popup
+                var uiMsg = Object.FindFirstObjectByType<UIMessage>();
+                if (uiMsg != null) uiMsg.ShowMessage("Not enough mana!");
+
+                // OR: flash the slot, play a sound, etc.
+                return; // don’t try to cast
+            }
+
             TryUseCard(index);
+        }
     }
 
     // -------------------- Deck / Draw / Use --------------------
@@ -228,26 +250,19 @@ public class CardHandUI : MonoBehaviour
 
         hand[slotIndex] = card;
         cardSlots[slotIndex].Show(card);
+        NotifyHandChanged();
     }
 
     private IEnumerator ShuffleWithDelay(List<Ability> list)
     {
+        shuffleActive = true;
+        StartShuffleSfx();
+
         float duration = Random.Range(shuffleDurationRange.x, shuffleDurationRange.y);
-
-        if (audioSource != null && shuffleClip != null)
-        {
-            audioSource.clip = shuffleClip;
-            audioSource.loop = true;
-            audioSource.Play();
-        }
-
         yield return new WaitForSeconds(duration);
 
-        if (audioSource != null)
-        {
-            audioSource.Stop();
-            audioSource.loop = false;
-        }
+        StopShuffleSfx();
+        shuffleActive = false;
 
         Shuffle(list);
 
@@ -257,6 +272,8 @@ public class CardHandUI : MonoBehaviour
 
         for (int i = 0; i < hand.Length; i++)
             if (hand[i] == null) DrawCard(i);
+
+        NotifyHandChanged();
     }
 
     private void TryUseCard(int index)
@@ -275,6 +292,7 @@ public class CardHandUI : MonoBehaviour
         UpdateDiscardText();
         UpdatePileUIs();
         DrawCard(index);
+        NotifyHandChanged();
     }
 
     // -------------------- UI helpers --------------------
@@ -388,6 +406,13 @@ public class CardHandUI : MonoBehaviour
 
     private void ShowRewardUI()
     {
+        if (audioSource != null && audioSource.isPlaying)
+        {
+            audioSource.Stop();
+            audioSource.loop = false;
+        }
+        rewardOpen = true;
+
         PauseManager.RequestPause();
         rewardUI.SetActive(true);
         ClearRewardCardsParent();
@@ -398,6 +423,7 @@ public class CardHandUI : MonoBehaviour
         for (int i = 0; i < 3 && i < pool.Count; i++)
         {
             Ability abilityCopy = Instantiate(pool[i]);
+            abilityCopy.name = pool[i].name;
             abilityCopy.rarity = RollRarity();
             BuildRewardCard(abilityCopy);
         }
@@ -412,6 +438,10 @@ public class CardHandUI : MonoBehaviour
 
     private void CloseRewardUI()
     {
+        rewardOpen = false;
+
+        if (shuffleActive) StartShuffleSfx();
+
         rewardUI.SetActive(false);
         skipButton.gameObject.SetActive(false);
         ClearRewardCardsParent();
@@ -420,11 +450,35 @@ public class CardHandUI : MonoBehaviour
 
     private void AddCardToDeck(Ability ability)
     {
+        if (ability == null) return;
+
+        // Player now owns the card either way
         deck.Add(ability);
+
+        // If there’s room in hand, place it directly into the first empty slot
+        int empty = FindFirstEmptyHandSlot();
+        if (empty != -1)
+        {
+            hand[empty] = ability;
+            if (cardSlots != null && empty < cardSlots.Length && cardSlots[empty] != null)
+                cardSlots[empty].Show(ability);
+            
+            NotifyHandChanged();
+
+            // Piles didn’t change, but keep UI consistent
+            UpdateDiscardText();
+            UpdateDeckText();
+            UpdatePileUIs();
+            return;
+        }
+
+        // Otherwise: old behavior — add to draw pile
         drawPile.Add(ability);
         UpdateDeckText();
         UpdatePileUIs();
+        NotifyHandChanged();
     }
+
 
     private Rarity RollRarity()
     {
@@ -459,20 +513,13 @@ public class CardHandUI : MonoBehaviour
         UpdateDeckText();
         UpdatePileUIs();
 
-        if (audioSource != null && shuffleClip != null)
-        {
-            audioSource.clip = shuffleClip;
-            audioSource.loop = true;
-            audioSource.Play();
-        }
+        shuffleActive = true;
+        StartShuffleSfx();
 
         yield return new WaitForSeconds(currentManualShuffleTime);
 
-        if (audioSource != null)
-        {
-            audioSource.Stop();
-            audioSource.loop = false;
-        }
+        StopShuffleSfx();
+        shuffleActive = false;
 
         drawPile.AddRange(allCards);
         Shuffle(drawPile);
@@ -485,6 +532,7 @@ public class CardHandUI : MonoBehaviour
             DrawCard(i);
 
         currentManualShuffleTime += 2f;
+        NotifyHandChanged();
     }
 
     public void OnWaveCompleted()
@@ -530,6 +578,8 @@ public class CardHandUI : MonoBehaviour
             hand[i] = null;
             if (cardSlots[i] != null) cardSlots[i].Clear();
         }
+
+        NotifyHandChanged();
     }
 
     // Add N random cards to the deck (instanced like your reward UI does) :contentReference[oaicite:1]{index=1}
@@ -548,6 +598,7 @@ public class CardHandUI : MonoBehaviour
         {
             int idx = Random.Range(0, allAbilities.Count);
             Ability abilityCopy = Instantiate(allAbilities[idx]);
+            abilityCopy.name = allAbilities[idx].name;
             abilityCopy.rarity = RollRarity(); // reuse your rarity logic :contentReference[oaicite:2]{index=2}
 
             deck.Add(abilityCopy);
@@ -566,5 +617,107 @@ public class CardHandUI : MonoBehaviour
                 if (hand[i] == null) DrawCard(i); // reuse your existing draw flow :contentReference[oaicite:6]{index=6}
         }
     }
+    private int FindFirstEmptyHandSlot()
+    {
+        if (hand == null) return -1;
+        for (int i = 0; i < hand.Length; i++)
+            if (hand[i] == null) return i;
+        return -1;
+    }
+    private void StartShuffleSfx()
+    {
+        if (!rewardOpen && audioSource != null && shuffleClip != null && !audioSource.isPlaying)
+        {
+            audioSource.clip = shuffleClip;
+            audioSource.loop = true;
+            audioSource.Play();
+        }
+    }
 
+    private void StopShuffleSfx()
+    {
+        if (audioSource != null)
+        {
+            audioSource.Stop();
+            audioSource.loop = false;
+        }
+    }
+
+    // Selection API used by CardSelectionController
+    public void SetSelectedIndex(int index)
+    {
+        selectedIndex = index;
+        UpdateSelectionHighlight();
+    }
+
+    public int HandLength
+    {
+        get { return hand != null ? hand.Length : 0; }
+    }
+
+    public Ability GetAbilityAt(int index)
+    {
+        if (hand == null || index < 0 || index >= hand.Length) return null;
+        return hand[index];
+    }
+
+    public int FindIndexByAbilityId(string id)
+    {
+        if (hand == null || string.IsNullOrEmpty(id)) return -1;
+        for (int i = 0; i < hand.Length; i++)
+        {
+            var a = hand[i];
+            if (a == null) continue;
+            if (GetAbilityId(a) == id) return i;
+        }
+        return -1;
+    }
+
+    private string GetAbilityId(Ability a)
+    {
+        var t = a.GetType();
+        var f = t.GetField("internalID") ?? t.GetField("abilityId") ?? t.GetField("id");
+        if (f != null) { var v = f.GetValue(a); if (v != null) return v.ToString(); }
+        var p = t.GetProperty("InternalID") ?? t.GetProperty("AbilityId") ?? t.GetProperty("Id");
+        if (p != null) { var v = p.GetValue(a, null); if (v != null) return v.ToString(); }
+        return a.name;
+    }
+
+    private void UpdateSelectionHighlight()
+    {
+        if (selectionHighlight == null || cardSlots == null) return;
+
+        // Hide when invalid
+        if (selectedIndex < 0 || selectedIndex >= cardSlots.Length || cardSlots[selectedIndex] == null)
+        {
+            selectionHighlight.gameObject.SetActive(false);
+            return;
+        }
+
+        var slotRect = cardSlots[selectedIndex].GetComponent<RectTransform>();
+        selectionHighlight.gameObject.SetActive(true);
+
+        // Move into the slot and stretch
+        selectionHighlight.SetParent(slotRect, false);
+        selectionHighlight.anchorMin = new Vector2(0, 0);
+        selectionHighlight.anchorMax = new Vector2(1, 1);
+        selectionHighlight.offsetMin = Vector2.zero;
+        selectionHighlight.offsetMax = Vector2.zero;
+
+        // Put BEHIND the card art
+        selectionHighlight.SetSiblingIndex(0);
+
+        // Never block clicks
+        var img = selectionHighlight.GetComponent<UnityEngine.UI.Image>();
+        if (img) img.raycastTarget = false;
+    }
+
+    private void NotifyHandChanged()
+    {
+        if (OnHandChanged != null) OnHandChanged.Invoke();
+    }
+    public void UseCardFromSelection(int index)
+    {
+        TryUseCardIfPossible(index); // <- was calling TryUseCard(...) before
+    }
 }

@@ -11,6 +11,11 @@ public class FireBird : MonoBehaviour, IAbilityBehavior
     [SerializeField] private int basePierces = 1;    // how many targets it can pass through at Common
     [SerializeField] private float maxLifetime = 6f; // safety cap
 
+    [Header("Range")]
+    public float range = 12f;                        // travel/cast range in world units (Smartcast reads this)
+    [SerializeField] private bool destroyAtMaxRange = true;
+    private Vector2 spawnPos;                        // where this projectile started
+
     [Header("Visual")]
     [SerializeField] private float baseScale = 1f;   // visual size at Common (multiplies localScale)
 
@@ -48,6 +53,9 @@ public class FireBird : MonoBehaviour, IAbilityBehavior
 
     private void Start()
     {
+        // Record spawn position for range tracking
+        spawnPos = transform.position;
+
         if (!luckyWasDuplicated)
         {
             LuckyShotSystem.OnSpellCast(this, () =>
@@ -72,9 +80,9 @@ public class FireBird : MonoBehaviour, IAbilityBehavior
                 if (comp != null)
                 {
                     comp.luckyWasDuplicated = true; // no chaining
-                    comp.direction = dir;           // <-- ensure movement
+                    comp.direction = dir;           // ensure movement
                     comp.FaceDirection(dir);        // keep visuals facing
-                    // Note: remainingPierces/damage/scale are already cloned from this instance.
+                    // comp.spawnPos will be set by the duplicate's Start()
                 }
             });
         }
@@ -82,8 +90,21 @@ public class FireBird : MonoBehaviour, IAbilityBehavior
 
     private void Update()
     {
+        // Range check (only if a positive range is set)
+        if (range > 0f)
+        {
+            Vector2 d = (Vector2)transform.position - spawnPos;
+            if (d.sqrMagnitude >= range * range)
+            {
+                if (destroyAtMaxRange) Destroy(gameObject);
+                return;
+            }
+        }
+
+        // Movement
         transform.position += (Vector3)direction * speed * Time.deltaTime;
 
+        // Lifetime safety
         lifeTimer += Time.deltaTime;
         if (lifeTimer >= maxLifetime)
             Destroy(gameObject);
@@ -117,10 +138,19 @@ public class FireBird : MonoBehaviour, IAbilityBehavior
 #if UNITY_EDITOR
     private void OnDrawGizmosSelected()
     {
+        // Forward indicator
         Gizmos.color = new Color(1f, 0.5f, 0f, 0.8f);
         Vector3 p = transform.position;
         Vector3 fwd = transform.right * 0.5f;
         Gizmos.DrawLine(p, p + fwd);
+
+        // Range ring from current position back to spawn is not tracked in edit mode,
+        // so just show the configured travel range as a circle for tuning.
+        if (range > 0f)
+        {
+            Gizmos.color = new Color(1f, 0.3f, 0f, 0.25f);
+            Gizmos.DrawWireSphere(transform.position, range);
+        }
     }
 #endif
 }

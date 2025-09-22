@@ -8,6 +8,7 @@ public class GodSpeed : MonoBehaviour, IAbilityBehavior
     [Header("Base")]
     [SerializeField] private float duration = 5f;
     [SerializeField] private float speedMultiplier = 1.5f;
+    [SerializeField] private float range = 1f;
 
     [Header("Zap")]
     [SerializeField] private float zapRadius = 1.0f;
@@ -50,10 +51,10 @@ public class GodSpeed : MonoBehaviour, IAbilityBehavior
 
         switch (rarity)
         {
-            case Rarity.Uncommon: duration += 1f; speedMultiplier *= 1.10f; zapRadius *= 1.05f; zapDamagePerTick += 1; break;
-            case Rarity.Rare: duration += 2f; speedMultiplier *= 1.20f; zapRadius *= 1.10f; zapDamagePerTick += 2; break;
-            case Rarity.Epic: duration += 3f; speedMultiplier *= 1.30f; zapRadius *= 1.15f; zapDamagePerTick += 3; break;
-            case Rarity.Legendary: duration += 4f; speedMultiplier *= 1.40f; zapRadius *= 1.20f; zapDamagePerTick += 4; break;
+            case Rarity.Uncommon: duration += 1f; speedMultiplier *= 1.10f; zapRadius *= 1.05f; range *= 1.05f; zapDamagePerTick += 1; break;
+            case Rarity.Rare: duration += 2f; speedMultiplier *= 1.20f; zapRadius *= 1.10f; range *= 1.10f; zapDamagePerTick += 2; break;
+            case Rarity.Epic: duration += 3f; speedMultiplier *= 1.30f; zapRadius *= 1.15f; range *= 1.15f; zapDamagePerTick += 3; break;
+            case Rarity.Legendary: duration += 4f; speedMultiplier *= 1.40f; zapRadius *= 1.20f; range *= 1.20f; zapDamagePerTick += 4; break;
         }
         if (duration < 0f) duration = 0f;
         return true;

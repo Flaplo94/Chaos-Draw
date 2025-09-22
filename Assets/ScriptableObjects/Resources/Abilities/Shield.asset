@@ -22,3 +22,4 @@ MonoBehaviour:
     rarities grant a chance to reflect damage to the attacker.
   rarity: 0
   magicType: 2
+  previewMode: 2

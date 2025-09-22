@@ -40,10 +40,16 @@ public class ControlRebinder : MonoBehaviour
 
     public void UpdateLabel()
     {
-        if (rebindLabel != null && action != null)
-            rebindLabel.text = action.GetBindingDisplayString(bindingIndex);
-    }
+        if (rebindLabel == null || action == null) return;
 
+        string s = action.GetBindingDisplayString(bindingIndex);
+
+        // Only change Danish "Mellemrum" to English "Space"
+        if (s.IndexOf("mellemrum", System.StringComparison.OrdinalIgnoreCase) >= 0)
+            s = "Space";
+
+        rebindLabel.text = s;
+    }
     private void StartRebind()
     {
         if (action == null || bindingIndex >= action.bindings.Count) return;
