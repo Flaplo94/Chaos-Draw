@@ -166,8 +166,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5eb0803d439cefc43899c6be9d29bf73, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  baseDamage: 2
-  lifetime: 5
+  baseDamage: 10
+  lifetime: 4
   manaOnHit: 5
   hitSfx: {fileID: 8300000, guid: aa74dd2837f0da14ca6b917c8a8d6565, type: 3}
   audioSource: {fileID: 1767576040511546225}

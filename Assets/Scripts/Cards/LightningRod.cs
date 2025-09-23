@@ -10,6 +10,7 @@ public class LightningRod : MonoBehaviour, IAbilityBehavior
     [SerializeField] private float damageTickRate = 0.5f;
     [SerializeField] private LayerMask enemyLayer;
     [SerializeField] private float radius = 10f;
+
     [Header("Visual")]
     [SerializeField] private GameObject lightningVisual;
     [SerializeField] private float boltWidthScale = 1f;
@@ -19,6 +20,10 @@ public class LightningRod : MonoBehaviour, IAbilityBehavior
     [SerializeField] private float duplicateSideOffset = 1.5f;
     [Tooltip("If true, place the duplicate to the RIGHT of the aim; otherwise to the LEFT.")]
     [SerializeField] private bool offsetToRight = true;
+
+    [Header("Stun")]
+    [SerializeField] private bool applyStun = true;
+    [SerializeField] private float stunDuration = 0.5f;
 
     private float damageTimer = 0f;
     private Transform player;
@@ -161,6 +166,13 @@ public class LightningRod : MonoBehaviour, IAbilityBehavior
                 if (!col) continue;
                 if (col.TryGetComponent(out EnemyHealth eh)) eh.TakeDamage(result.amount, result.element);
                 if (col.TryGetComponent(out BossHealth bh)) bh.TakeDamage(result.amount, result.element);
+
+                // NEW: stun
+                if (applyStun)
+                {
+                    Transform root = col.attachedRigidbody ? col.attachedRigidbody.transform : col.transform;
+                    StunReceiver.ApplyTo(root, stunDuration);
+                }
             }
             damageTimer = damageTickRate;
         }

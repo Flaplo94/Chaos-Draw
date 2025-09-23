@@ -168,8 +168,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 3
-  damagePerTick: 1
-  tickInterval: 0.1
+  damagePerTick: 5
+  tickInterval: 0.2
   duration: 5
   zapRadius: 2
   enemyLayer:

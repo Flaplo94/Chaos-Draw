@@ -18,6 +18,10 @@ public class LightningBall : MonoBehaviour, IAbilityBehavior
     [SerializeField] private float widthScale = 1f;
     [SerializeField] private float animSpeed = 1.0f;
 
+    [Header("Stun")]
+    [SerializeField] private bool applyStun = true;
+    [SerializeField] private float stunDuration = 0.5f;
+
     private Vector2 direction;
     private float tickTimer, lifeTimer;
     private Rigidbody2D rb;
@@ -157,20 +161,15 @@ public class LightningBall : MonoBehaviour, IAbilityBehavior
             if (root.CompareTag("Player")) continue;
 
             bool isValidTarget = false;
+            bool didDamage = false;
+            if (h.TryGetComponent(out EnemyHealth eh)) { eh.TakeDamage(result.amount, result.element); didDamage = true; }
+            else if (h.TryGetComponent(out BossHealth bh)) { bh.TakeDamage(result.amount, result.element); didDamage = true; }
+            else if (h.TryGetComponent(out LightningRod rod)) { isValidTarget = true; } // existing
 
-            if (h.TryGetComponent(out EnemyHealth eh))
+            if (didDamage)
             {
-                eh.TakeDamage(result.amount, result.element);
-                isValidTarget = true;
-            }
-            else if (h.TryGetComponent(out BossHealth bh))
-            {
-                bh.TakeDamage(result.amount, result.element);
-                isValidTarget = true;
-            }
-            else if (h.TryGetComponent(out LightningRod rod))
-            {
-                isValidTarget = true;
+                if (applyStun) StunReceiver.ApplyTo(root, stunDuration);   // NEW
+                if (lightningVisual != null) SpawnBolt(transform.position, root.position);
             }
 
             if (isValidTarget && lightningVisual != null)

@@ -178,8 +178,9 @@ MonoBehaviour:
   lifetime: 5
   wallCollider: {fileID: 1834736921122851880}
   visual: {fileID: 4804991577932546782}
+  radius: 1.5
   thornsEnabled: 0
-  thornsDamage: 1
+  thornsDamage: 5
   thornsInterval: 0.5
   duplicateSideOffset: 2
   offsetToRight: 1

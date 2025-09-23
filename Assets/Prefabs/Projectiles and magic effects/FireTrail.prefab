@@ -169,10 +169,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   duration: 4
   dropInterval: 0.15
+  range: 0.5
   patchLifetime: 2
   radius: 0.5
-  damagePerTick: 1
-  tickInterval: 0.5
+  damagePerTick: 10
+  tickInterval: 1
   enemyLayer:
     serializedVersion: 2
     m_Bits: 640
@@ -180,6 +181,7 @@ MonoBehaviour:
   spriteRenderer: {fileID: 0}
   spawnTrigger: Spawn
   spawnStateName: Spawn
+  duplicateSideDistance: 1.2
 --- !u!95 &-8315160528739904822
 Animator:
   serializedVersion: 7

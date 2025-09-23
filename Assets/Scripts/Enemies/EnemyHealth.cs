@@ -6,7 +6,7 @@ public class EnemyHealth : MonoBehaviour
 {
     [SerializeField] private int maxHealth = 3;
     [SerializeField] private bool flashOnLethalHit = true;
-    [SerializeField] private int goldReward = 1; // hvor meget guld denne fjende giver
+    
 
     private int currentHealth;
     private HitFlash flash;
@@ -86,9 +86,7 @@ public class EnemyHealth : MonoBehaviour
         foreach (var col in GetComponentsInChildren<Collider2D>())
             col.enabled = false;
 
-        // === Gold Reward ===
-        //if (Wallet.Instance != null)
-        //    Wallet.Instance.Add(goldReward);
+        
 
         OnAnyEnemyDied?.Invoke(this);
 

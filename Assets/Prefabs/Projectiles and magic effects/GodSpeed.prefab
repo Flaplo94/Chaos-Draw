@@ -168,9 +168,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   duration: 5
   speedMultiplier: 1.5
+  range: 1
   zapRadius: 1
-  zapDamagePerTick: 2
-  zapTickInterval: 0.12
+  zapDamagePerTick: 5
+  zapTickInterval: 0.3
   enemyLayer:
     serializedVersion: 2
     m_Bits: 0

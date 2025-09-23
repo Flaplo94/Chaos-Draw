@@ -16,6 +16,10 @@ public class ChainLightning : MonoBehaviour, IAbilityBehavior
     [SerializeField] private string stateName = "Zap";
     [SerializeField] private float widthScale = 1f;
 
+    [Header("Stun")]
+    [SerializeField] private bool applyStun = true;
+    [SerializeField] private float stunDuration = 0.5f;
+
     private bool luckyWasDuplicated = false;
 
     public bool Initialize(Vector2 dir, Rarity rarity)
@@ -70,6 +74,12 @@ public class ChainLightning : MonoBehaviour, IAbilityBehavior
 
             if (nearest.TryGetComponent(out EnemyHealth eh)) eh.TakeDamage(result.amount, result.element);
             if (nearest.TryGetComponent(out BossHealth bh)) bh.TakeDamage(result.amount, result.element);
+
+            if (applyStun)
+            {
+                Transform root = nearest.attachedRigidbody ? nearest.attachedRigidbody.transform : nearest.transform;
+                StunReceiver.ApplyTo(root, stunDuration);
+            }
 
             hitSet.Add(nearest);
             prevPos = nearest.transform.position;

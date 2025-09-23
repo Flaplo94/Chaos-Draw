@@ -104,6 +104,7 @@ GameObject:
   - component: {fileID: 8856416947508852704}
   - component: {fileID: 9025832996168125021}
   - component: {fileID: -6855651253175337950}
+  - component: {fileID: 3501790179147357742}
   m_Layer: 9
   m_Name: EnemyHealer
   m_TagString: Enemy
@@ -278,9 +279,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d32584ad1a20fe24b9522d8dbef73d33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 1
+  maxHealth: 20
   flashOnLethalHit: 1
-  goldReward: 1
   showHitboxGizmos: 1
   includeChildrenColliders: 1
   onlyHitboxLayer: 0
@@ -477,3 +477,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea89865d8793cf94f8eed498f33c1d94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &3501790179147357742
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7502241114002446682}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc6b8c91ea1371842bf75a5385a48b6f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  canBeStunned: 1

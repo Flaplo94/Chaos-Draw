@@ -167,8 +167,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   baseShieldHealth: 1
+  range: 1
   reflectChance: 0
-  reflectDamage: 1
+  reflectDamage: 10
   reflectRadius: 1.75
   enemyLayer:
     serializedVersion: 2
@@ -179,6 +180,7 @@ MonoBehaviour:
   followTarget: {fileID: 0}
   followOffset: {x: 0, y: 0, z: 0}
   shieldRadius: 0.15
+  stackSpacing: 0.2
 --- !u!95 &-898444186571195675
 Animator:
   serializedVersion: 7

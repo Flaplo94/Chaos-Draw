@@ -18,6 +18,10 @@ public class RandomLightning : MonoBehaviour, IAbilityBehavior
     [SerializeField] private float animSpeed = 1.0f;
     [SerializeField] private Vector2 strikeOffset = new Vector2(0f, 0.0f);
 
+    [Header("Stun")]
+    [SerializeField] private bool applyStun = true;
+    [SerializeField] private float stunDuration = 0.5f;
+
     private int bonusStrikes = 0;
     private float damageMultiplier = 1f;
     private bool luckyWasDuplicated = false;
@@ -68,6 +72,8 @@ public class RandomLightning : MonoBehaviour, IAbilityBehavior
             if (eh != null) eh.TakeDamage(result.amount, result.element);
             var bh = targetCol.GetComponent<BossHealth>();
             if (bh != null) bh.TakeDamage(result.amount, result.element);
+
+            if (applyStun) StunReceiver.ApplyTo(t, stunDuration);
 
             if (lightningVisual != null)
                 SpawnStrikeAt(t.position + (Vector3)strikeOffset);

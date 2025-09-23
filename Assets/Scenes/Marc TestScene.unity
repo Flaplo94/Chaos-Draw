@@ -1866,7 +1866,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardHandUI: {fileID: 1484783533}
   playerTransform: {fileID: 838276999}
-  minSpawnDistance: 5
+  minSpawnDistance: 10
   spawnRadius: 15
   enemyPrefabs:
   - {fileID: 5679082729230498780, guid: c25de75b8a76d504aa0ed013b1634e16, type: 3}
@@ -1884,7 +1884,7 @@ MonoBehaviour:
   normalMusic: {fileID: 8300000, guid: 9438a510557d9044b9d3db1950aba009, type: 3}
   boss1Music: {fileID: 8300000, guid: 578896b009485bc44a1f6ea1ca69cb97, type: 3}
   boss2Music: {fileID: 8300000, guid: 52b261eec4f366447b17d436f3e8e1c9, type: 3}
-  startEnemyCount: 3
+  startEnemyCount: 20
   timeBetweenWaves: 2
   waveText: {fileID: 2018384954}
   afterWave20Scene: TYscene
@@ -10865,27 +10865,7 @@ MonoBehaviour:
   emptyBack: {fileID: 0}
   emptySlotSprite: {fileID: 21300000, guid: 43e39f2351196a44f87f11f1208df991, type: 3}
   startingDeckList:
-  - abilityName: AOEPulse
-    count: 1
-  - abilityName: ChainLightning
-    count: 1
-  - abilityName: Fireball
-    count: 1
-  - abilityName: FireBird
-    count: 1
-  - abilityName: FireOnGround
-    count: 1
-  - abilityName: GodSpeed
-    count: 1
-  - abilityName: LightningBall
-    count: 1
-  - abilityName: LightningRod
-    count: 1
-  - abilityName: RandomLightning
-    count: 1
-  - abilityName: Spikes
-    count: 1
-  - abilityName: Shield
+  - abilityName: Healing
     count: 1
   rewardUI: {fileID: 118609471}
   rewardCardsParent: {fileID: 118609472}

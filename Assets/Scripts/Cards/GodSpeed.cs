@@ -30,6 +30,10 @@ public class GodSpeed : MonoBehaviour, IAbilityBehavior
     [SerializeField] private float boltWidthScale = 1f;
     [SerializeField] private float boltAnimSpeed = 1.0f;
 
+    [Header("Stun")]
+    [SerializeField] private bool applyStun = true;
+    [SerializeField] private float stunDuration = 0.5f;
+
     private Transform player;
     private PlayerMovement playerMove;
     private float originalBaseSpeed;   // store baseSpeed instead of moveSpeed
@@ -168,6 +172,11 @@ public class GodSpeed : MonoBehaviour, IAbilityBehavior
             if (h.TryGetComponent(out BossHealth bh)) { bh.TakeDamage(result.amount, result.element); didDamage = true; }
 
             if (didDamage && lightningVisual) SpawnBolt(player.position, root.position);
+            if (didDamage)
+            {
+                if (applyStun) StunReceiver.ApplyTo(root, stunDuration);  // NEW
+                if (lightningVisual) SpawnBolt(player.position, root.position);
+            }
         }
     }
 

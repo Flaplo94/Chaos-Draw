@@ -168,9 +168,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 10
-  damage: 5
+  damage: 20
   basePierces: 1
   maxLifetime: 1.5
+  range: 12
+  destroyAtMaxRange: 1
   baseScale: 1
 --- !u!95 &2877107194671135755
 Animator:

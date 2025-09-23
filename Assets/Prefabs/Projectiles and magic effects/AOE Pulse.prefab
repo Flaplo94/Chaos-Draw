@@ -167,11 +167,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 688119b977748284c962b70c3b54d1c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  radius: 3
-  damage: 10
+  range: 3
+  damage: 50
   enemyLayer:
     serializedVersion: 2
     m_Bits: 640
+  duplicateForwardOffsetMin: 1.5
+  duplicateForwardOffsetScale: 1.15
   impactSound: {fileID: 8300000, guid: 099302f5c0ce19b4c8c4895bca4d7c80, type: 3}
   audioSource: {fileID: -8120942133022758549}
 --- !u!95 &8205764166117664132

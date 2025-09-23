@@ -168,11 +168,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lifetime: 8
   rodRange: 10
-  damage: 1
+  damage: 5
   damageTickRate: 0.3
   enemyLayer:
     serializedVersion: 2
     m_Bits: 640
+  radius: 10
   lightningVisual: {fileID: 6422944563533170519, guid: d0b854a5cf35a654ab4ddee0a7959da7, type: 3}
   boltWidthScale: 1
   duplicateSideOffset: 7
