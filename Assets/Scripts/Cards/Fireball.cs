@@ -9,21 +9,19 @@ public class Fireball : MonoBehaviour, IAbilityBehavior
 
     private Vector2 direction;
     private bool impacted;
-
-    // Lucky Shot: prevent the duplicate from duplicating again
     private bool luckyWasDuplicated = false;
 
     private Animator anim;
     private Collider2D col;
-    private Rigidbody2D rb; // Unity 6 path when a RB2D is present
+    private Rigidbody2D rb;
 
     [Header("Audio")]
     [SerializeField] private AudioClip impactSound;
     [SerializeField] private AudioSource audioSource;
     [Header("Range")]
-    public float range = 10f;                 // cast / travel range in world units
-    [SerializeField] private bool explodeAtMaxRange = true; // explode when max range is reached
-    private Vector2 spawnPos;                 // where the projectile started
+    public float range = 10f;
+    [SerializeField] private bool explodeAtMaxRange = true;
+    private Vector2 spawnPos;
 
     public bool Initialize(Vector2 dir, Rarity rarity)
     {
@@ -31,7 +29,6 @@ public class Fireball : MonoBehaviour, IAbilityBehavior
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
 
-        // (Keep your rarity tweaks if you use them)
         switch (rarity)
         {
             case Rarity.Uncommon: aoeRadius *= 1.2f; damage += 2; break;
@@ -48,7 +45,6 @@ public class Fireball : MonoBehaviour, IAbilityBehavior
         anim = GetComponent<Animator>();
         col = GetComponent<Collider2D>();
 
-        // Audio setup (optional)
         audioSource = GetComponent<AudioSource>() ?? audioSource;
         if (audioSource != null)
         {
@@ -62,46 +58,36 @@ public class Fireball : MonoBehaviour, IAbilityBehavior
     void Start()
     {
         spawnPos = transform.position;
-        // --- Movement init: use RB if present, else fallback to transform movement ---
         if (rb != null)
         {
             rb.gravityScale = 0f;
             rb.linearDamping = 0f;
             rb.freezeRotation = true;
             rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
-            rb.linearVelocity = direction * speed;     // RB-driven movement
+            rb.linearVelocity = direction * speed;
         }
-        // else: Update() will handle transform movement
 
-        // --- Lucky Shot duplicate (side-by-side, same direction) ---
         if (!luckyWasDuplicated)
         {
             LuckyShotSystem.OnSpellCast(() =>
             {
-                // Perpendicular to travel direction for side-by-side placement
                 Vector2 dir = (direction.sqrMagnitude > 0.0001f) ? direction.normalized : (Vector2)transform.right;
-                Vector2 side = new Vector2(-dir.y, dir.x); // 90° left of flight
-
+                Vector2 side = new Vector2(-dir.y, dir.x);
                 Vector3 p2 = transform.position;
 
-                // Apply configured side offset (e.g., SetOffset(new Vector2(0.75f, 0f)))
                 if (LuckyShotSystem.TryConsumeSpawnOffset(out var off))
                 {
                     float dist = (off.x != 0f) ? off.x : off.magnitude;
                     p2 += (Vector3)(side * dist);
                 }
 
-                // Duplicate the projectile
                 var dup = Instantiate(gameObject, p2, transform.rotation);
                 var comp = dup.GetComponent<Fireball>();
                 if (comp != null)
                 {
-                    comp.luckyWasDuplicated = true; // don’t chain
+                    comp.luckyWasDuplicated = true;
                     comp.impacted = false;
                     comp.direction = dir;
-
-                    // If the duplicate has a RB, its Start() will set linearVelocity automatically.
-                    // If not, transform-based Update() will move it using 'direction' and 'speed'.
                 }
             });
         }
@@ -111,23 +97,20 @@ public class Fireball : MonoBehaviour, IAbilityBehavior
     {
         if (impacted) return;
 
-        // Max travel range check
         if (range > 0f)
         {
             Vector2 d = (Vector2)transform.position - spawnPos;
             if (d.sqrMagnitude >= range * range)
             {
-                if (explodeAtMaxRange) DoImpact(); // optional: spawn the AoE
-                else Destroy(gameObject);          // or just despawn silently
+                if (explodeAtMaxRange) DoImpact();
+                else Destroy(gameObject);
                 return;
             }
         }
 
-        // Only move via transform if NO Rigidbody2D is present
         if (rb == null)
             transform.position += (Vector3)direction * speed * Time.deltaTime;
     }
-
 
     void OnTriggerEnter2D(Collider2D other)
     {
@@ -142,26 +125,31 @@ public class Fireball : MonoBehaviour, IAbilityBehavior
         if (impacted) return;
         impacted = true;
 
-        // Stop any kind of movement immediately
         if (rb != null)
         {
             rb.linearVelocity = Vector2.zero;
-            rb.simulated = false; // no more physics updates
+            rb.simulated = false;
         }
 
         speed = 0f;
         if (col) col.enabled = false;
 
-        // AoE damage
         var hits = Physics2D.OverlapCircleAll(transform.position, aoeRadius);
         foreach (var h in hits)
         {
             var result = DamageCalculator.ComputeFinalDamage(damage, DamageElement.Fire);
-            if (h.TryGetComponent(out EnemyHealth eh)) eh.TakeDamage(result.amount, result.element);
-            if (h.TryGetComponent(out BossHealth bh)) bh.TakeDamage(result.amount, result.element);
+            if (h.TryGetComponent(out EnemyHealth eh))
+            {
+                eh.TakeDamage(result.amount, result.element);
+                BurnRules.TryApplyBurn(h.transform, result.amount);
+            }
+            if (h.TryGetComponent(out BossHealth bh))
+            {
+                bh.TakeDamage(result.amount, result.element);
+                BurnRules.TryApplyBurn(h.transform, result.amount);
+            }
         }
 
-        // Scale impact sprite to match aoeRadius
         float baseSpriteSize = 32f;
         float ppu = 32f;
         float worldSize = baseSpriteSize / ppu;
@@ -172,13 +160,8 @@ public class Fireball : MonoBehaviour, IAbilityBehavior
         if (anim) anim.SetTrigger("Impact");
     }
 
-    // Called by Animation Event at the end of the impact animation
-    public void OnImpactFinished()
-    {
-        Destroy(gameObject);
-    }
+    public void OnImpactFinished() => Destroy(gameObject);
 
-    // Called by Animation Event on the first frame of the impact animation
     public void PlayImpactSound()
     {
         if (audioSource != null && impactSound != null)

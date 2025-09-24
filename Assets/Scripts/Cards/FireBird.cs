@@ -119,8 +119,16 @@ public class FireBird : MonoBehaviour, IAbilityBehavior
         if (!hitRoots.Add(root)) return;
 
         var result = DamageCalculator.ComputeFinalDamage(damage, DamageElement.Fire);
-        if (root.TryGetComponent(out EnemyHealth eh)) eh.TakeDamage(result.amount, result.element);
-        if (root.TryGetComponent(out BossHealth bh)) bh.TakeDamage(result.amount, result.element);
+        if (root.TryGetComponent(out EnemyHealth eh))
+        {
+            eh.TakeDamage(result.amount, result.element);
+            BurnRules.TryApplyBurn(root, result.amount);
+        }
+        if (root.TryGetComponent(out BossHealth bh))
+        {
+            bh.TakeDamage(result.amount, result.element);
+            BurnRules.TryApplyBurn(root, result.amount);
+        }
 
         remainingPierces--;
         if (remainingPierces < 0) Destroy(gameObject);

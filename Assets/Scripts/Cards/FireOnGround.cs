@@ -93,8 +93,16 @@ public class FireOnGround : MonoBehaviour, IAbilityBehavior
             {
                 if (!hit) continue;
                 var result = DamageCalculator.ComputeFinalDamage(damagePerTick, DamageElement.Fire);
-                if (hit.TryGetComponent(out EnemyHealth eh)) eh.TakeDamage(result.amount, result.element);
-                if (hit.TryGetComponent(out BossHealth bh)) bh.TakeDamage(result.amount, result.element);
+                if (hit.TryGetComponent(out EnemyHealth eh))
+                {
+                    eh.TakeDamage(result.amount, result.element);
+                    BurnRules.TryApplyBurn(hit.transform, result.amount);
+                }
+                if (hit.TryGetComponent(out BossHealth bh))
+                {
+                    bh.TakeDamage(result.amount, result.element);
+                    BurnRules.TryApplyBurn(hit.transform, result.amount);
+                }
             }
         }
     }
