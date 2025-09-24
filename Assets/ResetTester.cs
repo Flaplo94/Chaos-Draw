@@ -2,12 +2,12 @@ using UnityEngine;
 
 public class ResetTester : MonoBehaviour
 {
-    [ContextMenu("Reset Legacy Unlock")]
-    public void ResetLegacyUnlock()
+    [ContextMenu("Reset DeckOfFate Unlock")]
+    public void ResetDeckOfFateUnlock()
     {
-        PlayerPrefs.SetInt("LegacyUnlocked", 0);
+        PlayerPrefs.SetInt("DeckOfFateUnlocked", 0);
         PlayerPrefs.Save();
-        Debug.Log("Legacy Deck & Skill Tree lock reset!");
+        Debug.Log(" Deck of Fate & Skill Tree lock reset!");
     }
 
     [ContextMenu("Reset All")]

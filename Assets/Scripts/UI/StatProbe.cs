@@ -1,9 +1,10 @@
 using UnityEngine;
 
 /// <summary>
-/// Samler alle værdier til StatBox UI.
+/// Samler værdier til StatBox UI.
 /// - Venstre kolonne: multipliers (1.00, 1.10, …)
-/// - Højre kolonne: total element-procent inkl. global damage ((global * element - 1) * 100)
+/// - Højre kolonne: elementtal (vises nu som "1.40( +40%)")
+/// Viktigt: Fire/Lightning/Burn påvirkes IKKE af global "atk dmg".
 /// </summary>
 public class StatProbe : MonoBehaviour
 {
@@ -21,119 +22,97 @@ public class StatProbe : MonoBehaviour
         if (!playerStats) playerStats = FindFirstObjectByType<PlayerStats>();
     }
 
-    // =======================
-    // Helpers (multipliers)
-    // =======================
+    // ---------------- Helpers (multipliers) ----------------
 
+    // Global / generic damage (må gerne være påvirket af atk dmg node)
     private float GetGlobalDamageMult()
     {
         float m = 1f;
-        if (playerStats) m *= Mathf.Max(0f, playerStats.damageMult);          // PlayerStats global
-        if (buffRef) m *= Mathf.Max(0f, buffRef.GetGenericDamageMult());  // BuffManager global (fx Glass Cannon)
+        if (playerStats) m *= Mathf.Max(0f, playerStats.damageMult);
+        if (buffRef) m *= Mathf.Max(0f, buffRef.GetGenericDamageMult());
         return m;
     }
 
-    private float GetFireElemMult()
+    // Element multipliers (Uden global — så “atk dmg” ikke påvirker dem)
+    private float GetFireElemOnly()
     {
         float m = 1f;
-        if (playerStats) m *= Mathf.Max(0f, playerStats.fireDamageMult);      // PlayerStats fire
-        if (buffRef) m *= Mathf.Max(0f, buffRef.GetFireDamageMult());     // BuffManager fire (fx Charcoal)
+        if (playerStats) m *= Mathf.Max(0f, playerStats.fireDamageMult); // hvis I bruger den
+        if (buffRef) m *= Mathf.Max(0f, buffRef.GetFireDamageMult());
         return m;
     }
-
-    private float GetLightningElemMult()
+    private float GetLightningElemOnly()
     {
         float m = 1f;
-        if (buffRef) m *= Mathf.Max(0f, buffRef.GetThunderDamageMult());  // BuffData hedder "Thunder"
+        if (buffRef) m *= Mathf.Max(0f, buffRef.GetThunderDamageMult());
         return m;
     }
-
-    private float GetBurnElemMult()
+    private float GetBurnElemOnly()
     {
         float m = 1f;
         if (buffRef) m *= Mathf.Max(0f, buffRef.GetBurnDamageMult());
         return m;
     }
 
-    // =====================================
-    // Venstre kolonne – multipliers (1.xx)
-    // =====================================
+    // ---------------- Venstre kolonne (bruges flere steder) ----------------
 
-    // Global/basic damage multiplier
-    public float GetDamageMultiplier()
-    {
-        return GetGlobalDamageMult(); // 1.00, 1.10, 4.00, ...
-    }
+    public float GetDamageMultiplier() => GetGlobalDamageMult();
 
-    // Attack speed multiplier (din faktiske kadence-mult. Tag buff med hvis I bruger den i gameplay)
     public float GetAttackSpeedMultiplier()
     {
         float m = 1f;
         if (throwingRef) m *= Mathf.Max(0.0001f, throwingRef.fireRateMult);
-        if (buffRef) m *= Mathf.Max(0.0001f, buffRef.GetAttackSpeedMult()); // hvis I benytter denne i gameplay
-        return m; // 1.00, 1.05, ...
+        if (buffRef) m *= Mathf.Max(0.0001f, buffRef.GetAttackSpeedMult());
+        return m;
     }
 
-    // Movement speed multiplier (slutfart / basefart)
+    // Returnerer forholdet ift. baseMoveSpeed (så man ser 1.00, 1.10, …)
     public float GetMoveSpeedMultiplier()
     {
         float baseSpd = movementRef ? Mathf.Max(0.0001f, movementRef.GetBaseSpeed()) : 1f;
         float mult = buffRef ? Mathf.Max(0f, buffRef.GetMoveSpeedMult()) : 1f;
         float final = baseSpd * mult;
-        return final / baseSpd; // = mult -> 1.00, 1.10, ...
+        return final / baseSpd;
     }
 
-    // ======================================
-    // Højre kolonne – total element-procent
-    // (inkl. global damage så Glass Cannon m.m. tæller med)
-    // ======================================
-
-    public float GetFireBonusPercent()
-    {
-        return (GetGlobalDamageMult() * GetFireElemMult() - 1f) * 100f;
-    }
-
-    public float GetLightningBonusPercent()
-    {
-        return (GetGlobalDamageMult() * GetLightningElemMult() - 1f) * 100f;
-    }
-
-    public float GetBurnBonusPercent()
-    {
-        return (GetGlobalDamageMult() * GetBurnElemMult() - 1f) * 100f;
-    }
-
-    // ======================================
-    // (Bevar disse for bagud-kompatibilitet hvis du har bundet dem et sted)
-    // ======================================
-
-    // Endelig “basic” fysisk hit damage (heltal) – hvis du vil vise rå tal et andet sted
-    public float GetBasicDamage()
-    {
-        int baseFromPrefab = 1;
-        if (throwingRef && throwingRef.cardPrefab &&
-            throwingRef.cardPrefab.TryGetComponent<Bullet>(out var bulletPrefab))
-        {
-            baseFromPrefab = Mathf.Max(1, bulletPrefab.baseDamage);
-        }
-
-        float final = baseFromPrefab * GetGlobalDamageMult();
-        return Mathf.Max(1f, Mathf.Round(final));
-    }
-
-    // Angreb pr. sekund (kun, hvis du stadig bruger den i UI et sted)
+    // (Valgfrit) skud/sek baseret på cooldown (hvis nogen binder til det)
     public float GetAttacksPerSecond()
     {
         if (!throwingRef || throwingRef.baseCooldown <= 0f) return 0f;
         float rate = Mathf.Max(0.0001f, throwingRef.fireRateMult);
-        return rate / Mathf.Max(0.0001f, throwingRef.baseCooldown);
+        return 1f / (throwingRef.baseCooldown / rate);
     }
 
-    // Absolut movespeed (m/s) – hvis du skulle få brug for den
+    // Absolut movespeed (m/s) – hvis du bruger den et sted
     public float GetMoveSpeed()
     {
         float baseSpd = movementRef ? movementRef.GetBaseSpeed() : 0f;
         float mult = buffRef ? buffRef.GetMoveSpeedMult() : 1f;
         return baseSpd * mult;
+    }
+
+    // ---------------- Højre kolonne – procenter (kun element, uden global) ----------------
+    public float GetFireBonusPercent() => (GetFireElemOnly() - 1f) * 100f;
+    public float GetLightningBonusPercent() => (GetLightningElemOnly() - 1f) * 100f;
+    public float GetBurnBonusPercent() => (GetBurnElemOnly() - 1f) * 100f;
+
+    // ---------------- Labels “1.40( +40%)” (kun element, uden global) ----------------
+    public string GetFireLabel()
+    {
+        float mult = GetFireElemOnly();
+        float pct = (mult - 1f) * 100f;
+        return $"{mult:0.##}( +{pct:0.#}%)";
+    }
+    public string GetLightningLabel()
+    {
+        float mult = GetLightningElemOnly();
+        float pct = (mult - 1f) * 100f;
+        return $"{mult:0.##}( +{pct:0.#}%)";
+    }
+    public string GetBurnLabel()
+    {
+        float mult = GetBurnElemOnly();
+        float pct = (mult - 1f) * 100f;
+        return $"{mult:0.##}( +{pct:0.#}%)";
     }
 }

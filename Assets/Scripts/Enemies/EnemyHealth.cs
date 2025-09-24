@@ -17,7 +17,7 @@ public class EnemyHealth : MonoBehaviour
     // Globalt event (for alle enemies)
     public static event Action<EnemyHealth> OnAnyEnemyDied;
 
-    private bool isDead = false; // NEW FLAG
+    private bool isDead = false;
 
     void Awake()
     {
@@ -28,7 +28,7 @@ public class EnemyHealth : MonoBehaviour
         hitbox = GetComponent<CircleCollider2D>();
     }
 
-    // Standard entrypoint
+    // === Standard damage entrypoint (bruges fortsat af alt eksisterende) ===
     public void TakeDamage(int amount, DamageElement element)
     {
         if (amount <= 0) return;
@@ -45,8 +45,26 @@ public class EnemyHealth : MonoBehaviour
 
         if (currentHealth <= 0)
             Die();
+    }
 
-        
+    // === Basic attacks med lifesteal ===
+    public void TakeBasicAttackDamage(int amount, DamageElement element)
+    {
+        if (amount <= 0) return;
+        if (isDead) return;
+
+        // Reuse standard apply logic (inkl. numbers/flash/death)
+        TakeDamage(amount, element);
+
+        // Lifesteal fra basic attacks (heal spiller med damage * lifestealMult)
+        var pbm = PlayerBuffManager.Instance;
+        float ls = pbm ? pbm.GetLifestealMult() : 0f; // 0.10 = 10% lifesteal
+        if (ls > 0f && PlayerHealth.Instance != null)
+        {
+            int heal = Mathf.RoundToInt(amount * ls);
+            if (heal > 0)
+                PlayerHealth.Instance.Heal(heal);
+        }
     }
 
     public void Heal(int amount)
@@ -61,7 +79,7 @@ public class EnemyHealth : MonoBehaviour
 
     void Die()
     {
-        if (isDead) return; // prevent double-death
+        if (isDead) return;
         isDead = true;
 
         GetComponent<EnemyFollow>()?.Kill();
@@ -79,7 +97,6 @@ public class EnemyHealth : MonoBehaviour
 
         enemyAnimator?.PlayDie();
     }
-
 
     // Called by animation event at the end of the death animation
     public void FinishDeath()

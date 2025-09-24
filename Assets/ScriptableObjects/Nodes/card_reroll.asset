@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8acc0fecff669ea4c91235318462fa51, type: 3}
+  m_Name: card_reroll
+  m_EditorClassIdentifier: 
+  id: card_reroll
+  displayName: Reward Reroll
+  description: Hate your rewards? Spin the wheel of disappointment again.
+  nodeType: 0
+  icon: {fileID: 7157561037332017152, guid: fc782d7de14b1154e96c521e3dd15e15, type: 3}
+  frame: {fileID: 6829908600747033567, guid: 276833240eadf5e4f8b8696b529f5ae0, type: 3}
+  glowColor: {r: 0.7, g: 0.2, b: 1, a: 1}
+  cost: 75
+  prerequisites:
+  - {fileID: 11400000, guid: f8934fecfacfa9444ad5655c2eb57d8a, type: 2}
+  minPrerequisites: 1
+  maxLevel: 1
+  valuePerLevel: []
+  costPerLevel: 
+  effectKey: 
+  effectValue: 

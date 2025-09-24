@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8acc0fecff669ea4c91235318462fa51, type: 3}
+  m_Name: flat_shardsgain
+  m_EditorClassIdentifier: 
+  id: flat_shardsgain
+  displayName: More Chaos Shards
+  description: "Get more chaos shards\t"
+  nodeType: 3
+  icon: {fileID: -5750353039905602045, guid: b06aebfb7e4356f46b5d21dbd051f746, type: 3}
+  frame: {fileID: 6829908600747033567, guid: 276833240eadf5e4f8b8696b529f5ae0, type: 3}
+  glowColor: {r: 1, g: 1, b: 1, a: 1}
+  cost: 5
+  prerequisites:
+  - {fileID: 11400000, guid: 4f53c8f151af5084eb211b5ed15ea6b6, type: 2}
+  minPrerequisites: 1
+  maxLevel: 3
+  valuePerLevel:
+  - 0.05
+  - 0.1
+  - 0.25
+  costPerLevel: 050000000a00000019000000
+  effectKey: flat_shardsgain
+  effectValue: '[0.05,0.10,0.25]'

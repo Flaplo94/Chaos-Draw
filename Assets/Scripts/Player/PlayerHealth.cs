@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
 
@@ -26,6 +25,10 @@ public class PlayerHealth : MonoBehaviour
     public Action OnDeath;
     [SerializeField] private Animator playerAnimator;
 
+    // Tracking for MaxHP-buffs & regen
+    private int baseMaxHealth;
+    private Coroutine regenRoutine;
+
     void Awake()
     {
         if (Instance == null) Instance = this;
@@ -34,7 +37,64 @@ public class PlayerHealth : MonoBehaviour
 
     void Start()
     {
-        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+        // Basis fra prefab/scene
+        baseMaxHealth = maxHealth;
+
+        // Start altid fuldt HP på første frame
+        currentHealth = maxHealth;
+
+        // Lyt til buff-ændringer
+        if (PlayerBuffManager.Instance != null)
+            PlayerBuffManager.Instance.OnValuesChanged += OnBuffValuesChanged;
+
+        // Anvend MaxHP-mult fra buffs og REFILL til fuldt HP ved opstart
+        UpdateMaxHPFromBuffs(refill: true);
+
+        // Start simpel 5-sek regen-loop
+        StartHPRegen();
+
+        UpdateUI();
+    }
+
+    private void OnDestroy()
+    {
+        if (PlayerBuffManager.Instance != null)
+            PlayerBuffManager.Instance.OnValuesChanged -= OnBuffValuesChanged;
+    }
+
+    private void OnBuffValuesChanged()
+    {
+        // Under run vil vi ikke give gratis heal, så refill=false
+        UpdateMaxHPFromBuffs(refill: false);
+    }
+
+    /// <summary>
+    /// Opdaterer maxHealth ud fra buffs. 
+    /// refill=true: sæt currentHealth til fuldt (bruges kun ved opstart).
+    /// refill=false: bevar nuværende HP proportionelt (eller clamp ned).
+    /// </summary>
+    private void UpdateMaxHPFromBuffs(bool refill)
+    {
+        float mult = 1f;
+        if (PlayerBuffManager.Instance != null)
+            mult = Mathf.Max(0.1f, PlayerBuffManager.Instance.GetMaxHpMult());
+
+        int newMax = Mathf.Max(1, Mathf.RoundToInt(baseMaxHealth * mult));
+
+        if (refill)
+        {
+            // Ved opstart: altid fuldt HP
+            maxHealth = newMax;
+            currentHealth = newMax;
+        }
+        else
+        {
+            // Mid-run: bevar procentuel HP, undgå gratis heal
+            float ratio = (maxHealth > 0) ? (float)currentHealth / maxHealth : 1f;
+            maxHealth = newMax;
+            currentHealth = Mathf.Clamp(Mathf.RoundToInt(ratio * maxHealth), 0, maxHealth);
+        }
+
         UpdateUI();
     }
 
@@ -47,6 +107,14 @@ public class PlayerHealth : MonoBehaviour
         {
             shield.ConsumeHit();
             return;
+        }
+
+        // Armor reduktion
+        if (PlayerBuffManager.Instance != null)
+        {
+            float red = Mathf.Clamp01(PlayerBuffManager.Instance.GetArmorReductionPct());
+            float mult = 1f - red; // 0.10 -> 90% damage
+            amount = Mathf.Max(0, Mathf.RoundToInt(amount * mult));
         }
 
         currentHealth -= amount;
@@ -99,23 +167,11 @@ public class PlayerHealth : MonoBehaviour
         if (TryConsumeExtraLife())
             return;
 
-        int wavesCleared = WaveManager.Instance != null ? WaveManager.Instance.CurrentWave : 0;
-
-        // Beregn reward shards
-        int reward = wavesCleared / 5;
-        if (wavesCleared >= 10 && wavesCleared % 10 == 0)
-            reward += 5;
-
-        if (MetaProgressionManager.Instance != null)
-            MetaProgressionManager.Instance.AddShards(reward);
-
         if (healthFill != null) healthFill.fillAmount = 0;
         if (hpEffect != null) hpEffect.fillAmount = 0;
 
         if (playerAnimator != null)
             playerAnimator.SetTrigger("Die");
-
-        Debug.Log($"[PlayerHealth] Dead - Game Over. Waves: {wavesCleared}, Shards: {reward}");
 
         OnDeath?.Invoke();
 
@@ -125,48 +181,9 @@ public class PlayerHealth : MonoBehaviour
         if (rb) rb.simulated = false;
     }
 
-    public void OnDeathAnimationFinished()
-    {
-        if (WaveManager.Instance != null)
-        {
-            WaveManager.Instance.EndRun();
-        }
-        else
-        {
-            if (GameOverManager.Instance != null)
-                GameOverManager.Instance.TriggerGameOver(0, 0, 0);
-        }
-
-        gameObject.SetActive(false);
-    }
-
-    private IEnumerator ShowGameOverDelayed(int wavesCleared, int reward)
-    {
-        yield return new WaitForSeconds(1.5f);
-
-        if (GameOverManager.Instance != null)
-            GameOverManager.Instance.TriggerGameOver(wavesCleared, reward, 0);
-        else
-            Debug.LogWarning("[PlayerHealth] GameOverManager mangler!");
-    }
-
-    public void SetMaxHealthTemporary(int newMax, bool clampCurrent = true)
-    {
-        maxHealth = Mathf.Max(1, newMax);
-        if (clampCurrent) currentHealth = Mathf.Min(currentHealth, maxHealth);
-        UpdateUI();
-    }
-
-    public void SetCurrentHealth(int hp)
-    {
-        currentHealth = Mathf.Clamp(hp, 0, maxHealth);
-        UpdateUI();
-        if (currentHealth <= 0) Die();
-    }
-
     private void UpdateUI()
     {
-        float ratio = (float)currentHealth / maxHealth;
+        float ratio = (float)currentHealth / Mathf.Max(1, maxHealth);
 
         if (healthFill != null)
             healthFill.fillAmount = ratio;
@@ -184,6 +201,31 @@ public class PlayerHealth : MonoBehaviour
                 edgeVfx.anchoredPosition.x,
                 -height / 2f + height * ratio
             );
+        }
+    }
+
+    // --- Simpel regen pr. 5 sek baseret på PBM:
+    private void StartHPRegen()
+    {
+        if (regenRoutine != null) StopCoroutine(regenRoutine);
+        regenRoutine = StartCoroutine(RegenLoop());
+    }
+
+    private IEnumerator RegenLoop()
+    {
+        var wait = new WaitForSeconds(5f);
+        while (true)
+        {
+            yield return wait;
+            if (PlayerBuffManager.Instance != null)
+            {
+                float per5 = PlayerBuffManager.Instance.GetHPRegenPer5Sec();
+                if (per5 > 0f && currentHealth > 0 && currentHealth < maxHealth)
+                {
+                    int heal = Mathf.RoundToInt(per5);
+                    Heal(heal);
+                }
+            }
         }
     }
 }
