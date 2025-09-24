@@ -4,6 +4,7 @@ using TMPro;
 using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using System.Collections;
+using System.Linq; //  NY: til reward-filter
 
 public class CardHandUI : MonoBehaviour
 {
@@ -25,11 +26,17 @@ public class CardHandUI : MonoBehaviour
     public Sprite otherBack;
     public Sprite emptyBack;
 
-    public Sprite emptySlotSprite; // sprite som vises i hånden, når slot er tomt
+    public Sprite emptySlotSprite; // sprite som vises i hï¿½nden, nï¿½r slot er tomt
 
     [Header("Card Pool")]
     [SerializeField] private List<StartingCard> startingDeckList = new();
     private List<Ability> allAbilities = new();
+
+    // --- NYT: Start-spells pr. deck (kan sï¿½ttes i Inspector) ---
+    [Header("Start Spells pr. Deck")]
+    [SerializeField] private string fireStartAbilityName = "Fireball";
+    [SerializeField] private string lightningStartAbilityName = "LightningBall";
+    [SerializeField][Min(1)] private int startCopies = 4;
 
     [Header("Reward UI (parent + prefab)")]
     [SerializeField] private GameObject rewardUI;
@@ -101,6 +108,10 @@ public class CardHandUI : MonoBehaviour
         hand = new Ability[cardSlots.Length];
 
         allAbilities = new List<Ability>(Resources.LoadAll<Ability>(""));
+
+        // --- NY: Overskriv start-listen ud fra valgt element (Fire/Lightning) ---
+        OverrideStartingDeckFromSelectedElement();
+
         CreateStartingDeck();
         Shuffle(drawPile);
 
@@ -187,7 +198,7 @@ public class CardHandUI : MonoBehaviour
                 if (uiMsg != null) uiMsg.ShowMessage("Not enough mana!");
 
                 // OR: flash the slot, play a sound, etc.
-                return; // don’t try to cast
+                return; // donï¿½t try to cast
             }
 
             TryUseCard(index);
@@ -417,7 +428,12 @@ public class CardHandUI : MonoBehaviour
         rewardUI.SetActive(true);
         ClearRewardCardsParent();
 
-        List<Ability> pool = new(allAbilities);
+        // --- NY: filtrï¿½r pool efter valgt element fï¿½r vi vï¿½lger 3 ---
+        var element = SessionData.SelectedElement; // MagicType.Fire / MagicType.Lightning
+        List<Ability> pool = allAbilities
+            .Where(a => a != null && a.magicType == element)
+            .ToList();
+
         Shuffle(pool);
 
         for (int i = 0; i < 3 && i < pool.Count; i++)
@@ -455,7 +471,7 @@ public class CardHandUI : MonoBehaviour
         // Player now owns the card either way
         deck.Add(ability);
 
-        // If there’s room in hand, place it directly into the first empty slot
+        // If thereï¿½s room in hand, place it directly into the first empty slot
         int empty = FindFirstEmptyHandSlot();
         if (empty != -1)
         {
@@ -465,14 +481,14 @@ public class CardHandUI : MonoBehaviour
             
             NotifyHandChanged();
 
-            // Piles didn’t change, but keep UI consistent
+            // Piles didnï¿½t change, but keep UI consistent
             UpdateDiscardText();
             UpdateDeckText();
             UpdatePileUIs();
             return;
         }
 
-        // Otherwise: old behavior — add to draw pile
+        // Otherwise: old behavior ï¿½ add to draw pile
         drawPile.Add(ability);
         UpdateDeckText();
         UpdatePileUIs();
@@ -719,5 +735,17 @@ public class CardHandUI : MonoBehaviour
     public void UseCardFromSelection(int index)
     {
         TryUseCardIfPossible(index); // <- was calling TryUseCard(...) before
+
+    // ------------ NY Hjï¿½lper: vï¿½lg start-deck ud fra valgt element ------------
+    private void OverrideStartingDeckFromSelectedElement()
+    {
+        var element = SessionData.SelectedElement; // sat i ChooseDeckMenu ved Start
+
+        string startName = (element == MagicType.Lightning)
+            ? lightningStartAbilityName
+            : fireStartAbilityName;
+
+        startingDeckList.Clear();
+        startingDeckList.Add(new StartingCard { abilityName = startName, count = startCopies });
     }
 }

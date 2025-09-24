@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8acc0fecff669ea4c91235318462fa51, type: 3}
+  m_Name: artifact_unlock
+  m_EditorClassIdentifier: 
+  id: artifact_unlock
+  displayName: Artifacts Unlocked
+  description: "Unlock shiny junk. Half of it\u2019s cursed, the other half is\u2026
+    also cursed. Enjoy."
+  nodeType: 0
+  icon: {fileID: -855298285791758126, guid: f838d4a1ab51b9a4184258d3c7cf1f48, type: 3}
+  frame: {fileID: 6829908600747033567, guid: 276833240eadf5e4f8b8696b529f5ae0, type: 3}
+  glowColor: {r: 0.7, g: 0.2, b: 1, a: 1}
+  cost: 25
+  prerequisites:
+  - {fileID: 11400000, guid: 3416e46dd12740f4e9c019752383f1a6, type: 2}
+  minPrerequisites: 1
+  maxLevel: 1
+  valuePerLevel: []
+  costPerLevel: 
+  effectKey: 
+  effectValue: 

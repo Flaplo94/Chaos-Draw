@@ -22,34 +22,61 @@ public struct DamageResult
 
 public static class DamageCalculator
 {
-    public static bool DEBUG_LOG = true; // slå fra når du er færdig
+    public static bool DEBUG_LOG = false;
 
     /// <summary>
-    /// Udregner final damage og returnerer både tal og element-type
+    /// Standard: Global "atk dmg" gælder KUN for Physical (basic attacks).
+    /// Spells (Fire/Lightning/Burn) får KUN deres element-multipliers.
     /// </summary>
     public static DamageResult ComputeFinalDamage(float baseDamage, DamageElement element)
     {
+        // Physical => basic attack => inkluder global
+        bool includeGlobal = (element == DamageElement.Physical);
+        return ComputeInternal(baseDamage, element, includeGlobal);
+    }
+
+    /// <summary>
+    /// Brug hvis du VED det er et basic attack (kan være non-physical, men skal have global med).
+    /// </summary>
+    public static DamageResult ComputeBasicAttackDamage(float baseDamage, DamageElement element = DamageElement.Physical)
+    {
+        return ComputeInternal(baseDamage, element, includeGlobal: true);
+    }
+
+    /// <summary>
+    /// Brug til spells: tvinger eksklusion af global, uanset element.
+    /// </summary>
+    public static DamageResult ComputeSpellDamage(float baseDamage, DamageElement element)
+    {
+        return ComputeInternal(baseDamage, element, includeGlobal: false);
+    }
+
+    // ---------------- Internal ----------------
+    private static DamageResult ComputeInternal(float baseDamage, DamageElement element, bool includeGlobal)
+    {
         float mult = 1f;
 
-        if (PlayerBuffManager.Instance != null)
+        var pbm = PlayerBuffManager.Instance;
+        if (pbm != null)
         {
-            // Generic (inkl. ScalingDamage)
-            mult *= PlayerBuffManager.Instance.GetGenericDamageMult();
+            // Global / generic "atk dmg"?
+            if (includeGlobal)
+                mult *= Mathf.Max(0f, pbm.GetGenericDamageMult());
 
-            // Element-specific
+            // Element-specifik multiplier
             switch (element)
             {
                 case DamageElement.Fire:
-                    mult *= PlayerBuffManager.Instance.GetFireDamageMult();
+                    mult *= Mathf.Max(0f, pbm.GetFireDamageMult());
                     break;
                 case DamageElement.Lightning:
-                    mult *= PlayerBuffManager.Instance.GetThunderDamageMult(); // OBS: dit BuffData bruger "Thunder"
+                    mult *= Mathf.Max(0f, pbm.GetThunderDamageMult());
                     break;
                 case DamageElement.Burn:
-                    mult *= PlayerBuffManager.Instance.GetBurnDamageMult();
+                    mult *= Mathf.Max(0f, pbm.GetBurnDamageMult());
                     break;
                 default:
-                    break; // neutral -> kun generic
+                    break; // Physical: kun global (hvis includeGlobal=true)
             }
         }
 
@@ -57,7 +84,7 @@ public static class DamageCalculator
         int intFinal = Mathf.Max(0, Mathf.RoundToInt(final));
 
         if (DEBUG_LOG)
-            Debug.Log($"[DMG] base={baseDamage} elem={element} mult={mult:F3} -> {intFinal}");
+            Debug.Log($"[DMG] base={baseDamage} elem={element} includeGlobal={includeGlobal} mult={mult:F3} -> {intFinal}");
 
         return new DamageResult(intFinal, element);
     }

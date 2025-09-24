@@ -10,7 +10,7 @@ public class BuffData : ScriptableObject
 
     [Header("Core Settings")]
     public BuffType type;        // hvilken stat buffen rammer
-    public float value = 0f;     // procent eller flat værdi (afhænger af buff)
+    public float value = 0f;     // procent (som faktor) eller rå værdi (HPRegen)
     public float duration = 0f;  // 0 = permanent, >0 = tidsbegrænset buff
 
     [Header("Rarity")]
@@ -28,6 +28,8 @@ public class BuffData : ScriptableObject
         // Survivability
         MaxHP,
         ShieldRegen,
+        Armor,     // NEW: incoming damage reduction (0.10 = 10% mindre skade)
+        HPRegen,   // NEW: HP pr. 5 sek (rå mængde)
 
         // Mana / Magic
         ManaRegen,
@@ -41,7 +43,7 @@ public class BuffData : ScriptableObject
         // Utility
         Speed,
         GoldGain,
-        ChaosShardGain   // <- ændret fra XP til ChaosShardGain
+        ChaosShardGain
     }
 
     public enum BuffRarity

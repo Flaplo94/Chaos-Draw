@@ -5,35 +5,26 @@ public class Bullet : MonoBehaviour
     public int baseDamage = 1;
     public float lifetime = 5f;
 
-    [Header("Mana")]
-    [SerializeField] private float manaOnHit = 5f;
-
     [Header("Audio")]
     [SerializeField] private AudioClip hitSfx;
-    [SerializeField] private AudioSource audioSource; // assign in Inspector
+    [SerializeField] private AudioSource audioSource;
 
-    // --- Backwards compatibility ---
-    public int damage
-    {
-        get => baseDamage;
-        set => baseDamage = value;
-    }
+    // Back-compat property (nogle scripts bruger 'damage')
+    public int damage { get => baseDamage; set => baseDamage = value; }
 
-    [Header("Debug")]
-    public bool logDamage = false;
+    [Header("Debug (for PlayerThrowing)")]
     [HideInInspector] public int debugBaseDamage = 0;
     [HideInInspector] public float debugGlobalMult = 1f;
     [HideInInspector] public float debugElementMult = 1f;
 
+    [Header("Logging")]
+    public bool logDamage = false;
+
     private Rigidbody2D rb;
-    private Collider2D col;
-    private SpriteRenderer sr;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        col = GetComponent<Collider2D>();
-        sr = GetComponent<SpriteRenderer>();
         Destroy(gameObject, lifetime);
     }
 
@@ -46,75 +37,80 @@ public class Bullet : MonoBehaviour
         }
     }
 
-    void OnTriggerEnter2D(Collider2D other)
+    // Trigger-collision
+    void OnTriggerEnter2D(Collider2D other) => HandleHit(other ? other.gameObject : null);
+
+    // Physics-collision
+    void OnCollisionEnter2D(Collision2D other) => HandleHit(other?.collider ? other.collider.gameObject : null);
+
+    private void HandleHit(GameObject hit)
     {
-        var enemy = other.GetComponent<EnemyHealth>()
-                 ?? other.GetComponentInParent<EnemyHealth>()
-                 ?? other.GetComponentInChildren<EnemyHealth>();
+        if (!hit) return;
+
+        var enemy = hit.GetComponent<EnemyHealth>()
+                 ?? hit.GetComponentInParent<EnemyHealth>()
+                 ?? hit.GetComponentInChildren<EnemyHealth>();
 
         if (enemy != null)
         {
             var result = DamageCalculator.ComputeFinalDamage(baseDamage, DamageElement.Physical);
-            enemy.TakeDamage(result.amount, result.element);
-
-            // Yeet Cube: count basic-attack hit (enemy)
-            YeetCubeSystem.ReportPlayerHit(enemy.transform.root, isBoss: false);
-
-            Hit("Enemy", enemy.gameObject.name, result);
+            enemy.TakeBasicAttackDamage(result.amount, result.element); // lifesteal for basic attacks
+            StopAndVanish(); // <- vigtig: stop bev�gelse + skjul straks
+            if (logDamage) LogDamage("Enemy", enemy.gameObject.name, result);
             return;
         }
 
-        var boss = other.GetComponent<BossHealth>()
-                ?? other.GetComponentInParent<BossHealth>()
-                ?? other.GetComponentInChildren<BossHealth>();
+        var boss = hit.GetComponent<BossHealth>()
+                ?? hit.GetComponentInParent<BossHealth>()
+                ?? hit.GetComponentInChildren<BossHealth>();
 
         if (boss != null)
         {
             var result = DamageCalculator.ComputeFinalDamage(baseDamage, DamageElement.Physical);
             boss.TakeDamage(result.amount, result.element);
-
-            // Yeet Cube: count basic-attack hit (boss)
-            YeetCubeSystem.ReportPlayerHit(boss.transform.root, isBoss: true);
-
-            Hit("Boss", boss.gameObject.name, result);
+            StopAndVanish(); // <- vigtig: stop bev�gelse + skjul straks
+            if (logDamage) LogDamage("Boss", boss.gameObject.name, result);
             return;
         }
+    }
 
-        if (logDamage)
+    private void StopAndVanish()
+    {
+        // 1) Stop al bev�gelse
+        if (rb)
         {
-            string layerName = LayerMask.LayerToName(other.gameObject.layer);
-            Debug.Log("[DMG?] Hit '" + other.gameObject.name + "' (layer=" + layerName + ") but no EnemyHealth/BossHealth found.");
+            rb.linearVelocity = Vector2.zero;     // sikrer stop
+            rb.linearVelocity = Vector2.zero; // hvis projektet bruger linearVelocity
+            rb.angularVelocity = 0f;
+            rb.simulated = false;           // frys fysik
+        }
+
+        // 2) Disable ALLE colliders, s� kuglen ikke rammer flere ting
+        foreach (var c in GetComponentsInChildren<Collider2D>()) c.enabled = false;
+
+        // 3) Skjul visuelt (sprite/trail/particles)
+        foreach (var sr in GetComponentsInChildren<SpriteRenderer>()) sr.enabled = false;
+        foreach (var tr in GetComponentsInChildren<TrailRenderer>()) tr.emitting = false;
+        foreach (var ps in GetComponentsInChildren<ParticleSystem>()) ps.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+
+        // 4) Afspil hit-lyd og ryd op
+        if (hitSfx != null)
+        {
+            if (audioSource != null) audioSource.PlayOneShot(hitSfx);
+            else AudioSource.PlayClipAtPoint(hitSfx, transform.position);
+            Destroy(gameObject, hitSfx.length);
+        }
+        else
+        {
+            Destroy(gameObject); // ingen lyd, bare fjern med det samme
         }
     }
 
-    private void Hit(string targetType, string targetName, DamageResult result)
+    private void LogDamage(string targetType, string targetName, DamageResult result)
     {
-        PlayHitSound();
-        LogDamage(targetType, targetName, result);
-
-        PlayerMana.Instance?.GainMana(manaOnHit);
-
-        // Disable visuals + collider immediately
-        if (col) col.enabled = false;
-        if (sr) sr.enabled = false;
-        if (rb) rb.linearVelocity = Vector2.zero;
-
-        // Destroy after sound finishes
-        Destroy(gameObject, hitSfx != null ? hitSfx.length : 0f);
-    }
-
-    void PlayHitSound()
-    {
-        if (hitSfx == null || audioSource == null) return;
-        audioSource.PlayOneShot(hitSfx);
-    }
-
-    void LogDamage(string targetType, string targetName, DamageResult result)
-    {
-        if (!logDamage) return;
         Debug.Log(
             $"[DMG] {targetType} '{targetName}' <- {result.amount} " +
-            $"(base {baseDamage}, mult={result.amount / (float)baseDamage:0.##}, element={result.element})"
+            $"(base {baseDamage}, mult={result.amount / (float)Mathf.Max(1, baseDamage):0.##}, element={result.element})"
         );
     }
 }
