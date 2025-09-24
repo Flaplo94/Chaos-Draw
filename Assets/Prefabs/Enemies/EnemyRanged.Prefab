@@ -174,6 +174,11 @@ MonoBehaviour:
   separationRadius: 0.7
   separationStrength: 2
   isHealer: 0
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 8
+  avoidDistance: 1
+  avoidStrength: 2
 --- !u!114 &76683931486816045
 MonoBehaviour:
   m_ObjectHideFlags: 0

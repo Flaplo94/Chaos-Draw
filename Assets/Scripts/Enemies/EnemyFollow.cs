@@ -3,12 +3,20 @@ using System.Collections.Generic;
 
 public class EnemyFollow : MonoBehaviour
 {
+    [Header("Movement")]
     [SerializeField] private float speed = 2f;
     [SerializeField] private float separationRadius = 1.5f;
     [SerializeField] private float separationStrength = 2f;
+
+    [Header("Behavior")]
     [SerializeField] private bool isHealer = false;
 
-    public Vector2 FacingDir { get; private set; } = Vector2.right; // <-- NEW
+    [Header("Obstacle Avoidance")] // <-- NEW
+    [SerializeField] private LayerMask obstacleMask;
+    [SerializeField] private float avoidDistance = 1.0f;
+    [SerializeField] private float avoidStrength = 2f;
+
+    public Vector2 FacingDir { get; private set; } = Vector2.right;
 
     private Transform player;
     private readonly List<EnemyFollow> allEnemies = new List<EnemyFollow>();
@@ -16,6 +24,7 @@ public class EnemyFollow : MonoBehaviour
     private float attackRange = 0f;
     private Rigidbody2D rb;
     private bool isDead = false;
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -36,6 +45,7 @@ public class EnemyFollow : MonoBehaviour
     void FixedUpdate()
     {
         if (isDead) { rb.linearVelocity = Vector2.zero; return; }
+
         // reacquire if needed
         if (player == null)
         {
@@ -74,7 +84,7 @@ public class EnemyFollow : MonoBehaviour
                 {
                     rb.linearVelocity = Vector2.zero;
 
-                    // <-- NEW: keep facing target while idle/attacking
+                    // keep facing target while idle/attacking
                     Vector2 toTargetFace = ((Vector2)target.position - rb.position);
                     if (toTargetFace.sqrMagnitude > 0.0001f)
                         FacingDir = toTargetFace.normalized;
@@ -84,9 +94,10 @@ public class EnemyFollow : MonoBehaviour
             }
         }
 
-        // Steering + separation
+        // Steering toward target
         Vector2 toTarget = ((Vector2)target.position - rb.position).normalized;
 
+        // Separation from other enemies
         Vector2 separation = Vector2.zero;
         int count = 0;
         for (int i = 0; i < allEnemies.Count; i++)
@@ -104,16 +115,30 @@ public class EnemyFollow : MonoBehaviour
         }
         if (count > 0) separation /= count;
 
-        Vector2 finalDir = (toTarget + separation * separationStrength).normalized;
+        // --- NEW: obstacle avoidance ---
+        Vector2 avoid = Vector2.zero;
+        RaycastHit2D hit = Physics2D.Raycast(rb.position, toTarget, avoidDistance, obstacleMask);
+        if (hit.collider != null)
+        {
+            // calculate a perpendicular direction to slide around the obstacle
+            Vector2 perp = Vector2.Perpendicular(hit.normal).normalized;
+            // choose the side pointing more toward the target
+            if (Vector2.Dot(perp, toTarget) < 0) perp = -perp;
+            avoid = perp * avoidStrength;
+        }
+
+        // Combine steering
+        Vector2 finalDir = (toTarget + separation * separationStrength + avoid).normalized;
 
         // Drive
         rb.linearVelocity = finalDir * speed;
 
-        // <-- NEW: expose where we're heading so the animator can pick a set
+        // expose where we're heading so the animator can pick a set
         if (finalDir.sqrMagnitude > 0.0001f)
             FacingDir = finalDir;
     }
-    public void Kill() // <-- NEW
+
+    public void Kill()
     {
         isDead = true;
         rb.linearVelocity = Vector2.zero;

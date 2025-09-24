@@ -18,15 +18,16 @@ public class FireOnGround : MonoBehaviour, IAbilityBehavior
 
     private float tickTimer;
     private float lifeTimer;
+    private bool luckyWasDuplicated = false;
 
     public bool Initialize(Vector2 dir, Rarity rarity)
     {
         switch (rarity)
         {
-            case Rarity.Uncommon: radius *= 1.2f; break;
-            case Rarity.Rare: radius *= 1.4f; damagePerTick += 1; break;
-            case Rarity.Epic: radius *= 1.6f; damagePerTick += 2; break;
-            case Rarity.Legendary: radius *= 2.0f; damagePerTick += 3; break;
+            case Rarity.Uncommon: radius *= 1.2f; damagePerTick += 1; break;
+            case Rarity.Rare: radius *= 1.4f; damagePerTick += 2; break;
+            case Rarity.Epic: radius *= 1.6f; damagePerTick += 3; break;
+            case Rarity.Legendary: radius *= 2.0f; damagePerTick += 4; break;
         }
         return true;
     }
@@ -36,6 +37,18 @@ public class FireOnGround : MonoBehaviour, IAbilityBehavior
         tickTimer = 0f;
         lifeTimer = duration;
         SpawnTilesFillCircle();
+        if (!luckyWasDuplicated)
+        {
+            LuckyShotSystem.OnSpellCast(this, () =>
+            {
+                var p2 = transform.position;
+                if (LuckyShotSystem.TryConsumeSpawnOffset(out var off)) p2 += (Vector3)off;
+
+                var dup = Instantiate(gameObject, p2, transform.rotation);
+                var comp = dup.GetComponent<FireOnGround>();
+                if (comp != null) comp.luckyWasDuplicated = true;
+            });
+        }
     }
 
     private void Update()

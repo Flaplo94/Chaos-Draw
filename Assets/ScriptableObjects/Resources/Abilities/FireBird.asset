@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: FireBird
   m_EditorClassIdentifier: 
   abilityName: Fire Bird
-  icon: {fileID: -8586417740124189794, guid: a93bace5f3f458944a6d018144bd0ea2, type: 3}
+  icon: {fileID: 21300000, guid: ba6b6bf8f9d98cb49a78bd396f6138a7, type: 3}
   effectPrefab: {fileID: 4804991577932546782, guid: 9019518a972eb32498dabb87b5a33b0c, type: 3}
   spawnAtMousePosition: 0
   damage: 5

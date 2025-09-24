@@ -556,7 +556,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nameText: {fileID: 2503603611321082773}
   artImage: {fileID: 2890312669624910815}
-  rarityText: {fileID: 6132601185743134228}
+  rarityIcon: {fileID: 0}
   dmgText: {fileID: 2389567598563887312}
   manaText: {fileID: 48982700255607861}
   tagRow: {fileID: 1329714720719335505}

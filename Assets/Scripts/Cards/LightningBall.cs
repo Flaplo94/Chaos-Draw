@@ -23,16 +23,17 @@ public class LightningBall : MonoBehaviour, IAbilityBehavior
     private Rigidbody2D rb;
     private Collider2D col;
     private Vector2 lastVelocity;
+    private bool luckyWasDuplicated = false;
 
     public bool Initialize(Vector2 dir, Rarity rarity)
     {
         direction = dir.normalized;
         switch (rarity)
         {
-            case Rarity.Uncommon: zapRadius *= 1.1f; duration += 1f; break;
-            case Rarity.Rare: zapRadius *= 1.2f; duration += 1.5f; damagePerTick++; break;
-            case Rarity.Epic: zapRadius *= 1.3f; duration += 2f; damagePerTick += 2; break;
-            case Rarity.Legendary: zapRadius *= 1.5f; duration += 3f; damagePerTick += 3; break;
+            case Rarity.Uncommon: zapRadius *= 1.1f; duration += 1f; damagePerTick += 1; break;
+            case Rarity.Rare: zapRadius *= 1.2f; duration += 1.5f; damagePerTick += 2; break;
+            case Rarity.Epic: zapRadius *= 1.3f; duration += 2f; damagePerTick += 3; break;
+            case Rarity.Legendary: zapRadius *= 1.5f; duration += 3f; damagePerTick += 4; break;
         }
         return true;
     }
@@ -59,6 +60,18 @@ public class LightningBall : MonoBehaviour, IAbilityBehavior
 
         rb.linearVelocity = direction * speed;
         lastVelocity = rb.linearVelocity;
+        if (!luckyWasDuplicated)
+        {
+            LuckyShotSystem.OnSpellCast(this, () =>
+            {
+                var p2 = transform.position;
+                if (LuckyShotSystem.TryConsumeSpawnOffset(out var off)) p2 += (Vector3)off;
+
+                var dup = Instantiate(gameObject, p2, transform.rotation);
+                var comp = dup.GetComponent<LightningBall>();
+                if (comp != null) comp.luckyWasDuplicated = true;
+            });
+        }
     }
 
     private IEnumerator ReenablePlayerCollisionSoon(Collider2D[] playerCols)

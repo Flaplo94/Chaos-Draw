@@ -8,6 +8,7 @@ public class ChaosShardRewardSystem : MonoBehaviour
     [Header("Shard Rewards")]
     [Tooltip("Shards for at klare en wave (additivt pr. wave).")]
     public int basePerWave = 1;
+
     [Tooltip("Ekstra shards pr. wave der er gået. (fx 0.2 = +20% mere pr. wave)")]
     public float perWaveScale = 0.1f;
 
@@ -35,10 +36,19 @@ public class ChaosShardRewardSystem : MonoBehaviour
         if (waveNum % 10 == 0)
             reward += bossBonus;
 
-        if (reward > 0 && MetaProgressionManager.Instance != null)
+        if (reward <= 0) return;
+
+        // === APPLY SHARD GAIN MULTIPLIER ===
+        float mult = 1f;
+        if (PlayerBuffManager.Instance != null)
+            mult = PlayerBuffManager.Instance.GetChaosShardGainMult();
+
+        int finalReward = Mathf.Max(0, Mathf.RoundToInt(reward * mult));
+
+        if (MetaProgressionManager.Instance != null)
         {
-            MetaProgressionManager.Instance.AddShards(reward);
-            Debug.Log($"[ChaosShardReward] Wave {waveNum} -> +{reward} shards");
+            MetaProgressionManager.Instance.AddShards(finalReward);
+            Debug.Log($"[ChaosShardReward] Wave {waveNum} -> base {reward}, mult {mult:0.##}, final +{finalReward} shards");
         }
     }
 }

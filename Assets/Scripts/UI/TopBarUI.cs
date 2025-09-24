@@ -85,6 +85,6 @@ public class TopBarUI : MonoBehaviour
     private void UpdateWave(int wave)
     {
         if (waveText != null)
-            waveText.text = "Wave " + wave;
+            waveText.text = "WAVE " + wave;
     }
 }

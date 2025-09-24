@@ -5,6 +5,9 @@ public class CardHoverTrigger : MonoBehaviour, IPointerEnterHandler, IPointerExi
 {
     private Ability ability;
 
+    /// <summary>
+    /// Kaldes af CardSlotUI.Show() eller når et reward-kort bygges.
+    /// </summary>
     public void SetAbility(Ability a)
     {
         ability = a;
@@ -12,18 +15,28 @@ public class CardHoverTrigger : MonoBehaviour, IPointerEnterHandler, IPointerExi
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        Debug.Log("[HoverTrigger] ENTER " + ability?.abilityName);
-
-        if (ability != null)
+        if (ability != null && IsDimmerActive())
         {
-            Debug.Log("[HoverTrigger] SHOW card: " + ability.abilityName);
             CardHoverUI.Instance.Show(ability, transform.position);
         }
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        Debug.Log("[HoverTrigger] EXIT " + ability?.abilityName);
-        CardHoverUI.Instance.Hide();
+        if (IsDimmerActive())
+        {
+            CardHoverUI.Instance.Hide();
+        }
+    }
+
+    private bool IsDimmerActive()
+    {
+        var dim = FindFirstObjectByType<Dimmer>();
+        if (dim == null) return false;
+
+        var cg = dim.GetComponent<CanvasGroup>();
+        if (cg == null) return false;
+
+        return cg.alpha > 0.01f; // hover kun når dimmeren er synlig (pause, rewards, shop osv.)
     }
 }

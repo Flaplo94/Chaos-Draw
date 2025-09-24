@@ -6,21 +6,21 @@ using TMPro;
 public class MainMenu : MonoBehaviour
 {
     [Header("Scene Names")]
-    public string gameScene = "Stefan TestScene"; // din testscene
-    public string legacyDeckScene = "LegacyDeck";
+    public string gameScene = "GameScene"; // din testscene
+    public string DeckOfFateScene = "DeckOfFate";
     public string skillTreeScene = "SkillTree";
     public string optionsScene = "Options";
 
     [Header("Unlockable Buttons")]
-    public Button legacyDeckButton;      // drag LegacyDeckButton her
+    public Button DeckOfFateButton;      // drag DeckOfFate Button her
     public Button skillTreeButton;       // drag SkillTreeButton her
 
     [Header("Lock Icons")]
-    public GameObject legacyLockIcon;    // drag LegacyDeckButton/LockIcon her
+    public GameObject DeckOfFateLockIcon;    // drag DeckOfFateButton/LockIcon her
     public GameObject skillTreeLockIcon; // drag SkillTreeButton/LockIcon her
 
     [Header("Texts")]
-    public TMP_Text legacyDeckText;      // drag TMP_Text fra LegacyDeckButton
+    public TMP_Text DeckOfFateText;      // drag TMP_Text fra DeckOfFateButton
     public TMP_Text skillTreeText;       // drag TMP_Text fra SkillTreeButton
 
     private Color unlockedColor = Color.white;
@@ -46,22 +46,22 @@ public class MainMenu : MonoBehaviour
         if (skillTreeText) skillTreeText.color = skillTreeUnlocked ? unlockedColor : lockedColor;
         if (skillTreeLockIcon) skillTreeLockIcon.SetActive(!skillTreeUnlocked);
 
-        // --- Legacy Deck unlock (via Fire Spiral node) ---
-        bool legacyUnlocked = MetaProgressionManager.Instance.legacyUnlocked;
-        if (legacyDeckButton) legacyDeckButton.interactable = legacyUnlocked;
-        if (legacyDeckText) legacyDeckText.color = legacyUnlocked ? unlockedColor : lockedColor;
-        if (legacyLockIcon) legacyLockIcon.SetActive(!legacyUnlocked);
+        // --- Deck Of Fate unlock (via Fire Spiral node) ---
+        bool DeckOfFateUnlocked = MetaProgressionManager.Instance.DeckOfFateUnlocked;
+        if (DeckOfFateButton) DeckOfFateButton.interactable = DeckOfFateUnlocked;
+        if (DeckOfFateText) DeckOfFateText.color = DeckOfFateUnlocked ? unlockedColor : lockedColor;
+        if (DeckOfFateLockIcon) DeckOfFateLockIcon.SetActive(!DeckOfFateUnlocked);
 
         
     }
 
     // --- Button events ---
-    public void PlayGame() => SceneManager.LoadScene(gameScene);
+    public void PlayGame() => SceneManager.LoadScene("GameScene");
 
-    public void OpenLegacyDeck()
+    public void OpenDeckOfFate()
     {
-        if (MetaProgressionManager.Instance != null && MetaProgressionManager.Instance.legacyUnlocked)
-            SceneManager.LoadScene(legacyDeckScene);
+        if (MetaProgressionManager.Instance != null && MetaProgressionManager.Instance.DeckOfFateUnlocked)
+            SceneManager.LoadScene(DeckOfFateScene);
     }
 
     public void OpenSkillTree()

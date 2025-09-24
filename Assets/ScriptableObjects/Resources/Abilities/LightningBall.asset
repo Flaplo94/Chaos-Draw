@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: LightningBall
   m_EditorClassIdentifier: 
   abilityName: Lightning Ball
-  icon: {fileID: 8369304094877553587, guid: 40327cf57fd376c4eadbae19c749c671, type: 3}
+  icon: {fileID: 21300000, guid: 811b9bc85c8c8dc4aacbd576f541e3a2, type: 3}
   effectPrefab: {fileID: 4804991577932546782, guid: 32054acbc325aa4489fb441bd976a866, type: 3}
   spawnAtMousePosition: 0
   damage: 10

@@ -116,6 +116,14 @@ public class BossHealth : MonoBehaviour
         if (WaveManager.Instance != null && WaveManager.Instance.bossHealthBarUI != null)
             WaveManager.Instance.bossHealthBarUI.SetActive(false);
 
+        // NEW: mark wave>=10 boss kill for this run
+        if (WaveManager.Instance != null
+            && WaveManager.Instance.CurrentWave >= 10
+            && MetaProgressionManager.Instance != null)
+        {
+            MetaProgressionManager.Instance.MarkWave10BossDefeated();
+        }
+
         Destroy(gameObject);
     }
 }

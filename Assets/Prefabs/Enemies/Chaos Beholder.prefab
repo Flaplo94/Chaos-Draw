@@ -193,7 +193,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 1000
   flashOnLethalHit: 1
-  displayName: Chaos Beholder
+  displayName: CHAOS BEHOLDER
 --- !u!114 &-6778992249738247409
 MonoBehaviour:
   m_ObjectHideFlags: 0

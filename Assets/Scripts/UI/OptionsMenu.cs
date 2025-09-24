@@ -4,49 +4,110 @@ using UnityEngine.UI;
 
 public class OptionsMenu : MonoBehaviour
 {
+    [Header("Audio")]
     [SerializeField] private AudioMixer audioMixer;
+
+    [SerializeField] private Slider masterSlider;
+    [SerializeField] private Toggle masterMuteToggle;
+
     [SerializeField] private Slider musicSlider;
+    [SerializeField] private Toggle musicMuteToggle;
+
     [SerializeField] private Slider sfxSlider;
+    [SerializeField] private Toggle sfxMuteToggle;
 
-    private void Start()
+    private float lastMaster = 1f;
+    private float lastMusic = 1f;
+    private float lastSfx = 1f;
+
+    void OnEnable()
     {
-        // Load saved values, default to full volume
-        float music = PlayerPrefs.GetFloat("MusicVolNorm", 1f);
-        float sfx = PlayerPrefs.GetFloat("SFXVolNorm", 1f);
-
-        // Assign to sliders
-        musicSlider.value = music;
-        sfxSlider.value = sfx;
-
-        // Apply immediately so mixer matches slider from the start
-        ApplyMusicVolume(music);
-        ApplySFXVolume(sfx);
-
-        // Add listeners
-        musicSlider.onValueChanged.AddListener(ApplyMusicVolume);
-        sfxSlider.onValueChanged.AddListener(ApplySFXVolume);
+        LoadSettings();
     }
 
-    private void ApplyMusicVolume(float value)
+    void Start()
     {
-        // Clamp between 0 and 1
-        value = Mathf.Clamp01(value);
+        masterSlider.onValueChanged.AddListener(SetMasterVolume);
+        masterMuteToggle.onValueChanged.AddListener(ToggleMasterMute);
 
-        float dB = (value <= 0f) ? -80f : Mathf.Log10(value) * 20f;
+        musicSlider.onValueChanged.AddListener(SetMusicVolume);
+        musicMuteToggle.onValueChanged.AddListener(ToggleMusicMute);
 
-        audioMixer.SetFloat("MusicVol", dB);
-        PlayerPrefs.SetFloat("MusicVolNorm", value);
-        Debug.Log($"[OptionsMenu] Music slider={value} ? dB={dB}");
+        sfxSlider.onValueChanged.AddListener(SetSFXVolume);
+        sfxMuteToggle.onValueChanged.AddListener(ToggleSFXMute);
     }
 
-    private void ApplySFXVolume(float value)
+    private void SetMasterVolume(float value)
     {
-        value = Mathf.Clamp01(value);
+        lastMaster = value;
+        if (!masterMuteToggle.isOn)
+            ApplyChannel("Master", value, false);
+        PlayerPrefs.SetFloat("MasterVol", value);
+        PlayerPrefs.Save();
+    }
 
-        float dB = (value <= 0f) ? -80f : Mathf.Log10(value) * 20f;
+    private void ToggleMasterMute(bool mute)
+    {
+        ApplyChannel("Master", lastMaster, mute);
+        PlayerPrefs.SetInt("MasterMute", mute ? 1 : 0);
+        PlayerPrefs.Save();
+    }
 
-        audioMixer.SetFloat("SFXVol", dB);
-        PlayerPrefs.SetFloat("SFXVolNorm", value);
-        Debug.Log($"[OptionsMenu] SFX slider={value} ? dB={dB}");
+    private void SetMusicVolume(float value)
+    {
+        lastMusic = value;
+        if (!musicMuteToggle.isOn)
+            ApplyChannel("Music", value, false);
+        PlayerPrefs.SetFloat("MusicVol", value);
+        PlayerPrefs.Save();
+    }
+
+    private void ToggleMusicMute(bool mute)
+    {
+        ApplyChannel("Music", lastMusic, mute);
+        PlayerPrefs.SetInt("MusicMute", mute ? 1 : 0);
+        PlayerPrefs.Save();
+    }
+
+    private void SetSFXVolume(float value)
+    {
+        lastSfx = value;
+        if (!sfxMuteToggle.isOn)
+            ApplyChannel("SFX", value, false);
+        PlayerPrefs.SetFloat("SFXVol", value);
+        PlayerPrefs.Save();
+    }
+
+    private void ToggleSFXMute(bool mute)
+    {
+        ApplyChannel("SFX", lastSfx, mute);
+        PlayerPrefs.SetInt("SFXMute", mute ? 1 : 0);
+        PlayerPrefs.Save();
+    }
+
+    private void ApplyChannel(string parameter, float value, bool mute)
+    {
+        if (mute)
+            audioMixer.SetFloat(parameter, -80f);
+        else
+            audioMixer.SetFloat(parameter, Mathf.Log10(Mathf.Max(value, 0.0001f)) * 20f);
+    }
+
+    private void LoadSettings()
+    {
+        lastMaster = PlayerPrefs.GetFloat("MasterVol", 1f);
+        masterSlider.value = lastMaster;
+        masterMuteToggle.isOn = PlayerPrefs.GetInt("MasterMute", 0) == 1;
+        ApplyChannel("Master", lastMaster, masterMuteToggle.isOn);
+
+        lastMusic = PlayerPrefs.GetFloat("MusicVol", 1f);
+        musicSlider.value = lastMusic;
+        musicMuteToggle.isOn = PlayerPrefs.GetInt("MusicMute", 0) == 1;
+        ApplyChannel("Music", lastMusic, musicMuteToggle.isOn);
+
+        lastSfx = PlayerPrefs.GetFloat("SFXVol", 1f);
+        sfxSlider.value = lastSfx;
+        sfxMuteToggle.isOn = PlayerPrefs.GetInt("SFXMute", 0) == 1;
+        ApplyChannel("SFX", lastSfx, sfxMuteToggle.isOn);
     }
 }

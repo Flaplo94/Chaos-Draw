@@ -27,16 +27,17 @@ public class FireTrail : MonoBehaviour, IAbilityBehavior
 
     private float patchLifeTimer;
     private float tickTimer;
+    private bool luckyWasDuplicated = false;
 
     public bool Initialize(Vector2 _, Rarity rarity)
     {
         rarityApplied = rarity;
         switch (rarity)
         {
-            case Rarity.Uncommon: duration *= 1.10f; radius *= 1.10f; break;
-            case Rarity.Rare: duration *= 1.25f; radius *= 1.25f; damagePerTick += 1; break;
-            case Rarity.Epic: duration *= 1.35f; radius *= 1.35f; damagePerTick += 2; break;
-            case Rarity.Legendary: duration *= 1.50f; radius *= 1.50f; damagePerTick += 3; break;
+            case Rarity.Uncommon: duration *= 1.10f; radius *= 1.10f; damagePerTick += 1; break;
+            case Rarity.Rare: duration *= 1.25f; radius *= 1.25f; damagePerTick += 2; break;
+            case Rarity.Epic: duration *= 1.35f; radius *= 1.35f; damagePerTick += 3; break;
+            case Rarity.Legendary: duration *= 1.50f; radius *= 1.50f; damagePerTick += 4; break;
         }
         return true;
     }
@@ -63,6 +64,22 @@ public class FireTrail : MonoBehaviour, IAbilityBehavior
 
             player = playerObj.transform;
             StartCoroutine(LeaveTrail());
+            if (!luckyWasDuplicated)
+            {
+                LuckyShotSystem.OnSpellCast(this, () =>
+                {
+                    var p2 = transform.position;
+                    if (LuckyShotSystem.TryConsumeSpawnOffset(out var off)) p2 += (Vector3)off;
+
+                    var dup = Instantiate(gameObject, p2, transform.rotation);
+                    var comp = dup.GetComponent<FireTrail>();
+                    if (comp != null)
+                    {
+                        comp.luckyWasDuplicated = true;
+                        comp.isController = true;
+                    }
+                });
+            }
         }
         else
         {

@@ -99,7 +99,6 @@ GameObject:
   - component: {fileID: 76683931486816045}
   - component: {fileID: 8842564766879278348}
   - component: {fileID: 3380281956299672159}
-  - component: {fileID: 2237808560128093634}
   - component: {fileID: 1918429773650605416}
   - component: {fileID: 8570292891657577899}
   - component: {fileID: 2630208393804298388}
@@ -258,6 +257,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 2
   flashOnLethalHit: 1
+  goldReward: 1
 --- !u!114 &8842564766879278348
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -287,22 +287,6 @@ MonoBehaviour:
   flashUpTime: 0.03
   flashHoldTime: 0.04
   flashDownTime: 0.1
---- !u!114 &2237808560128093634
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7502241114002446682}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e69a65c1c69b43a49ab42864c6954d94, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 2
-  separationRadius: 1.5
-  separationStrength: 2
-  isHealer: 0
 --- !u!114 &1918429773650605416
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -315,10 +299,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fbea5c31188093d4a9056a8f162e3cd1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  walkStateName: WalkBT
-  attackStateName: AttackBT
-  dieStateName: DieBT
   movingThreshold: 0.01
+  directionThreshold: 0.05
 --- !u!95 &8570292891657577899
 Animator:
   serializedVersion: 7

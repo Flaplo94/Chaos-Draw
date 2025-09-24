@@ -5,6 +5,10 @@ public class Shield : MonoBehaviour, IAbilityBehavior
     private static int activeShieldCount = 0; // count how many shields are active
     private int myIndex = 0;
 
+    // Lucky Shot: avoid re-trigger on the duplicate
+    private bool luckyWasDuplicated = false;
+    private Rarity myRarity = Rarity.Common;
+
     [Header("Base")]
     [SerializeField] private int baseShieldHealth = 1;
 
@@ -37,6 +41,8 @@ public class Shield : MonoBehaviour, IAbilityBehavior
 
     public bool Initialize(Vector2 _, Rarity rarity)
     {
+        myRarity = rarity;
+
         // Assign unique index for this shield
         myIndex = activeShieldCount++;
         currentHealth = baseShieldHealth;
@@ -61,7 +67,6 @@ public class Shield : MonoBehaviour, IAbilityBehavior
 
         if (followTarget == null)
         {
-            
             Destroy(gameObject);
             return;
         }
@@ -79,6 +84,25 @@ public class Shield : MonoBehaviour, IAbilityBehavior
         }
 
         foreach (var c in GetComponentsInChildren<Collider2D>()) c.enabled = false;
+
+        // Lucky Shot: spawn one more shield on the player (no offset)
+        if (!luckyWasDuplicated)
+        {
+            LuckyShotSystem.OnSpellCast(this, () =>
+            {
+                Vector3 p2 = followTarget != null ? followTarget.position + followOffset : transform.position;
+
+                var dup = Instantiate(gameObject, p2, transform.rotation);
+                var comp = dup.GetComponent<Shield>();
+                if (comp != null)
+                {
+                    comp.luckyWasDuplicated = true;            // do not re-trigger Lucky Shot
+                    comp.followTarget = this.followTarget;     // ensure it follows the same player
+                    comp.followOffset = this.followOffset;     // same placement
+                    comp.Initialize(Vector2.zero, myRarity);   // fresh index/health for proper stacking
+                }
+            });
+        }
     }
 
     void LateUpdate()
@@ -87,7 +111,6 @@ public class Shield : MonoBehaviour, IAbilityBehavior
         {
             transform.position = followTarget.position + followOffset;
             transform.rotation = followTarget.rotation;
-
             ApplyManualScale();
         }
     }
@@ -99,12 +122,8 @@ public class Shield : MonoBehaviour, IAbilityBehavior
         float baseDiameter = Mathf.Max(shieldSR.sprite.bounds.size.x, shieldSR.sprite.bounds.size.y);
         if (baseDiameter <= 0f) return;
 
-        // base scale from inspector radius
         float scale = (shieldRadius * 2f) / baseDiameter;
-
-        // extra scale per stacked shield
         scale *= (1f + stackSpacing * myIndex);
-
         transform.localScale = new Vector3(scale, scale, 1f);
     }
 

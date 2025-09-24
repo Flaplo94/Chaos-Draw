@@ -20,11 +20,10 @@ public class ArtifactSystem : MonoBehaviour
 
     void Start()
     {
-        // Apply already-owned artifacts at scene start (e.g., after load)
-        if (PlayerInventory.Instance != null)
+        if (PlayerInventory.Instance != null && PlayerArtifactManager.Instance != null)
         {
             foreach (var a in PlayerInventory.Instance.artifacts)
-                Apply(a);
+                PlayerArtifactManager.Instance.AddArtifact(a);
         }
     }
 
@@ -32,44 +31,19 @@ public class ArtifactSystem : MonoBehaviour
     {
         if (a == null || string.IsNullOrWhiteSpace(a.internalID)) return;
 
-        string id = Normalize(a.internalID);
-        if (applied.Contains(id)) return;
-        applied.Add(id);
+        // Optional duplicate guard (per-session), helps if something calls Apply twice:
+        string key = Normalize(a.internalID);
+        if (applied.Contains(key)) return;
+        applied.Add(key);
 
-        switch (id)
+        // Unified effect path lives here:
+        if (PlayerArtifactManager.Instance != null)
         {
-            // === Demo artifacts ===
-
-            case "charcoal":
-                if (PlayerBuffManager.Instance != null)
-                    PlayerBuffManager.Instance.AddRuntimeBonus(BuffData.BuffType.FireDamage, 0.40f); // +40%
-                Debug.Log("[Artifact] Charcoal applied: +40% Fire damage");
-                break;
-
-            case "gamerscap":
-                if (PlayerBuffManager.Instance != null)
-                {
-                    PlayerBuffManager.Instance.AddRuntimeBonus(BuffData.BuffType.Damage, 0.10f);       // +10% global dmg
-                    PlayerBuffManager.Instance.AddRuntimeBonus(BuffData.BuffType.Speed, 0.10f);        // +10% move speed
-                    PlayerBuffManager.Instance.AddRuntimeBonus(BuffData.BuffType.AttackSpeed, 0.10f);  // +10% attack speed
-                }
-                if (throwingRef != null)
-                {
-                    throwingRef.projectileSpeedMult *= 1.10f; // stadig lokalt for projektiler
-                }
-                Debug.Log("[Artifact] Gamer's Cap applied: +10% all stats");
-                break;
-
-            case "glasscannon":
-                if (healthRef != null) healthRef.ForceSetToOneHP();
-                if (PlayerBuffManager.Instance != null)
-                    PlayerBuffManager.Instance.AddRuntimeBonus(BuffData.BuffType.Damage, 3.0f); // +300%
-                Debug.Log("[Artifact] Glass Cannon applied: HP=1, +300% dmg");
-                break;
-
-            default:
-                Debug.Log("[ArtifactSystem] Unknown artifact id: '" + a.internalID + "' (no runtime effect)");
-                break;
+            PlayerArtifactManager.Instance.AddArtifact(a);
+        }
+        else
+        {
+            Debug.LogWarning("[ArtifactSystem] PlayerArtifactManager not found; cannot apply " + a.internalID);
         }
     }
 

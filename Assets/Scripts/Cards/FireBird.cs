@@ -18,6 +18,8 @@ public class FireBird : MonoBehaviour, IAbilityBehavior
     private int remainingPierces;
     private float lifeTimer;
 
+    private bool luckyWasDuplicated = false;
+
     // Track roots so multi-collider enemies don't get double-hit
     private readonly HashSet<Transform> hitRoots = new HashSet<Transform>();
 
@@ -41,6 +43,21 @@ public class FireBird : MonoBehaviour, IAbilityBehavior
 
         transform.localScale *= baseScale * scaleMul;
         return true;
+    }
+    private void Start() // ADD
+    {
+        if (!luckyWasDuplicated)
+        {
+            LuckyShotSystem.OnSpellCast(this, () =>
+            {
+                var p2 = transform.position;
+                if (LuckyShotSystem.TryConsumeSpawnOffset(out var off)) p2 += (Vector3)off;
+
+                var dup = Instantiate(gameObject, p2, transform.rotation);
+                var comp = dup.GetComponent<FireBird>();
+                if (comp != null) comp.luckyWasDuplicated = true;
+            });
+        }
     }
 
     private void Update()

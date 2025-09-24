@@ -310,9 +310,12 @@ MonoBehaviour:
   - {fileID: 7349428611817855051, guid: cb0ec4d2c8937bd4a8c2f1a52dfefc76, type: 3}
   spawnParentName: Props
   spawnPointNameContains: Prop Location
-  minSeparation: 1.25
+  defaultRadius: 0.6
+  minSeparationPadding: 0.1
   jitterRadius: 0.4
   maxAttemptsPerPoint: 10
+  avoidAcrossChunks: 1
+  drawGizmos: 0
 --- !u!1 &5296262073264392950
 GameObject:
   m_ObjectHideFlags: 0
