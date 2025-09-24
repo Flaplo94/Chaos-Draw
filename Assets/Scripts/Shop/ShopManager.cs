@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using ChaosDraw.SkillTree; // til NodeData og SkillTreeManager
 
 public class ShopManager : MonoBehaviour
 {
@@ -11,6 +12,10 @@ public class ShopManager : MonoBehaviour
     [Header("Data")]
     public ShopCatalog catalog;
     public ShopItem removeCardServiceItem;
+
+    [Header("Gating")]
+    [Tooltip("Denne skilltree-node skal være unlocked for at vise artifacts i shoppen.")]
+    public NodeData artifactUnlockNode;
 
     [Header("UI Root")]
     public GameObject windowGroup;     // ShopWindow root
@@ -22,6 +27,10 @@ public class ShopManager : MonoBehaviour
     public RectTransform[] artifactSlots = new RectTransform[3];
     public RectTransform[] buffSlots = new RectTransform[3];
     public RectTransform serviceSlot;
+
+    [Header("Labels")]
+    [Tooltip("(Valgfri) Label over artifact-kolonnen der skal skjules indtil unlocked.")]
+    public GameObject artifactLabel;
 
     [Header("Item UI")]
     public GameObject itemUIPrefab;
@@ -159,20 +168,29 @@ public class ShopManager : MonoBehaviour
     // ---------- intern UI opsætning ----------
     private void BuildSelectionUI()
     {
-        var allArts = catalog.items
-            .Where(i => i && i.itemType == ShopItemType.Artifact && i.artifactData);
-        var arts = allArts.OrderBy(_ => UnityEngine.Random.value).Take(3).ToList();
+        bool canShowArtifacts = HasArtifactsAccess();
+        SetArtifactsColumnActive(canShowArtifacts);
 
+        // Artifacts (kun hvis unlocked)
+        if (canShowArtifacts)
+        {
+            var allArts = catalog.items
+                .Where(i => i && i.itemType == ShopItemType.Artifact && i.artifactData);
+            var arts = allArts.OrderBy(_ => UnityEngine.Random.value).Take(3).ToList();
+
+            for (int i = 0; i < 3 && i < arts.Count && i < artifactSlots.Length; i++)
+                SpawnIntoSlot(arts[i], artifactSlots[i]);
+        }
+
+        // Buffs (uberørt)
         var allBuffs = catalog.items
             .Where(i => i && i.itemType == ShopItemType.Buff && i.buffData);
         var buffs = allBuffs.OrderBy(_ => UnityEngine.Random.value).Take(3).ToList();
 
-        for (int i = 0; i < 3 && i < arts.Count && i < artifactSlots.Length; i++)
-            SpawnIntoSlot(arts[i], artifactSlots[i]);
-
         for (int i = 0; i < 3 && i < buffs.Count && i < buffSlots.Length; i++)
             SpawnIntoSlot(buffs[i], buffSlots[i]);
 
+        // Service (uberørt)
         if (removeCardServiceItem != null && serviceSlot != null)
             SpawnIntoSlot(removeCardServiceItem, serviceSlot);
     }
@@ -219,12 +237,48 @@ public class ShopManager : MonoBehaviour
         return artsOk && buffsOk && serviceOk;
     }
 
-
     private void AutoFindAllSlots()
     {
         var slots = GetComponentsInChildren<RectTransform>();
         artifactSlots = slots.Where(s => s.name.Contains("Artifact")).ToArray();
         buffSlots = slots.Where(s => s.name.Contains("Buff")).ToArray();
         serviceSlot = slots.FirstOrDefault(s => s.name.Contains("Service"));
+    }
+
+    // ---------- Artifact gating helpers ----------
+    private bool HasArtifactsAccess()
+    {
+        // Mangler reference? => ingen artifacts
+        if (artifactUnlockNode == null) return false;
+
+        // 1) Brug den autoritative SkillTreeManager, hvis den findes i scenen
+        if (SkillTreeManager.Instance != null)
+            return SkillTreeManager.Instance.IsUnlocked(artifactUnlockNode.id);
+
+        // 2) Fallback: læs samme PlayerPrefs-payload som SkillTreeManager bruger ("nodeLevels")
+        // Format: "id=level|id=level|..."
+        string payload = PlayerPrefs.GetString("nodeLevels", "");
+        if (string.IsNullOrEmpty(payload)) return false;
+
+        var items = payload.Split('|');
+        for (int i = 0; i < items.Length; i++)
+        {
+            var pair = items[i].Split('=');
+            if (pair.Length == 2 && pair[0] == artifactUnlockNode.id && int.TryParse(pair[1], out int lv))
+                return lv > 0;
+        }
+        return false;
+    }
+
+    private void SetArtifactsColumnActive(bool active)
+    {
+        // toggle label
+        if (artifactLabel != null) artifactLabel.SetActive(active);
+
+        // toggle kolonne/slots
+        if (artifactSlots == null) return;
+        for (int i = 0; i < artifactSlots.Length; i++)
+            if (artifactSlots[i] != null)
+                artifactSlots[i].gameObject.SetActive(active);
     }
 }
