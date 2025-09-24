@@ -57,6 +57,9 @@ public class Bullet : MonoBehaviour
             enemy.TakeBasicAttackDamage(result.amount, result.element); // lifesteal for basic attacks
             StopAndVanish(); // <- vigtig: stop bev�gelse + skjul straks
             if (logDamage) LogDamage("Enemy", enemy.gameObject.name, result);
+
+            // Yeet Cube: count basic-attack hit (enemy)
+            YeetCubeSystem.ReportPlayerHit(enemy.transform.root, isBoss: false);
             return;
         }
 
@@ -69,6 +72,10 @@ public class Bullet : MonoBehaviour
             var result = DamageCalculator.ComputeFinalDamage(baseDamage, DamageElement.Physical);
             boss.TakeDamage(result.amount, result.element);
             StopAndVanish(); // <- vigtig: stop bev�gelse + skjul straks
+
+            // Yeet Cube: count basic-attack hit (boss)
+            YeetCubeSystem.ReportPlayerHit(boss.transform.root, isBoss: true);
+
             if (logDamage) LogDamage("Boss", boss.gameObject.name, result);
             return;
         }

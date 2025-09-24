@@ -735,7 +735,7 @@ public class CardHandUI : MonoBehaviour
     public void UseCardFromSelection(int index)
     {
         TryUseCardIfPossible(index); // <- was calling TryUseCard(...) before
-
+    }
     // ------------ NY Hj�lper: v�lg start-deck ud fra valgt element ------------
     private void OverrideStartingDeckFromSelectedElement()
     {
