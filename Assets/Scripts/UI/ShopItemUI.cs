@@ -179,8 +179,8 @@ public class ShopItemUI : MonoBehaviour
         if (item.itemType == ShopItemType.Artifact && item.artifactData != null)
             return inv.Has(item.artifactData);
 
-        if (item.itemType == ShopItemType.Buff && item.buffData != null)
-            return inv.Has(item.buffData);
+        if (item.itemType == ShopItemType.Item && item.itemData != null)
+            return inv.Has(item.itemData);
 
         return false; // Services kan ikke "ejes"
     }

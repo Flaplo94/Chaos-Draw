@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public enum ShopItemType { Artifact, Buff, Service }
+public enum ShopItemType { Artifact, Item, Service }
 public enum ShopServiceType { None, RemoveCard }
 
 [CreateAssetMenu(fileName = "New Shop Item", menuName = "ChaosDraw/Shop/Item")]
@@ -9,9 +9,9 @@ public class ShopItem : ScriptableObject
     [Header("Type")]
     public ShopItemType itemType = ShopItemType.Artifact;
 
-    [Header("Data (for Artifact/Buff)")]
+    [Header("Data (for Artifact/Item)")]
     public ArtifactData artifactData;
-    public BuffData buffData;
+    public ItemData itemData;
 
     [Header("Service (for Service type)")]
     public ShopServiceType serviceType = ShopServiceType.None;
@@ -34,9 +34,9 @@ public class ShopItem : ScriptableObject
                 // Brug ALTID ikon fra ArtifactData
                 return artifactData ? artifactData.icon : null;
 
-            case ShopItemType.Buff:
+            case ShopItemType.Item:
                 // Brug ALTID ikon fra BuffData
-                return buffData ? buffData.icon : null;
+                return itemData ? itemData.icon : null;
 
             case ShopItemType.Service:
                 // Kun vis ikon hvis serviceIcon er sat; ellers ingen ikon
@@ -55,9 +55,9 @@ public class ShopItem : ScriptableObject
                 if (artifactData)
                     return string.IsNullOrEmpty(artifactData.artifactName) ? artifactData.name : artifactData.artifactName;
                 break;
-            case ShopItemType.Buff:
-                if (buffData)
-                    return string.IsNullOrEmpty(buffData.buffName) ? buffData.name : buffData.buffName;
+            case ShopItemType.Item:
+                if (itemData)
+                    return string.IsNullOrEmpty(itemData.itemName) ? itemData.name : itemData.itemName;
                 break;
             case ShopItemType.Service:
                 return serviceType.ToString();
@@ -73,8 +73,8 @@ public class ShopItem : ScriptableObject
         {
             case ShopItemType.Artifact:
                 return artifactData ? (artifactData.description ?? "") : "";
-            case ShopItemType.Buff:
-                return buffData ? (buffData.description ?? "") : "";
+            case ShopItemType.Item:
+                return itemData ? (itemData.description ?? "") : "";
             case ShopItemType.Service:
                 return "Remove a card from your deck.";
         }
@@ -85,8 +85,8 @@ public class ShopItem : ScriptableObject
     private void OnValidate()
     {
         // hold data felter eksklusive
-        if (itemType == ShopItemType.Artifact) buffData = null;
-        if (itemType == ShopItemType.Buff) artifactData = null;
+        if (itemType == ShopItemType.Artifact) itemData = null;
+        if (itemType == ShopItemType.Item) artifactData = null;
     }
 #endif
 }

@@ -31,7 +31,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1.6160886, y: 0.22190613, z: 0.024003629}
-  m_LocalScale: {x: 0.2, y: 0.3, z: 0}
+  m_LocalScale: {x: 0.25, y: 0.36, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -168,13 +168,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   baseDamage: 10
   lifetime: 4
-  manaOnHit: 5
   hitSfx: {fileID: 8300000, guid: aa74dd2837f0da14ca6b917c8a8d6565, type: 3}
   audioSource: {fileID: 1767576040511546225}
-  logDamage: 1
   debugBaseDamage: 0
   debugGlobalMult: 1
   debugElementMult: 1
+  logDamage: 1
 --- !u!82 &1767576040511546225
 AudioSource:
   m_ObjectHideFlags: 0

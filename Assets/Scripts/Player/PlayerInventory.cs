@@ -7,7 +7,7 @@ public class PlayerInventory : MonoBehaviour
     public static PlayerInventory Instance;
 
     public readonly HashSet<ArtifactData> artifacts = new();
-    public readonly HashSet<BuffData> buffs = new();
+    public readonly HashSet<ItemData> items = new();
 
     /// <summary>Fyrer hver gang hele inventory ændrer sig.</summary>
     public event Action OnInventoryChanged;
@@ -16,7 +16,7 @@ public class PlayerInventory : MonoBehaviour
     public event Action<ArtifactData> OnArtifactAdded;
 
     /// <summary>Fyrer specifikt når en buff tilføjes.</summary>
-    public event Action<BuffData> OnBuffAdded;
+    public event Action<ItemData> OnItemAdded;
 
     void Awake()
     {
@@ -30,7 +30,7 @@ public class PlayerInventory : MonoBehaviour
 
     // --- Queries ---
     public bool Has(ArtifactData a) => a != null && artifacts.Contains(a);
-    public bool Has(BuffData b) => b != null && buffs.Contains(b);
+    public bool Has(ItemData b) => b != null && items.Contains(b);
 
     // --- Mutations ---
     public bool AddArtifact(ArtifactData a)
@@ -49,21 +49,23 @@ public class PlayerInventory : MonoBehaviour
         return added;
     }
 
-    public bool AddBuff(BuffData b)
+    public bool AddItem(ItemData b)
     {
         if (b == null) return false;
 
-        bool added = buffs.Add(b);
+        bool added = items.Add(b);
 
         OnInventoryChanged?.Invoke();
-        OnBuffAdded?.Invoke(b);
+        OnItemAdded?.Invoke(b);
 
-        // Hvis buffs også skal have effekter direkte, kan du evt. kalde PlayerBuffManager her
+        // Apply item effects immediately (mirror artifacts)
+        if (added && PlayerItemManager.Instance != null)
+            PlayerItemManager.Instance.AddItem(b);
 
         return added;
     }
 
     // --- BAKKOMPAT ---
     public void Add(ArtifactData a) { AddArtifact(a); }
-    public void Add(BuffData bOld) { AddBuff(bOld); }
+    public void Add(ItemData iOld) { AddItem(iOld); }
 }

@@ -21,13 +21,13 @@ public class TopBarUI : MonoBehaviour
         if (PlayerInventory.Instance != null)
         {
             PlayerInventory.Instance.OnArtifactAdded += AddArtifactIcon;
-            PlayerInventory.Instance.OnBuffAdded += AddBuffIcon;
+            PlayerInventory.Instance.OnItemAdded += AddItemIcon;
 
             // initial icons
             foreach (var art in PlayerInventory.Instance.artifacts)
                 AddArtifactIcon(art);
-            foreach (var buff in PlayerInventory.Instance.buffs)
-                AddBuffIcon(buff);
+            foreach (var buff in PlayerInventory.Instance.items)
+                AddItemIcon(buff);
         }
 
         // Wallet events
@@ -50,7 +50,7 @@ public class TopBarUI : MonoBehaviour
         if (PlayerInventory.Instance != null)
         {
             PlayerInventory.Instance.OnArtifactAdded -= AddArtifactIcon;
-            PlayerInventory.Instance.OnBuffAdded -= AddBuffIcon;
+            PlayerInventory.Instance.OnItemAdded -= AddItemIcon;
         }
 
         if (Wallet.Instance != null)
@@ -68,12 +68,12 @@ public class TopBarUI : MonoBehaviour
         if (img) img.sprite = artifact.icon;
     }
 
-    private void AddBuffIcon(BuffData buff)
+    private void AddItemIcon(ItemData item)
     {
-        if (!buff || !iconPrefab || !buffsContent) return;
+        if (!item || !iconPrefab || !buffsContent) return;
         GameObject go = Instantiate(iconPrefab, buffsContent);
         var img = go.GetComponent<Image>();
-        if (img) img.sprite = buff.icon;
+        if (img) img.sprite = item.icon;
     }
 
     private void UpdateGold(int amount)

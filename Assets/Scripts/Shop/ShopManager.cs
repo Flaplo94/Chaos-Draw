@@ -25,7 +25,7 @@ public class ShopManager : MonoBehaviour
 
     [Header("Slots (manual)")]
     public RectTransform[] artifactSlots = new RectTransform[3];
-    public RectTransform[] buffSlots = new RectTransform[3];
+    public RectTransform[] itemSlots = new RectTransform[3];
     public RectTransform serviceSlot;
 
     [Header("Labels")]
@@ -90,7 +90,7 @@ public class ShopManager : MonoBehaviour
         if (!ValidateSlots() && autoFindSlots) AutoFindAllSlots();
         if (!ValidateSlots())
         {
-            Debug.LogError("[Shop] Parents not assigned (Artifacts/Buffs/Service).");
+            Debug.LogError("[Shop] Parents not assigned (Artifacts/Items/Service).");
             return;
         }
 
@@ -148,11 +148,11 @@ public class ShopManager : MonoBehaviour
                 }
                 break;
 
-            case ShopItemType.Buff:
-                if (item.buffData && PlayerInventory.Instance != null)
+            case ShopItemType.Item:
+                if (item.itemData && PlayerInventory.Instance != null)
                 {
-                    PlayerInventory.Instance.AddBuff(item.buffData);
-                    Debug.Log($"[Shop] Bought Buff: {item.buffData.buffName}");
+                    PlayerInventory.Instance.AddItem(item.itemData);
+                    Debug.Log($"[Shop] Bought Item: {item.itemData.itemName}");
                 }
                 break;
 
@@ -184,11 +184,11 @@ public class ShopManager : MonoBehaviour
 
         // Buffs (uberørt)
         var allBuffs = catalog.items
-            .Where(i => i && i.itemType == ShopItemType.Buff && i.buffData);
+            .Where(i => i && i.itemType == ShopItemType.Item && i.itemData);
         var buffs = allBuffs.OrderBy(_ => UnityEngine.Random.value).Take(3).ToList();
 
-        for (int i = 0; i < 3 && i < buffs.Count && i < buffSlots.Length; i++)
-            SpawnIntoSlot(buffs[i], buffSlots[i]);
+        for (int i = 0; i < 3 && i < buffs.Count && i < itemSlots.Length; i++)
+            SpawnIntoSlot(buffs[i], itemSlots[i]);
 
         // Service (uberørt)
         if (removeCardServiceItem != null && serviceSlot != null)
@@ -227,9 +227,9 @@ public class ShopManager : MonoBehaviour
                       artifactSlots[0] && artifactSlots[1] && artifactSlots[2];
 
         // Buff slots er valgfrie: enten alle sat, eller ingen
-        bool buffsOk = buffSlots == null || buffSlots.Length == 0 ||
-                       (buffSlots.Length >= 3 &&
-                        buffSlots[0] && buffSlots[1] && buffSlots[2]);
+        bool buffsOk = itemSlots == null || itemSlots.Length == 0 ||
+                       (itemSlots.Length >= 3 &&
+                        itemSlots[0] && itemSlots[1] && itemSlots[2]);
 
         // Service stadig påkrævet
         bool serviceOk = serviceSlot != null;
@@ -241,7 +241,7 @@ public class ShopManager : MonoBehaviour
     {
         var slots = GetComponentsInChildren<RectTransform>();
         artifactSlots = slots.Where(s => s.name.Contains("Artifact")).ToArray();
-        buffSlots = slots.Where(s => s.name.Contains("Buff")).ToArray();
+        itemSlots = slots.Where(s => s.name.Contains("Item")).ToArray();
         serviceSlot = slots.FirstOrDefault(s => s.name.Contains("Service"));
     }
 

@@ -1869,7 +1869,7 @@ MonoBehaviour:
   minSpawnDistance: 10
   spawnRadius: 15
   enemyPrefabs:
-  - {fileID: 5679082729230498780, guid: c25de75b8a76d504aa0ed013b1634e16, type: 3}
+  - {fileID: 7502241114002446682, guid: 04e8239b255693a4e8254ab6869f0802, type: 3}
   enemySpawnWeights:
   - 1
   - 1
@@ -3036,7 +3036,7 @@ GameObject:
   - component: {fileID: 338123680}
   - component: {fileID: 338123681}
   m_Layer: 5
-  m_Name: BuffsGroup
+  m_Name: ItemsGroup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4037,7 +4037,7 @@ GameObject:
   - component: {fileID: 529874716}
   - component: {fileID: 529874715}
   m_Layer: 5
-  m_Name: BuffsConent
+  m_Name: ItemsConent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5405,7 +5405,7 @@ GameObject:
   - component: {fileID: 690562186}
   - component: {fileID: 690562187}
   m_Layer: 5
-  m_Name: BuffUIManager
+  m_Name: ItemUIManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5439,11 +5439,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 690562185}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0bfd083770a1fec4bad9d5b2d4eaf3d5, type: 3}
+  m_Script: {fileID: 11500000, guid: 24089f24c6d10cc40ad90e254816a047, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buffIconPrefab: {fileID: 2685396640628256496, guid: 2a4fad0591152ab46926adbbb5c8746c, type: 3}
-  buffBarParent: {fileID: 0}
+  itemIconPrefab: {fileID: 2685396640628256496, guid: 2a4fad0591152ab46926adbbb5c8746c, type: 3}
+  itemBarParent: {fileID: 529874714}
 --- !u!1 &729018021
 GameObject:
   m_ObjectHideFlags: 0
@@ -6926,7 +6926,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.707, y: -0.068, z: 0}
-  m_LocalScale: {x: 5, y: 5, z: 1}
+  m_LocalScale: {x: 8, y: 8, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2091777804}
@@ -7273,7 +7273,7 @@ MonoBehaviour:
   m_text: X
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ec2d85607e6c39e44986bd51ac5b198e, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: -5878321975634312132, guid: ec2d85607e6c39e44986bd51ac5b198e, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -7338,7 +7338,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 1
+  m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!222 &843644500
@@ -8224,7 +8224,7 @@ GameObject:
   - component: {fileID: 1070110129}
   - component: {fileID: 1070110131}
   m_Layer: 5
-  m_Name: BuffsLabel
+  m_Name: ItemsLabel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8269,9 +8269,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Buffs
-
-'
+  m_text: Items
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ec2d85607e6c39e44986bd51ac5b198e, type: 2}
   m_sharedMaterial: {fileID: -5878321975634312132, guid: ec2d85607e6c39e44986bd51ac5b198e, type: 2}
@@ -9428,7 +9426,7 @@ MonoBehaviour:
   m_text: Shop
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ec2d85607e6c39e44986bd51ac5b198e, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: -5878321975634312132, guid: ec2d85607e6c39e44986bd51ac5b198e, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -9493,7 +9491,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 1
+  m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!222 &1244754713
@@ -9996,7 +9994,7 @@ MonoBehaviour:
   m_text: Artifacts
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ec2d85607e6c39e44986bd51ac5b198e, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: -5878321975634312132, guid: ec2d85607e6c39e44986bd51ac5b198e, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -10061,7 +10059,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 1
+  m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!222 &1291132357
@@ -10829,6 +10827,8 @@ MonoBehaviour:
   scalingDamageMult: 1
   maxHpMult: 1
   shieldRegenMult: 1
+  armorReductionPct: 0
+  hpRegenPer5Sec: 0
   manaRegenMult: 1
   manaCostReductionMult: 1
   attackSpeedMult: 1
@@ -10867,6 +10867,9 @@ MonoBehaviour:
   startingDeckList:
   - abilityName: Healing
     count: 1
+  fireStartAbilityName: Fireball
+  lightningStartAbilityName: LightningBall
+  startCopies: 4
   rewardUI: {fileID: 118609471}
   rewardCardsParent: {fileID: 118609472}
   rewardCardPrefab: {fileID: 4060490641503446627, guid: 3cdad6f5b5173fd44b42f5fdc87dc86a, type: 3}
@@ -14672,6 +14675,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   catalog: {fileID: 11400000, guid: 069fd8845aad13c45ad2aacabb8ef6b4, type: 2}
   removeCardServiceItem: {fileID: 11400000, guid: 0e9a7c57906f5f4459ae39829924a121, type: 2}
+  artifactUnlockNode: {fileID: 0}
   windowGroup: {fileID: 656648256}
   dimmer: {fileID: 1801731987}
   dimmerGO: {fileID: 0}
@@ -14680,8 +14684,9 @@ MonoBehaviour:
   - {fileID: 248852190}
   - {fileID: 1727792292}
   - {fileID: 1021514103}
-  buffSlots: []
+  itemSlots: []
   serviceSlot: {fileID: 874602709}
+  artifactLabel: {fileID: 0}
   itemUIPrefab: {fileID: 1067690742603721929, guid: b371c7a6c079b2045a5d020e118af439, type: 3}
   pauseOnOpen: 1
   debugToggleKey: 111
