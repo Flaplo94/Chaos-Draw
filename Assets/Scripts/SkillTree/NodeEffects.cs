@@ -11,31 +11,53 @@ public static class NodeEffects
     {
         if (!node) return;
 
-        // 1) Flat stats (uændret fra din version)
+        // 1) Flat stats
         if (SkillTreeManager.Instance != null && SkillTreeManager.Instance.IsFlatStat(node))
         {
             ApplyFlatStat(node.effectKey, gainedValue);
             return;
         }
 
-        // 2) Special cases (herunder Burn fra Fire-unlock noden)
-        // Brug node.id fra dit asset (fx "fire_unlock")
+        // 2) Special cases (by node.id)
         if (!string.IsNullOrEmpty(node.id))
         {
             switch (node.id)
             {
                 case "fire_unlock":
-                    // Aktiver global regel: Fire-spells påfører Burn-DoT (25% af endeligt Fire-hit)
-                    BurnRules.FireAddsBurn = true;
-                    BurnRules.PercentOfHit = 0.25f;
-                    Debug.Log("[NodeEffects] Fire unlock: Fire spells now apply Burn DoT (25%).");
-                    return;
+                    {
+                        // Global regel: Fire-spells påfører Burn-DoT (25% af endeligt Fire-hit)
+                        BurnRules.FireAddsBurn = true;
+                        BurnRules.PercentOfHit = 0.25f;
+                        Debug.Log("[NodeEffects] Fire unlock: Fire spells now apply Burn DoT (25%).");
+                        return;
+                    }
 
-                    // (Plads til andre special-noder fremover)
+                case "fire_aoepulseunlock":     // Fire Rose
+                    {
+                        if (newLevel >= 1)
+                        {
+                            CardUnlocks.UnlockAbilityByName("AOE Pulse");
+                            Debug.Log("[NodeEffects] Unlocked card: AOE Pulse (via Fire Rose).");
+                        }
+                        return;
+                    }
+
+                case "lightning_godspeedunlock":   // Lightning node: Godspeed
+                case "lightning_godspeed_unlock":
+                    {
+                        if (newLevel >= 1)
+                        {
+                            CardUnlocks.UnlockAbilityByName("Godspeed");
+                            Debug.Log("[NodeEffects] Unlocked card: Godspeed (via Lightning node).");
+                        }
+                        return;
+                    }
+
+                    // (Plads til flere special-noder)
             }
         }
 
-        Debug.Log($"[NodeEffects] No special handler for node '{node.id}'.");
+        Debug.Log("[NodeEffects] No special handler for node '" + node.id + "'.");
     }
 
     private static void ApplyFlatStat(string effectKey, float value)
@@ -61,16 +83,15 @@ public static class NodeEffects
             case "flat_hp_regen": pbm.AddRuntimeBonus(BuffData.BuffType.HPRegen, value); break;
 
             default:
-                Debug.LogWarning($"[NodeEffects] Unknown effectKey '{effectKey}'.");
+                Debug.LogWarning("[NodeEffects] Unknown effectKey '" + effectKey + "'.");
                 break;
         }
 
-        // Gem totals, så de er tilbage efter scene-/session-skift
         pbm.SavePersistentTotals();
     }
 
     /// <summary>
-    /// Sørger for at en PlayerBuffManager eksisterer i scenen (samme adfærd som din version).
+    /// Sørger for at en PlayerBuffManager eksisterer i scenen.
     /// </summary>
     private static void EnsurePlayerBuffManager()
     {

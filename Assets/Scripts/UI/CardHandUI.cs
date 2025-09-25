@@ -4,7 +4,7 @@ using TMPro;
 using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using System.Collections;
-using System.Linq; //  NY: til reward-filter
+using System.Linq; //  til reward-filter
 
 public class CardHandUI : MonoBehaviour
 {
@@ -26,13 +26,12 @@ public class CardHandUI : MonoBehaviour
     public Sprite otherBack;
     public Sprite emptyBack;
 
-    public Sprite emptySlotSprite; // sprite som vises i h�nden, n�r slot er tomt
+    public Sprite emptySlotSprite;
 
     [Header("Card Pool")]
     [SerializeField] private List<StartingCard> startingDeckList = new();
     private List<Ability> allAbilities = new();
 
-    // --- NYT: Start-spells pr. deck (kan s�ttes i Inspector) ---
     [Header("Start Spells pr. Deck")]
     [SerializeField] private string fireStartAbilityName = "Fireball";
     [SerializeField] private string lightningStartAbilityName = "LightningBall";
@@ -82,10 +81,9 @@ public class CardHandUI : MonoBehaviour
 
     public System.Action OnHandChanged;
 
-    [SerializeField] private RectTransform selectionHighlight; // assign an Image in inspector
+    [SerializeField] private RectTransform selectionHighlight;
     private int selectedIndex = -1;
 
-    // Deckless toggle
     [HideInInspector] public bool decklessEnabled = false;
 
     [System.Serializable]
@@ -107,9 +105,10 @@ public class CardHandUI : MonoBehaviour
 
         hand = new Ability[cardSlots.Length];
 
+        // Load all abilities from Resources
         allAbilities = new List<Ability>(Resources.LoadAll<Ability>(""));
 
-        // --- NY: Overskriv start-listen ud fra valgt element (Fire/Lightning) ---
+        // Overskriv start-listen ud fra valgt element (Fire/Lightning)
         OverrideStartingDeckFromSelectedElement();
 
         CreateStartingDeck();
@@ -133,26 +132,10 @@ public class CardHandUI : MonoBehaviour
         card4Action = playerMap.FindAction("Card 4");
         reshuffleAction = playerMap.FindAction("Reshuffle");
 
-        if (card1Action != null)
-        {
-            card1Action.performed += _ => TryUseCardIfPossible(0);
-            card1Action.Enable();
-        }
-        if (card2Action != null)
-        {
-            card2Action.performed += _ => TryUseCardIfPossible(1);
-            card2Action.Enable();
-        }
-        if (card3Action != null)
-        {
-            card3Action.performed += _ => TryUseCardIfPossible(2);
-            card3Action.Enable();
-        }
-        if (card4Action != null)
-        {
-            card4Action.performed += _ => TryUseCardIfPossible(3);
-            card4Action.Enable();
-        }
+        if (card1Action != null) { card1Action.performed += _ => TryUseCardIfPossible(0); card1Action.Enable(); }
+        if (card2Action != null) { card2Action.performed += _ => TryUseCardIfPossible(1); card2Action.Enable(); }
+        if (card3Action != null) { card3Action.performed += _ => TryUseCardIfPossible(2); card3Action.Enable(); }
+        if (card4Action != null) { card4Action.performed += _ => TryUseCardIfPossible(3); card4Action.Enable(); }
         if (reshuffleAction != null)
         {
             reshuffleAction.performed += _ =>
@@ -163,11 +146,10 @@ public class CardHandUI : MonoBehaviour
             };
             reshuffleAction.Enable();
         }
-        else if (reshuffleAction == null)
+        else
         {
             Debug.LogWarning("Reshuffle action not found in InputActionAsset2.");
         }
-
     }
 
     private void OnDisable()
@@ -193,12 +175,9 @@ public class CardHandUI : MonoBehaviour
             var ability = (index >= 0 && hand != null && index < hand.Length) ? hand[index] : null;
             if (ability != null && PlayerMana.Instance != null && PlayerMana.Instance.GetMana() < ability.manaCost)
             {
-                // Optional: on-screen popup
                 var uiMsg = Object.FindFirstObjectByType<UIMessage>();
                 if (uiMsg != null) uiMsg.ShowMessage("Not enough mana!");
-
-                // OR: flash the slot, play a sound, etc.
-                return; // don�t try to cast
+                return;
             }
 
             TryUseCard(index);
@@ -264,7 +243,7 @@ public class CardHandUI : MonoBehaviour
         NotifyHandChanged();
     }
 
-    private IEnumerator ShuffleWithDelay(List<Ability> list)
+    private System.Collections.IEnumerator ShuffleWithDelay(List<Ability> list)
     {
         shuffleActive = true;
         StartShuffleSfx();
@@ -428,10 +407,10 @@ public class CardHandUI : MonoBehaviour
         rewardUI.SetActive(true);
         ClearRewardCardsParent();
 
-        // --- NY: filtr�r pool efter valgt element f�r vi v�lger 3 ---
-        var element = SessionData.SelectedElement; // MagicType.Fire / MagicType.Lightning
+        // Filter by element AND unlocks (important)
+        var element = SessionData.SelectedElement;
         List<Ability> pool = allAbilities
-            .Where(a => a != null && a.magicType == element)
+            .Where(a => a != null && a.magicType == element && CardUnlocks.IsAbilityUnlocked(a))
             .ToList();
 
         Shuffle(pool);
@@ -459,7 +438,7 @@ public class CardHandUI : MonoBehaviour
         if (shuffleActive) StartShuffleSfx();
 
         rewardUI.SetActive(false);
-        skipButton.gameObject.SetActive(false);
+        if (skipButton != null) skipButton.gameObject.SetActive(false);
         ClearRewardCardsParent();
         PauseManager.ReleasePause();
     }
@@ -468,33 +447,27 @@ public class CardHandUI : MonoBehaviour
     {
         if (ability == null) return;
 
-        // Player now owns the card either way
         deck.Add(ability);
 
-        // If there�s room in hand, place it directly into the first empty slot
         int empty = FindFirstEmptyHandSlot();
         if (empty != -1)
         {
             hand[empty] = ability;
             if (cardSlots != null && empty < cardSlots.Length && cardSlots[empty] != null)
                 cardSlots[empty].Show(ability);
-            
-            NotifyHandChanged();
 
-            // Piles didn�t change, but keep UI consistent
+            NotifyHandChanged();
             UpdateDiscardText();
             UpdateDeckText();
             UpdatePileUIs();
             return;
         }
 
-        // Otherwise: old behavior � add to draw pile
         drawPile.Add(ability);
         UpdateDeckText();
         UpdatePileUIs();
         NotifyHandChanged();
     }
-
 
     private Rarity RollRarity()
     {
@@ -557,21 +530,18 @@ public class CardHandUI : MonoBehaviour
 
         if (decklessEnabled)
         {
-            // Deckless: Every wave grant exactly 2 random cards, no reward UI
             AddRandomCardsToDeck(2);
             return;
         }
 
-        // Original behavior: every 2 waves show reward UI :contentReference[oaicite:7]{index=7}
         if (waveCount % 2 == 0)
             ShowRewardUI();
     }
-    // Call when Deckless is enabled (clears deck/draw/discard/hand and UI)
+
     public void EnableDecklessRuntime()
     {
         decklessEnabled = true;
 
-        // Clear deck piles
         deck.Clear();
         drawPile.Clear();
         discardPile.Clear();
@@ -579,13 +549,11 @@ public class CardHandUI : MonoBehaviour
         UpdateDeckText();
         UpdatePileUIs();
 
-        // Clear hand (same pattern you use in ManualShuffle) :contentReference[oaicite:0]{index=0}
         ClearHandSlots();
 
         Debug.Log("[Deckless] CardHandUI cleared.");
     }
 
-    // Clear the visible hand & internal array
     private void ClearHandSlots()
     {
         if (hand == null || cardSlots == null) return;
@@ -598,12 +566,10 @@ public class CardHandUI : MonoBehaviour
         NotifyHandChanged();
     }
 
-    // Add N random cards to the deck (instanced like your reward UI does) :contentReference[oaicite:1]{index=1}
     public void AddRandomCardsToDeck(int count)
     {
         if (allAbilities == null || allAbilities.Count == 0) return;
 
-        // Lazy init hand array if needed (in case Deckless enabled before Start finished)
         if (hand == null && handParent != null)
         {
             cardSlots = handParent.GetComponentsInChildren<CardSlotUI>(true);
@@ -615,24 +581,23 @@ public class CardHandUI : MonoBehaviour
             int idx = Random.Range(0, allAbilities.Count);
             Ability abilityCopy = Instantiate(allAbilities[idx]);
             abilityCopy.name = allAbilities[idx].name;
-            abilityCopy.rarity = RollRarity(); // reuse your rarity logic :contentReference[oaicite:2]{index=2}
+            abilityCopy.rarity = RollRarity();
 
             deck.Add(abilityCopy);
             drawPile.Add(abilityCopy);
         }
 
-        // Shuffle draw pile then auto-fill empty hand slots
-        Shuffle(drawPile);                       // reuse your shuffle method :contentReference[oaicite:3]{index=3}
-        UpdateDeckText();                        // keeps counters correct :contentReference[oaicite:4]{index=4}
-        UpdatePileUIs();                         // updates pile sprites/counts :contentReference[oaicite:5]{index=5}
+        Shuffle(drawPile);
+        UpdateDeckText();
+        UpdatePileUIs();
 
-        // Draw into empty hand slots so the new cards are playable
         if (hand != null)
         {
             for (int i = 0; i < hand.Length; i++)
-                if (hand[i] == null) DrawCard(i); // reuse your existing draw flow :contentReference[oaicite:6]{index=6}
+                if (hand[i] == null) DrawCard(i);
         }
     }
+
     private int FindFirstEmptyHandSlot()
     {
         if (hand == null) return -1;
@@ -640,6 +605,7 @@ public class CardHandUI : MonoBehaviour
             if (hand[i] == null) return i;
         return -1;
     }
+
     private void StartShuffleSfx()
     {
         if (!rewardOpen && audioSource != null && shuffleClip != null && !audioSource.isPlaying)
@@ -659,7 +625,6 @@ public class CardHandUI : MonoBehaviour
         }
     }
 
-    // Selection API used by CardSelectionController
     public void SetSelectedIndex(int index)
     {
         selectedIndex = index;
@@ -703,7 +668,6 @@ public class CardHandUI : MonoBehaviour
     {
         if (selectionHighlight == null || cardSlots == null) return;
 
-        // Hide when invalid
         if (selectedIndex < 0 || selectedIndex >= cardSlots.Length || cardSlots[selectedIndex] == null)
         {
             selectionHighlight.gameObject.SetActive(false);
@@ -713,17 +677,14 @@ public class CardHandUI : MonoBehaviour
         var slotRect = cardSlots[selectedIndex].GetComponent<RectTransform>();
         selectionHighlight.gameObject.SetActive(true);
 
-        // Move into the slot and stretch
         selectionHighlight.SetParent(slotRect, false);
         selectionHighlight.anchorMin = new Vector2(0, 0);
         selectionHighlight.anchorMax = new Vector2(1, 1);
         selectionHighlight.offsetMin = Vector2.zero;
         selectionHighlight.offsetMax = Vector2.zero;
 
-        // Put BEHIND the card art
         selectionHighlight.SetSiblingIndex(0);
 
-        // Never block clicks
         var img = selectionHighlight.GetComponent<UnityEngine.UI.Image>();
         if (img) img.raycastTarget = false;
     }
@@ -732,14 +693,15 @@ public class CardHandUI : MonoBehaviour
     {
         if (OnHandChanged != null) OnHandChanged.Invoke();
     }
+
     public void UseCardFromSelection(int index)
     {
-        TryUseCardIfPossible(index); // <- was calling TryUseCard(...) before
+        TryUseCardIfPossible(index);
     }
-    // ------------ NY Hj�lper: v�lg start-deck ud fra valgt element ------------
+
     private void OverrideStartingDeckFromSelectedElement()
     {
-        var element = SessionData.SelectedElement; // sat i ChooseDeckMenu ved Start
+        var element = SessionData.SelectedElement;
 
         string startName = (element == MagicType.Lightning)
             ? lightningStartAbilityName

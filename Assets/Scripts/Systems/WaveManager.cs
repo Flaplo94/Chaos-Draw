@@ -55,6 +55,9 @@ public class WaveManager : MonoBehaviour
 
     private int bossesKilled = 0; // track bosses killed
 
+    // --- ADD: guard mod dobbelt EndRun ---
+    private bool runEnded = false;
+
     public int CurrentWave => currentWave;
     public int BossesKilled => bossesKilled;
 
@@ -69,7 +72,22 @@ public class WaveManager : MonoBehaviour
         if (musicManager != null && normalMusic != null)
             musicManager.PlayMusic(normalMusic);
 
+        // --- ADD: Lyt på spiller-død og afslut run ---
+        if (PlayerHealth.Instance != null)
+            PlayerHealth.Instance.OnDeath += HandlePlayerDeath;
+
         StartCoroutine(NextWave());
+    }
+
+    void OnDestroy()
+    {
+        if (PlayerHealth.Instance != null)
+            PlayerHealth.Instance.OnDeath -= HandlePlayerDeath;
+    }
+
+    private void HandlePlayerDeath()
+    {
+        EndRun();
     }
 
     void Update()
@@ -83,8 +101,6 @@ public class WaveManager : MonoBehaviour
 
             if (bossHealthBarUI.activeSelf)
                 bossHealthBarUI.SetActive(false);
-
-            
 
             if (cardHandUI != null) cardHandUI.OnWaveCompleted();
 
@@ -272,6 +288,17 @@ public class WaveManager : MonoBehaviour
 
     public void EndRun()
     {
+        if (runEnded) return; // --- ADD guard ---
+        runEnded = true;
+
+        // --- ADD: Første død = lås skill tree op (persist) ---
+        if (MetaProgressionManager.Instance != null && !MetaProgressionManager.Instance.skillTreeUnlocked)
+        {
+            MetaProgressionManager.Instance.skillTreeUnlocked = true;
+            MetaProgressionManager.Instance.Save();
+            Debug.Log("[Meta] Skill Tree unlocked on first death.");
+        }
+
         int wavesCleared = currentWave;
         int reward = 0;
 

@@ -118,6 +118,17 @@ public class MetaProgressionManager : MonoBehaviour
         Debug.Log("[Meta] Deck of Fate unlocked");
     }
 
+    // ADD: bekvemmelighed til dev-tool mm.
+    public void UnlockSkillTreePermanent()
+    {
+        if (!skillTreeUnlocked)
+        {
+            skillTreeUnlocked = true;
+            Save();
+            Debug.Log("[Meta] Skill Tree permanently unlocked");
+        }
+    }
+
     public void Save() => SaveData();
 
     // ----- Run hooks (call from boss/player code) -----

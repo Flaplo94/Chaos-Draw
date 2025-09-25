@@ -14,73 +14,110 @@ public class SkillTreeToggle : MonoBehaviour
     [SerializeField] private Button skillTreeButton;
     [SerializeField] private GameObject skillTreeLockIcon;
 
+    [Header("Debug")]
+    [SerializeField] private bool verboseLogs = false;
+
+    // --- Unity lifecycle ---
+    private void Awake()
+    {
+        // Sikre at vi ikke får dobbelt-registreringer, hvis man binder i Inspector
+        if (skillTreeButton != null)
+        {
+            skillTreeButton.onClick.RemoveListener(OpenSkillTree);
+            skillTreeButton.onClick.AddListener(OpenSkillTree);
+        }
+    }
+
     private void Start()
     {
-        LogState("[Start] before enforce");
-        // Kendt starttilstand
+        // Start-tilstand: Main menu synlig, skill tree skjult
         SetGroup(mainMenuGroup, true);
         SetGroup(skillTreeGroup, false);
-        LogState("[Start] after enforce");
+
+        RefreshLocks();     // læs gemt meta og opdatér ikon/knap
+        if (verboseLogs) LogState("[Start]");
     }
 
+    private void OnEnable()
+    {
+        // Når hovedmenuen vises igen efter et run: opdatér låse UI
+        RefreshLocks();
+        if (verboseLogs) LogState("[OnEnable]");
+    }
+
+    // --- Public UI handlers ---
     public void OpenSkillTree()
     {
-        Debug.Log("[SkillTreeToggle] OpenSkillTree() called");
+        bool unlocked = MetaProgressionManager.Instance != null && MetaProgressionManager.Instance.skillTreeUnlocked;
+        if (!unlocked)
+        {
+            if (verboseLogs) Debug.Log("[SkillTreeToggle] Skill Tree er låst – ignorer klik.");
+            return;
+        }
+
+        if (verboseLogs) Debug.Log("[SkillTreeToggle] Åbner Skill Tree");
         SetGroup(mainMenuGroup, false);
-        SetGroup(skillTreeGroup, true);           // enable nu
-        StartCoroutine(ForceShowNextFrame());     // og igen næste frame (overstyr andre scripts)
+        SetGroup(skillTreeGroup, true);
+
+        // Ekstra sikkerhed mod andre scripts der evt. toggler i samme frame
+        StartCoroutine(ForceShowNextFrame());
     }
 
-    public void CloseSkillTree()
+    public void CloseSkillTreeAndShowMenu()
     {
-        Debug.Log("[SkillTreeToggle] CloseSkillTree() called");
+        if (verboseLogs) Debug.Log("[SkillTreeToggle] Lukker Skill Tree  tilbage til menu");
         SetGroup(skillTreeGroup, false);
         SetGroup(mainMenuGroup, true);
-        LogState("[Close] after");
+    }
+
+    // --- Core: sync låse UI med gemt meta ---
+    public void RefreshLocks()
+    {
+        bool hasMeta = MetaProgressionManager.Instance != null;
+
+        bool skillTreeUnlocked = hasMeta && MetaProgressionManager.Instance.skillTreeUnlocked;
+        if (skillTreeButton != null) skillTreeButton.interactable = skillTreeUnlocked;
+        if (skillTreeLockIcon != null) skillTreeLockIcon.SetActive(!skillTreeUnlocked);
+
+        // Valgfrit: Deck of Fate samme mønster (ændrer ikke andre systemer)
+        bool deckUnlocked = hasMeta && MetaProgressionManager.Instance.DeckOfFateUnlocked;
+        if (DeckOfFateButton != null) DeckOfFateButton.interactable = deckUnlocked;
+        if (DeckOfFateLockIcon != null) DeckOfFateLockIcon.SetActive(!deckUnlocked);
+
+        if (verboseLogs)
+        {
+            Debug.Log($"[SkillTreeToggle] RefreshLocks()  skillTreeUnlocked={skillTreeUnlocked}, deckUnlocked={deckUnlocked}");
+        }
+    }
+
+    // --- Helpers ---
+    private void SetGroup(GameObject go, bool show)
+    {
+        if (!go) return;
+        go.SetActive(show);
     }
 
     private IEnumerator ForceShowNextFrame()
     {
-        yield return null; // vent én frame, så andres Start() er kørt
-        RepairCanvasAndGroup(skillTreeGroup);
-        RepairCanvasAndGroup(mainMenuGroup);
-        // Sikr endelig tilstand:
+        // I tilfælde af at andre scripts sætter canvases i OnEnable/Start samme frame
+        yield return null; // 1 frame
         SetGroup(mainMenuGroup, false);
         SetGroup(skillTreeGroup, true);
-        LogState("[ForceShowNextFrame] enforced");
-    }
-
-    private void SetGroup(GameObject go, bool state)
-    {
-        if (!go) { Debug.LogWarning("[SkillTreeToggle] SetGroup(null)"); return; }
-        if (go.activeSelf != state) go.SetActive(state);
-    }
-
-    private void RepairCanvasAndGroup(GameObject group)
-    {
-        if (!group) return;
-        // Hvis nogen har sat en Canvas på gruppen der blev disabled:
-        var canvas = group.GetComponentInParent<Canvas>();
-        if (canvas && !canvas.enabled) canvas.enabled = true;
-
-        // CanvasGroup der er blevet gennemsigtig?
-        var cg = group.GetComponent<CanvasGroup>();
-        if (cg)
-        {
-            cg.alpha = 1f;
-            cg.interactable = true;
-            cg.blocksRaycasts = true;
-        }
+        if (verboseLogs) LogState("[ForceShowNextFrame]");
     }
 
     private void LogState(string where)
     {
         string PathOf(GameObject go)
         {
-            if (!go) return "null";
+            if (!go) return "(null)";
             var t = go.transform;
             string p = t.name;
-            while (t.parent) { t = t.parent; p = t.name + "/" + p; }
+            while (t.parent)
+            {
+                t = t.parent;
+                p = t.name + "/" + p;
+            }
             return p + $" (id:{go.GetInstanceID()})";
         }
 
