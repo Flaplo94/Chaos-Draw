@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: lightning
   deckName: Lightning Deck
-  tagline: "Aggressive\t\nBurst Damages"
+  tagline: "Aggressive\t\nControl"
   icon: {fileID: 5207423212948609555, guid: 38d625419d607f140af7ecb5e4a99294, type: 3}
   banner: {fileID: 5207423212948609555, guid: 38d625419d607f140af7ecb5e4a99294, type: 3}
   uiTint: {r: 1, g: 1, b: 1, a: 1}
