@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 22ee6802786c8ea4687f57e8e1665ca2, type: 3}
-  m_Name: Flame Affinity
+  m_Name: FilpFlops of Fury
   m_EditorClassIdentifier: 
-  itemName: Flame Affinity
-  description: Fire abilities deal +15% more damage.
-  icon: {fileID: 1009049853055315898, guid: 2482764a12c439449aa6eb0512c99db4, type: 3}
-  rarity: 3
-  buffType: 1
-  value: 0.15
+  itemName: FilpFlops of Fury
+  description: Movement speed is increased by 10%.
+  icon: {fileID: 3928878328890046419, guid: 589a3164777c71149942855e90dc0c20, type: 3}
+  rarity: 1
+  buffType: 7
+  value: 0.1
   internalID: 

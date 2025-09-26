@@ -60,22 +60,29 @@ public class PlayerItemManager : MonoBehaviour
         switch (id)
         {
             // --- Examples (edit/extend these to your real item IDs) ---
-            case "smallcharm_damage":
-                buffs.AddRuntimeBonus(BuffData.BuffType.Damage, 0.05f); // +5% damage
+            case "fuel":
+                PlayerBuffManager.Instance.AddRuntimeBonus(BuffData.BuffType.BurnDamage, 0.10f);
                 break;
 
-            case "smallcharm_gold":
-                buffs.AddRuntimeBonus(BuffData.BuffType.GoldGain, 0.10f); // +10% gold
+            case "matchbox":
+                PlayerBuffManager.Instance.AddRuntimeBonus(BuffData.BuffType.FireDamage, 0.10f);
                 break;
 
-            case "tinyboots":
-                buffs.AddRuntimeBonus(BuffData.BuffType.Speed, 0.05f); // +5% move speed
+            case "tazer":
+                PlayerBuffManager.Instance.AddRuntimeBonus(BuffData.BuffType.ThunderDamage, 0.10f);
                 break;
 
-            case "steadyhands":
-                buffs.AddRuntimeBonus(BuffData.BuffType.AttackSpeed, 0.05f); // +5% atk speed
+            case "filpflopsoffury":
+                PlayerBuffManager.Instance.AddRuntimeBonus(BuffData.BuffType.Speed, 0.10f);
                 break;
 
+            case "goldnugget":
+                PlayerBuffManager.Instance.AddRuntimeBonus(BuffData.BuffType.GoldGain, 0.10f);
+                break;
+
+            case "fortifiedcloak":
+                PlayerBuffManager.Instance.AddRuntimeBonus(BuffData.BuffType.MaxHP, 0.15f);
+                break;
             // Add more hard-coded items here if they need special handling...
             // -------------------------------------------------------------
 

@@ -15,7 +15,7 @@ MonoBehaviour:
   itemName: Vampiric Touch
   description: Heal 5% of all damage you deal.
   icon: {fileID: -8471532484696407613, guid: e61aa38a75e5ef945a272fd58671e40a, type: 3}
-  rarity: 3
+  rarity: 4
   buffType: 13
   value: 0.05
   internalID: 

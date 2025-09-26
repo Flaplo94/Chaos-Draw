@@ -10,10 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 14c410c306645854f92164f5ca6c4167, type: 3}
-  m_Name: SI_FlameAffinity
+  m_Name: SI_Gold Nugget
   m_EditorClassIdentifier: 
   itemType: 1
   artifactData: {fileID: 0}
-  buffData: {fileID: 11400000, guid: 7261a166e8bac5540b97b7d4c1bec5a2, type: 2}
+  itemData: {fileID: 11400000, guid: 69180fa8b92efc34fa583d91bef6d409, type: 2}
   serviceType: 0
+  serviceIcon: {fileID: 0}
   basePrice: 50
+  titleOverride: 
+  descriptionOverride: 
+  iconOverride: {fileID: 0}

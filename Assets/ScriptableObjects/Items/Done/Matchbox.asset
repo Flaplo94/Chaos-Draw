@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 22ee6802786c8ea4687f57e8e1665ca2, type: 3}
-  m_Name: Thunder Channeling
+  m_Name: Matchbox
   m_EditorClassIdentifier: 
-  itemName: Thunder Channeling
-  description: Lightning abilities deal +15% more damage.
-  icon: {fileID: -2278440341621924931, guid: 80f368d4ce06dec4b8d3484812446fe4, type: 3}
+  itemName: Matchbox
+  description: Fire abilities deal +10% more damage.
+  icon: {fileID: 1009049853055315898, guid: 2482764a12c439449aa6eb0512c99db4, type: 3}
   rarity: 3
-  buffType: 2
-  value: 0.15
+  buffType: 1
+  value: 0.1
   internalID: 

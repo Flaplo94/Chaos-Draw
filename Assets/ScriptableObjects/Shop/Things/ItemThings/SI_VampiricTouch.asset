@@ -14,6 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemType: 1
   artifactData: {fileID: 0}
-  buffData: {fileID: 11400000, guid: af479eda99c2b664d86f7698e7159377, type: 2}
+  itemData: {fileID: 11400000, guid: eb100fdfb7f658446b18515de95961ae, type: 2}
   serviceType: 0
+  serviceIcon: {fileID: 0}
   basePrice: 50
+  titleOverride: 
+  descriptionOverride: 
+  iconOverride: {fileID: 0}

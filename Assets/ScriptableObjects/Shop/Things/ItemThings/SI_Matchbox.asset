@@ -10,10 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 14c410c306645854f92164f5ca6c4167, type: 3}
-  m_Name: SI_SwiftFeet
+  m_Name: SI_Matchbox
   m_EditorClassIdentifier: 
   itemType: 1
   artifactData: {fileID: 0}
-  buffData: {fileID: 11400000, guid: 24b2402c1ffdf99438548145cbc5770f, type: 2}
+  itemData: {fileID: 11400000, guid: 2ca6ff1e4f6ae214797da00dcf8b1f08, type: 2}
   serviceType: 0
+  serviceIcon: {fileID: 0}
   basePrice: 50
+  titleOverride: 
+  descriptionOverride: 
+  iconOverride: {fileID: 0}

@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 22ee6802786c8ea4687f57e8e1665ca2, type: 3}
-  m_Name: Gold Magnet
+  m_Name: Tazer
   m_EditorClassIdentifier: 
-  itemName: Gold Magnet
-  description: Enemies drop 20% more gold.
-  icon: {fileID: -6350371357635554078, guid: 37c2be2adfacf5c4ca5b7b58cf46a075, type: 3}
+  itemName: Tazer
+  description: Lightning abilities deal +10% more damage.
+  icon: {fileID: -2278440341621924931, guid: 80f368d4ce06dec4b8d3484812446fe4, type: 3}
   rarity: 3
-  buffType: 15
-  value: 0.2
+  buffType: 2
+  value: 0.1
   internalID: 
