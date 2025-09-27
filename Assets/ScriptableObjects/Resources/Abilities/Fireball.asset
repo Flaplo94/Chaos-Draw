@@ -16,7 +16,7 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: c297a4a481e9e8849a066f44b2121b22, type: 3}
   effectPrefab: {fileID: 4804991577932546782, guid: e683a791c96afe847a2b82a7f6b6e1e9, type: 3}
   spawnAtMousePosition: 0
-  damage: 5
+  damage: 50
   manaCost: 15
   description: Launch a blazing fireball that explodes on impact, dealing heavy damage
     in a small radius.

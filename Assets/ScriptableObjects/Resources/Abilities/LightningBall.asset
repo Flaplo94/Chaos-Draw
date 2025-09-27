@@ -16,10 +16,9 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: 811b9bc85c8c8dc4aacbd576f541e3a2, type: 3}
   effectPrefab: {fileID: 4804991577932546782, guid: 32054acbc325aa4489fb441bd976a866, type: 3}
   spawnAtMousePosition: 0
-  damage: 10
+  damage: 5
   manaCost: 20
-  description: Summon a crackling orb that floats for 5s, zapping all nearby enemies
-    for 10 DPS
+  description: 'Play ball with your very own lightningball. '
   rarity: 0
   magicType: 1
   previewMode: 1

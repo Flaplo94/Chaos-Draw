@@ -16,7 +16,7 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: ba6b6bf8f9d98cb49a78bd396f6138a7, type: 3}
   effectPrefab: {fileID: 4804991577932546782, guid: 9019518a972eb32498dabb87b5a33b0c, type: 3}
   spawnAtMousePosition: 0
-  damage: 5
+  damage: 20
   manaCost: 10
   description: Summon a fiery phoenix that soars forward, dealing 10 DPS per enemy
     and piercing up to 1 additional target for the same damage.

@@ -16,7 +16,7 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: d283d5f1750c2c843a441148cd965d0c, type: 3}
   effectPrefab: {fileID: 4804991577932546782, guid: c565b68d628f8594cbcfa5a6ef25b890, type: 3}
   spawnAtMousePosition: 0
-  damage: 10
+  damage: 50
   manaCost: 25
   description: Release a fiery shockwave that deals 10 DPS to all enemies in a smallradius.
   rarity: 0

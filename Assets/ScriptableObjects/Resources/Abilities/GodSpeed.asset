@@ -16,10 +16,10 @@ MonoBehaviour:
   icon: {fileID: -8419024768148562069, guid: 9224b4ebc875b3a4ebf5b856ae7ec93d, type: 3}
   effectPrefab: {fileID: 4804991577932546782, guid: 8bc3f8327a435c842a89e756c90fcd79, type: 3}
   spawnAtMousePosition: 0
-  damage: 8
+  damage: 5
   manaCost: 20
   description: Empower yourself with lightning for 5s, moving faster and zapping
-    nearby enemies for up to 8 DPS per enemy
+    nearby enemies.
   rarity: 0
   magicType: 1
   previewMode: 2
