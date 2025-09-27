@@ -16,9 +16,7 @@ public class DeckDefinition : ScriptableObject
 
     [Header("Unlock")]
     public bool unlockedByDefault = false;
+
+    [Header("Starting Cards (preview only)")]
+    public List<CardData> startingCardsPreview = new List<CardData>();
 }
-
-    
-
-
-

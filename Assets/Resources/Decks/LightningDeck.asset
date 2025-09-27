@@ -19,3 +19,8 @@ MonoBehaviour:
   banner: {fileID: 5207423212948609555, guid: 38d625419d607f140af7ecb5e4a99294, type: 3}
   uiTint: {r: 1, g: 1, b: 1, a: 1}
   unlockedByDefault: 1
+  startingCardsPreview:
+  - {fileID: 11400000, guid: 0d2ccd96ce8c0a64491c8e60e38ec02d, type: 2}
+  - {fileID: 11400000, guid: 0d2ccd96ce8c0a64491c8e60e38ec02d, type: 2}
+  - {fileID: 11400000, guid: 0d2ccd96ce8c0a64491c8e60e38ec02d, type: 2}
+  - {fileID: 11400000, guid: 0d2ccd96ce8c0a64491c8e60e38ec02d, type: 2}

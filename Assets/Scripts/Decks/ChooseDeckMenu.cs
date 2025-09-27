@@ -1,25 +1,36 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using ChaosDraw.SkillTree;
 
 public class ChooseDeckMenu : MonoBehaviour
 {
     [Header("Parents")]
-    [SerializeField] private Transform deckGrid;          // DeckGrid
+    [SerializeField] private Transform deckGrid;
 
     [Header("Detail Root")]
-    [SerializeField] private GameObject detailPanelRoot;  //  drag DetailPanel her
+    [SerializeField] private GameObject detailPanelRoot;
     [SerializeField] private Image banner;
     [SerializeField] private TMP_Text deckName;
-    [SerializeField] private TMP_Text tagline;            //  drag din "Taglines" TMP her
+    [SerializeField] private TMP_Text tagline;
     [SerializeField] private Button startButton;
     [SerializeField] private string gameSceneName = "GameScene";
 
+    [Header("Starting Cards UI (i DetailPanel)")]
+    [SerializeField] private TMP_Text startingTitle;
+    [SerializeField] private Transform startingGridParent;
+    [SerializeField] private GameObject miniCardPrefab;
 
+    [Header("Healing gate (valgfri)")]
+    [SerializeField] private bool includeHealingWhenUnlocked = true;
+    [SerializeField] private NodeData healingNode;          // NodeData (id bruges)
+    [SerializeField] private ScriptableObject healingCard;  // ScriptableObject for Healing
 
     private DeckCardUI[] cards;
     private int selectedIndex = -1;
+    private readonly List<GameObject> spawnedMini = new List<GameObject>();
 
     void OnEnable()
     {
@@ -31,13 +42,13 @@ public class ChooseDeckMenu : MonoBehaviour
             c.SetSelected(false);
         }
 
-        // Ingen default selection
         selectedIndex = -1;
 
         if (detailPanelRoot) detailPanelRoot.SetActive(false);
         if (banner) banner.sprite = null;
         if (deckName) deckName.text = "";
         if (tagline) tagline.text = "";
+        if (startingTitle) startingTitle.text = "Starting Cards";
 
         if (startButton)
         {
@@ -46,6 +57,8 @@ public class ChooseDeckMenu : MonoBehaviour
             startButton.interactable = false;
             startButton.gameObject.SetActive(false);
         }
+
+        ClearStartingGrid();
     }
 
     private void OnCardSelected(DeckCardUI card)
@@ -71,11 +84,73 @@ public class ChooseDeckMenu : MonoBehaviour
         if (deckName) deckName.text = d ? d.deckName : "";
         if (tagline) tagline.text = d ? d.tagline : "";
 
+        BuildStartingCardsPreview(d);
+
         if (startButton)
         {
             startButton.gameObject.SetActive(true);
             startButton.interactable = cards[selectedIndex].IsUnlocked;
         }
+    }
+
+    private void BuildStartingCardsPreview(DeckDefinition d)
+    {
+        ClearStartingGrid();
+        if (!d || startingGridParent == null || miniCardPrefab == null) return;
+
+        // 1) Kopier preview-listen
+        var list = (d.startingCardsPreview != null)
+            ? new List<ScriptableObject>(d.startingCardsPreview)
+            : new List<ScriptableObject>();
+
+        // 2) Tilføj Healing hvis unlocked
+        if (includeHealingWhenUnlocked && healingNode != null && healingCard != null)
+        {
+            if (SkillTreeManager.Instance != null && SkillTreeManager.Instance.IsUnlocked(healingNode.id))
+            {
+                list.Add(healingCard);
+            }
+        }
+
+        // 3) Gruper efter SO og tæl antal (så vi kan vise xN)
+        var counts = new Dictionary<ScriptableObject, int>();
+        for (int i = 0; i < list.Count; i++)
+        {
+            var so = list[i];
+            if (so == null) continue;
+            if (!counts.ContainsKey(so)) counts[so] = 0;
+            counts[so]++;
+        }
+
+        // 4) Instantiér én mini pr. unik SO og sæt quantity
+        foreach (var kvp in counts)
+        {
+            var so = kvp.Key;
+            var qty = kvp.Value;
+
+            var go = Object.Instantiate(miniCardPrefab, startingGridParent);
+            spawnedMini.Add(go);
+
+            var ui = go.GetComponent<CardMiniPreviewUI>();
+            if (ui != null)
+            {
+                ui.SetObject(so, d.icon);
+                ui.SetQuantity(qty);
+            }
+        }
+
+        bool any = counts.Count > 0;
+        if (startingTitle != null) startingTitle.gameObject.SetActive(any);
+        startingGridParent.gameObject.SetActive(any);
+    }
+
+    private void ClearStartingGrid()
+    {
+        for (int i = 0; i < spawnedMini.Count; i++)
+        {
+            if (spawnedMini[i] != null) Destroy(spawnedMini[i]);
+        }
+        spawnedMini.Clear();
     }
 
     private void StartSelected()
@@ -85,12 +160,8 @@ public class ChooseDeckMenu : MonoBehaviour
         if (!d) return;
 
         SessionData.SelectedDeck = d.id;
-        // map deck-id -> element (tilføj bare flere cases når du får flere decks)
         SessionData.SelectedElement = (d.id == "lightning") ? MagicType.Lightning : MagicType.Fire;
 
-        // ... og så loader du scenen som du allerede gør:
         SceneManager.LoadScene(gameSceneName, LoadSceneMode.Single);
-
     }
-
 }
