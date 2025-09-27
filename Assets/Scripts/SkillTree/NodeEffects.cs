@@ -4,15 +4,14 @@ using ChaosDraw.SkillTree;
 public static class NodeEffects
 {
     /// <summary>
-    /// Kaldes når en node levels op (for unlock-noder også ved 1. level).
-    /// newLevel = nodeens nye level efter level-up.
-    /// gainedValue = den konkrete værdi (flat stat) man har opnået ved dette level-up (hvis relevant).
+    /// Kaldes når en node levels op. newLevel = nodeens nye level efter level-up.
+    /// gainedValue = flat stat værdi for dette level-up (hvis relevant).
     /// </summary>
     public static void ApplyOnLeveled(NodeData node, int newLevel, float gainedValue)
     {
         if (!node) return;
 
-        // 1) Flat stats -> via effectKey / valuePerLevel
+        // 1) Flat stats
         if (SkillTreeManager.Instance != null && SkillTreeManager.Instance.IsFlatStat(node))
         {
             ApplyFlatStat(node.effectKey, gainedValue);
@@ -27,41 +26,18 @@ public static class NodeEffects
             return;
         }
 
-        if (newLevel <= 0)
-        {
-            Debug.Log("[NodeEffects] Node '" + node.id + "' har newLevel <= 0 – ingen effekt.");
-            return;
-        }
+        if (newLevel <= 0) return;
 
         switch (node.id)
         {
-            // Eksempler der allerede fandtes i dit projekt
+            // -------- Fire --------
             case "fire_unlock":
                 {
-                    BurnRules.FireAddsBurn = true;
-                    BurnRules.PercentOfHit = 0.25f;
-                    Debug.Log("[NodeEffects] Fire unlock: Fire spells now apply Burn DoT (25%).");
-                    return;
-                }
-
-            case "fire_aoepulseunlock":
-                {
-                    if (newLevel >= 1)
-                    {
-                        CardUnlocks.UnlockAbilityByName("AOE Pulse");
-                        Debug.Log("[NodeEffects] Unlocked card: AOE Pulse (via Fire node).");
-                    }
-                    return;
-                }
-
-            case "lightning_godspeedunlock":
-            case "lightning_godspeed_unlock":
-                {
-                    if (newLevel >= 1)
-                    {
-                        CardUnlocks.UnlockAbilityByName("Godspeed");
-                        Debug.Log("[NodeEffects] Unlocked card: Godspeed (via Lightning node).");
-                    }
+                    // Brug din gamle, fungerende persist-mechanik
+                    BurnRules.EnableFireBurn(0.25f);
+                    pbm.AddRuntimeBonus(BuffData.BuffType.BurnDamage, 0.25f);
+                    pbm.SavePersistentTotals();
+                    Debug.Log("[NodeEffects] Fire unlock: Burn DoT aktiveret (25%).");
                     return;
                 }
 
@@ -69,31 +45,74 @@ public static class NodeEffects
                 {
                     pbm.AddRuntimeBonus(BuffData.BuffType.FireDamage, 0.25f);
                     pbm.SavePersistentTotals();
-                    Debug.Log("[NodeEffects] Fire +25% damage anvendt (mult +0.25).");
+                    Debug.Log("[NodeEffects] +25% Fire damage.");
                     return;
                 }
 
+            case "fire_aoepulseunlock":
+            case "fire_aoe_pulse_unlock":
+            case "aoe_pulse_unlock":
+                {
+                    if (newLevel >= 1)
+                    {
+                        CardUnlocks.UnlockAbilityByName("AOE Pulse");
+                        Debug.Log("[NodeEffects] Unlocked: AOE Pulse.");
+                    }
+                    return;
+                }
+
+            // -------- Lightning --------
             case "lightning_25dmg":
                 {
                     pbm.AddRuntimeBonus(BuffData.BuffType.ThunderDamage, 0.25f);
                     pbm.SavePersistentTotals();
-                    Debug.Log("[NodeEffects] Lightning +25% damage anvendt (Thunder mult +0.25).");
+                    Debug.Log("[NodeEffects] +25% Lightning damage.");
                     return;
                 }
 
-            // ===== NY: Card Reroll (opgraderbar, men ikke "flat stat") =====
+            case "lightning_godspeedunlock":
+            case "lightning_godspeed_unlock":
+            case "godspeed_unlock":
+                {
+                    if (newLevel >= 1)
+                    {
+                        CardUnlocks.UnlockAbilityByName("Godspeed");
+                        Debug.Log("[NodeEffects] Unlocked: Godspeed.");
+                    }
+                    return;
+                }
+
+            case "lightning_unlock": // din stun-node (Storm Pact)
+            case "lightning_staticcharge":
+            case "lightning_stun_unlock":
+            case "stun_unlock":
+            case "lightningstun":
+                {
+                    PlayerPrefs.SetInt("lightning_stun_unlocked", 1);
+                    PlayerPrefs.Save();
+                    Debug.Log("[NodeEffects] Lightning stun unlocked (flag set).");
+                    return;
+                }
+
+            // -------- Reroll (din tilføjelse) --------
             case "card_reroll":
                 {
-                    // Kapacitet styres per run. Når level ændres, gensæt kapacitet for dette run.
+                    // Persistér level, så run-UI/logic kan hente det.
+                    PlayerPrefs.SetInt("card_reroll_level", Mathf.Max(0, newLevel));
+                    PlayerPrefs.Save();
+
+                    // Hvis du har en metode i MetaProgressionManager til at sætte capacity direkte,
+                    // så kald den her (ellers er PlayerPrefs-nøglen nok):
                     var meta = MetaProgressionManager.Instance;
                     if (meta != null)
                     {
-                        meta.StartNewRun(); // re-init ifm. testen; ved faktisk run gør du også dette ved run-start
-                        Debug.Log("[NodeEffects] Card Reroll level set to " + newLevel + " (capacity per run = " + newLevel + ").");
+                        // Hvis du har noget ala: meta.SetCardRerollCapacity(newLevel); så brug den.
+                        // Ellers lader vi PlayerPrefs være kilden.
+                        Debug.Log("[NodeEffects] Card Reroll level = " + newLevel + " (gemt).");
                     }
                     else
                     {
-                        Debug.LogWarning("[NodeEffects] MetaProgressionManager mangler; kan ikke init reroll capacity.");
+                        Debug.LogWarning("[NodeEffects] MetaProgressionManager ikke fundet; Reroll-level er gemt i PlayerPrefs.");
                     }
                     return;
                 }
@@ -110,7 +129,7 @@ public static class NodeEffects
         var pbm = PlayerBuffManager.Instance;
         if (!pbm)
         {
-            Debug.LogWarning("[NodeEffects] PlayerBuffManager.Instance not available even after bootstrap");
+            Debug.LogWarning("[NodeEffects] PlayerBuffManager.Instance not available after bootstrap");
             return;
         }
 
@@ -137,7 +156,7 @@ public static class NodeEffects
     {
         if (PlayerBuffManager.Instance != null) return;
 
-        var existing = Object.FindFirstObjectByType<PlayerBuffManager>();
+        var existing = Object.FindObjectOfType<PlayerBuffManager>();
         if (existing != null) return;
 
         var go = new GameObject("PlayerBuffManager(Auto)");

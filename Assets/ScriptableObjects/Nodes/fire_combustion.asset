@@ -14,8 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: fire_combustion
   displayName: Combustion
-  description: 'Enemies have 25% chance to deal explosive area damage when killed
-    by fire. '
+  description: COMING SOON
   nodeType: 1
   icon: {fileID: -1045133410153605164, guid: 18459a9f05f930f45be03425c2020476, type: 3}
   frame: {fileID: 6829908600747033567, guid: 276833240eadf5e4f8b8696b529f5ae0, type: 3}

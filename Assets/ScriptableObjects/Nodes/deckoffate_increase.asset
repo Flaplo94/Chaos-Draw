@@ -14,8 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: deckoffate_increase
   displayName: RNGesus
-  description: Draw 2 Cards of Fate,, pick 1. Because bad choices are more fun when
-    you have options.
+  description: COMING SOON
   nodeType: 0
   icon: {fileID: -570535711028372819, guid: 3ecf9bc7f38cf1a4d8c8bf0d92866c0e, type: 3}
   frame: {fileID: 6829908600747033567, guid: 276833240eadf5e4f8b8696b529f5ae0, type: 3}

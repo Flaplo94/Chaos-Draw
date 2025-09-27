@@ -2,26 +2,42 @@ using UnityEngine;
 
 public static class BurnRules
 {
-    public static bool FireAddsBurn = false;
-    public static float PercentOfHit = 0.25f;
+    private const string K_FIRE_APPLIES_BURN = "ChaosDraw_FireAppliesBurn";
+    private const string K_BURN_PERCENT = "ChaosDraw_BurnPercentOfHit";
+
+    public static bool FireAddsBurn { get; private set; } = false;
+    public static float PercentOfHit { get; private set; } = 0.25f;
+
+    // Auto-load ved første brug efter domain reload
+    static BurnRules()
+    {
+        FireAddsBurn = PlayerPrefs.GetInt(K_FIRE_APPLIES_BURN, 0) == 1;
+        PercentOfHit = PlayerPrefs.GetFloat(K_BURN_PERCENT, 0.25f);
+    }
+
+    public static void EnableFireBurn(float percentOfHit)
+    {
+        FireAddsBurn = true;
+        PercentOfHit = Mathf.Max(0f, percentOfHit);
+
+        PlayerPrefs.SetInt(K_FIRE_APPLIES_BURN, FireAddsBurn ? 1 : 0);
+        PlayerPrefs.SetFloat(K_BURN_PERCENT, PercentOfHit);
+        PlayerPrefs.Save();
+    }
 
     /// <summary>
-    /// Kald denne efter at du har påført et Fire-hit.
-    /// 'target' må være child-collider; vi finder selv roden.
+    /// Kald denne efter et endeligt Fire-hit. 'target' kan være child—vi finder roden.
     /// </summary>
     public static void TryApplyBurn(Transform target, int fireDamage)
     {
         if (!FireAddsBurn || fireDamage <= 0 || target == null) return;
 
-        // 1) Find "roden" af fjenden (så vi ikke ender på et child GO uden EnemyHealth/BossHealth)
         Transform root = ResolveEnemyRoot(target);
+        if (root == null) return;
 
-        // 2) Sørg for at BurnDoT ligger på roden
         BurnDoT dot = root.GetComponent<BurnDoT>();
-        if (dot == null)
-            dot = root.gameObject.AddComponent<BurnDoT>();
+        if (dot == null) dot = root.gameObject.AddComponent<BurnDoT>();
 
-        // 3) (Re)apply/refresh burn
         dot.ApplyNewBurn(fireDamage, PercentOfHit);
     }
 
@@ -29,18 +45,16 @@ public static class BurnRules
     {
         if (t == null) return null;
 
-        // attachedRigidbody = bedste bud på "root"
         if (t.TryGetComponent<Rigidbody2D>(out var rb2d) && rb2d != null)
             return rb2d.transform;
 
-        // Hvis target er et child, så prøv at finde EnemyHealth/BossHealth i forældre
         var eh = t.GetComponentInParent<EnemyHealth>();
         if (eh != null) return eh.transform;
 
         var bh = t.GetComponentInParent<BossHealth>();
         if (bh != null) return bh.transform;
 
-        // Som fallback: gå til top i hierarkiet
+        // fallback: top of hierarchy
         Transform cur = t;
         while (cur.parent != null) cur = cur.parent;
         return cur;

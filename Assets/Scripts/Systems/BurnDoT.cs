@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Ligger på fjendens "root" og tiker Burn-skade.
+/// Ligger på fjendens "root" og tiker Burn-skade (ingen crit, fuld effekt på bosses).
 /// </summary>
 public class BurnDoT : MonoBehaviour
 {
@@ -19,23 +19,22 @@ public class BurnDoT : MonoBehaviour
 
     private void Awake()
     {
-        // Cache direkte — hvis vi ligger på et child ved en fejl, prøv Parent
         enemy = GetComponent<EnemyHealth>() ?? GetComponentInParent<EnemyHealth>();
         boss = GetComponent<BossHealth>() ?? GetComponentInParent<BossHealth>();
     }
 
     /// <summary>
-    /// Kaldes for hvert nyt (seneste) Fire-hit. Overwriter/refresh'er DoT.
+    /// Overwriter/refresh'er DoT baseret på seneste Fire-hit.
     /// </summary>
     public void ApplyNewBurn(int fireHitDamage, float percentOfHit)
     {
         if (fireHitDamage <= 0 || percentOfHit <= 0f) return;
 
-        // Reset varighed
+        // Reset timing
         timeLeft = duration;
         nextTickIn = tickInterval;
 
-        // Total burn = 25% af det ENDELIGE Fire-hit * PBM Burn mult
+        // Total burn = 25% af ENDELIGT Fire-hit * PBM BurnMult
         int totalBurn = Mathf.RoundToInt(fireHitDamage * percentOfHit);
 
         float mult = 1f;
@@ -44,7 +43,7 @@ public class BurnDoT : MonoBehaviour
 
         totalBurn = Mathf.RoundToInt(totalBurn * mult);
 
-        // Fordel jævnt over ticks
+        // Fordel jævnt
         ticksTotal = Mathf.Max(1, Mathf.RoundToInt(duration / tickInterval));
         ticksLeft = ticksTotal;
         damagePerTick = Mathf.Max(1, totalBurn / ticksTotal);
@@ -72,7 +71,6 @@ public class BurnDoT : MonoBehaviour
     {
         if (damagePerTick <= 0) return;
 
-        // Kritter ikke – vi kalder bare TakeDamage som normalt med Burn-element
         if (enemy != null)
             enemy.TakeDamage(damagePerTick, DamageElement.Burn);
         else if (boss != null)

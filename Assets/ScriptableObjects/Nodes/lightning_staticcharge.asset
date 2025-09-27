@@ -14,8 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: lightning_staticcharge
   displayName: Static Charge
-  description: After standing still for 3 seconds your next lightning spell is enpowered
-    dealing +50% damage.
+  description: COMING SOON!
   nodeType: 2
   icon: {fileID: 5986244224761071404, guid: 3025bf6f8b7d6c945a82fc0e98d7d078, type: 3}
   frame: {fileID: 6829908600747033567, guid: 276833240eadf5e4f8b8696b529f5ae0, type: 3}

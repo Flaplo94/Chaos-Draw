@@ -4,7 +4,8 @@ using TMPro;
 using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using System.Collections;
-using System.Linq; //  til reward-filter
+using System.Linq; // til reward-filter
+using ChaosDraw.SkillTree; // for NodeData + SkillTreeManager
 
 public class CardHandUI : MonoBehaviour
 {
@@ -36,6 +37,13 @@ public class CardHandUI : MonoBehaviour
     [SerializeField] private string fireStartAbilityName = "Fireball";
     [SerializeField] private string lightningStartAbilityName = "LightningBall";
     [SerializeField][Min(1)] private int startCopies = 4;
+
+    [Header("Healing Starter (SkillTree-gated)")]
+    [Tooltip("Node der unlocker Healing-starterkortet (fx 'healing_unlocked').")]
+    [SerializeField] private NodeData healingUnlockNode;
+    [Tooltip("Ability-navn paa Healing (matcher baade asset name og abilityName).")]
+    [SerializeField] private string healingAbilityName = "Healing";
+    [SerializeField][Min(1)] private int healingCopies = 1;
 
     [Header("Reward UI (parent + prefab)")]
     [SerializeField] private GameObject rewardUI;
@@ -108,7 +116,8 @@ public class CardHandUI : MonoBehaviour
         // Load all abilities from Resources
         allAbilities = new List<Ability>(Resources.LoadAll<Ability>(""));
 
-        // Overskriv start-listen ud fra valgt element (Fire/Lightning)
+        // Overskriv start-listen ud fra valgt element (Fire/Lightning) og
+        // injicer evt. Healing starterkortet, hvis noden er koebt.
         OverrideStartingDeckFromSelectedElement();
 
         CreateStartingDeck();
@@ -430,15 +439,14 @@ public class CardHandUI : MonoBehaviour
             skipButton.onClick.AddListener(CloseRewardUI);
         }
     }
+
     // === REROLL: public hook kaldes af CardRewardRerollController ===
     public void RegenerateChoices()
     {
-        // Kør kun hvis reward-skærmen er åben.
         if (rewardUI == null || !rewardUI.activeSelf) return;
 
         ClearRewardCardsParent();
 
-        // Samme logik som i ShowRewardUI(): filter + 3 distinkte kort
         var element = SessionData.SelectedElement;
         List<Ability> pool = allAbilities
             .Where(a => a != null && a.magicType == element && CardUnlocks.IsAbilityUnlocked(a))
@@ -453,8 +461,6 @@ public class CardHandUI : MonoBehaviour
             abilityCopy.rarity = RollRarity();
             BuildRewardCard(abilityCopy);
         }
-
-        // Skip-knappen og øvrige UI-tilstande lader vi være som de er.
     }
 
     private void CloseRewardUI()
@@ -725,6 +731,7 @@ public class CardHandUI : MonoBehaviour
         TryUseCardIfPossible(index);
     }
 
+    // -------------------- START-DECK OVERRIDE + HEALING INJEKTION --------------------
     private void OverrideStartingDeckFromSelectedElement()
     {
         var element = SessionData.SelectedElement;
@@ -735,5 +742,85 @@ public class CardHandUI : MonoBehaviour
 
         startingDeckList.Clear();
         startingDeckList.Add(new StartingCard { abilityName = startName, count = startCopies });
+
+        // Injicer Healing hvis unlocked – tilfoejes som healingCopies i start-deck.
+        TryInjectHealingIntoStartingList();
+    }
+
+    private void TryInjectHealingIntoStartingList()
+    {
+        if (!IsHealingUnlocked()) return;
+
+        var heal = ResolveAbilityByName(healingAbilityName);
+        if (heal == null) return;
+
+        // CreateStartingDeck matcher paa .name, saa vi bruger asset-navnet
+        startingDeckList.Add(new StartingCard { abilityName = heal.name, count = Mathf.Max(1, healingCopies) });
+    }
+
+    private bool IsHealingUnlocked()
+    {
+        if (healingUnlockNode == null) return false;
+
+        var stm = SkillTreeManager.Instance;
+        if (stm != null)
+        {
+            try
+            {
+                if (stm.IsUnlocked(healingUnlockNode.id)) return true;
+                if (stm.GetLevel(healingUnlockNode.id) > 0) return true;
+            }
+            catch { }
+        }
+
+        // PlayerPrefs fallback paa KEY_LEVELS-string: "id=lv|id=lv|..."
+        string id = string.IsNullOrEmpty(healingUnlockNode.id) ? healingUnlockNode.name : healingUnlockNode.id;
+        string payload = PlayerPrefs.GetString("nodeLevels", "");
+        if (!string.IsNullOrEmpty(payload))
+        {
+            string token = id + "=";
+            int idx = payload.IndexOf(token, System.StringComparison.Ordinal);
+            if (idx >= 0)
+            {
+                int start = idx + token.Length;
+                int end = payload.IndexOf("|", start, System.StringComparison.Ordinal);
+                string sub = (end >= 0) ? payload.Substring(start, end - start) : payload.Substring(start);
+                if (int.TryParse(sub, out int lv) && lv > 0) return true;
+            }
+        }
+
+        // Evt. enkelt-flag som ekstra fallback (hvis du saetter det i NodeEffects)
+        if (PlayerPrefs.GetInt("starter_healing", 0) == 1) return true;
+
+        return false;
+    }
+
+    private Ability ResolveAbilityByName(string wanted)
+    {
+        if (allAbilities == null || allAbilities.Count == 0) return null;
+        string norm = Normalize(wanted);
+
+        // match baade asset .name og abilityName, case-insensitivt og uden mellemrum/underscores/bindestreger
+        foreach (var a in allAbilities)
+        {
+            if (a == null) continue;
+            if (!string.IsNullOrEmpty(a.name) && Normalize(a.name) == norm) return a;
+            if (!string.IsNullOrEmpty(a.abilityName) && Normalize(a.abilityName) == norm) return a;
+        }
+        return null;
+    }
+
+    private static string Normalize(string s)
+    {
+        if (string.IsNullOrEmpty(s)) return string.Empty;
+        s = s.ToUpperInvariant();
+        System.Text.StringBuilder sb = new System.Text.StringBuilder(s.Length);
+        for (int i = 0; i < s.Length; i++)
+        {
+            char c = s[i];
+            if (c == ' ' || c == '_' || c == '-') continue;
+            sb.Append(c);
+        }
+        return sb.ToString();
     }
 }
