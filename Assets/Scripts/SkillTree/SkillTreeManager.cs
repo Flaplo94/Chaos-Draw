@@ -61,9 +61,10 @@ public class SkillTreeManager : MonoBehaviour
     public bool IsFlatStat(NodeData n)
     {
         if (n == null) return false;
-        if (n.maxLevel > 1) return true;
+        // Kun "flade stats" er dem, der faktisk har valuePerLevel-data.
         return n.valuePerLevel != null && n.valuePerLevel.Count > 0;
     }
+
 
     public int GetNextCost(NodeData n)
     {

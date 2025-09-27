@@ -430,6 +430,32 @@ public class CardHandUI : MonoBehaviour
             skipButton.onClick.AddListener(CloseRewardUI);
         }
     }
+    // === REROLL: public hook kaldes af CardRewardRerollController ===
+    public void RegenerateChoices()
+    {
+        // Kør kun hvis reward-skærmen er åben.
+        if (rewardUI == null || !rewardUI.activeSelf) return;
+
+        ClearRewardCardsParent();
+
+        // Samme logik som i ShowRewardUI(): filter + 3 distinkte kort
+        var element = SessionData.SelectedElement;
+        List<Ability> pool = allAbilities
+            .Where(a => a != null && a.magicType == element && CardUnlocks.IsAbilityUnlocked(a))
+            .ToList();
+
+        Shuffle(pool);
+
+        for (int i = 0; i < 3 && i < pool.Count; i++)
+        {
+            Ability abilityCopy = Instantiate(pool[i]);
+            abilityCopy.name = pool[i].name;
+            abilityCopy.rarity = RollRarity();
+            BuildRewardCard(abilityCopy);
+        }
+
+        // Skip-knappen og øvrige UI-tilstande lader vi være som de er.
+    }
 
     private void CloseRewardUI()
     {

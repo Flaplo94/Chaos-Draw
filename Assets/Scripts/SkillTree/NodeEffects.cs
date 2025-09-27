@@ -12,17 +12,13 @@ public static class NodeEffects
     {
         if (!node) return;
 
-        // 1) Flat stats håndteres via effectKey / valuePerLevel
+        // 1) Flat stats -> via effectKey / valuePerLevel
         if (SkillTreeManager.Instance != null && SkillTreeManager.Instance.IsFlatStat(node))
         {
-            // Her bruger vi node.effectKey som nøgle til hvilke bufftyper der rammes
-            // og gainedValue som selve værdien (additiv til multipliers).
             ApplyFlatStat(node.effectKey, gainedValue);
             return;
         }
 
-        // 2) Specialnoder (unlock-effekter + andre ikke-flat ting) via node.id
-        //    Bruges allerede i dit projekt (fx fire_unlock, lightning_godspeedunlock, m.fl.)
         EnsurePlayerBuffManager();
         var pbm = PlayerBuffManager.Instance;
         if (!pbm)
@@ -31,31 +27,29 @@ public static class NodeEffects
             return;
         }
 
-        // Safety: kun reagér når man rent faktisk har et level (dine unlocks er one-time)
         if (newLevel <= 0)
         {
-            Debug.Log("[NodeEffects] Node “" + node.id + "” har newLevel <= 0 – ingen effekt.");
+            Debug.Log("[NodeEffects] Node '" + node.id + "' har newLevel <= 0 – ingen effekt.");
             return;
         }
 
         switch (node.id)
         {
-            // Allerede eksisterende eksempler i dit projekt:
+            // Eksempler der allerede fandtes i dit projekt
             case "fire_unlock":
                 {
-                    // Global regel: Fire-spells påfører Burn-DoT (25% af endeligt Fire-hit)
                     BurnRules.FireAddsBurn = true;
                     BurnRules.PercentOfHit = 0.25f;
                     Debug.Log("[NodeEffects] Fire unlock: Fire spells now apply Burn DoT (25%).");
                     return;
                 }
 
-            case "fire_aoepulseunlock":     // Fire Rose
+            case "fire_aoepulseunlock":
                 {
                     if (newLevel >= 1)
                     {
                         CardUnlocks.UnlockAbilityByName("AOE Pulse");
-                        Debug.Log("[NodeEffects] Unlocked card: AOE Pulse (via Fire Rose).");
+                        Debug.Log("[NodeEffects] Unlocked card: AOE Pulse (via Fire node).");
                     }
                     return;
                 }
@@ -71,11 +65,8 @@ public static class NodeEffects
                     return;
                 }
 
-            // ------------------- NYE NODER (denne opgave) -------------------
-
             case "fire_25dmg":
                 {
-                    // +25% Fire damage = +0.25 på din fireDamageMult (additiv til multiplier der starter på 1.00)
                     pbm.AddRuntimeBonus(BuffData.BuffType.FireDamage, 0.25f);
                     pbm.SavePersistentTotals();
                     Debug.Log("[NodeEffects] Fire +25% damage anvendt (mult +0.25).");
@@ -84,14 +75,28 @@ public static class NodeEffects
 
             case "lightning_25dmg":
                 {
-                    // Dine systemer bruger "Thunder" internt for Lightning
                     pbm.AddRuntimeBonus(BuffData.BuffType.ThunderDamage, 0.25f);
                     pbm.SavePersistentTotals();
                     Debug.Log("[NodeEffects] Lightning +25% damage anvendt (Thunder mult +0.25).");
                     return;
                 }
 
-            // ----------------------------------------------------------------
+            // ===== NY: Card Reroll (opgraderbar, men ikke "flat stat") =====
+            case "card_reroll":
+                {
+                    // Kapacitet styres per run. Når level ændres, gensæt kapacitet for dette run.
+                    var meta = MetaProgressionManager.Instance;
+                    if (meta != null)
+                    {
+                        meta.StartNewRun(); // re-init ifm. testen; ved faktisk run gør du også dette ved run-start
+                        Debug.Log("[NodeEffects] Card Reroll level set to " + newLevel + " (capacity per run = " + newLevel + ").");
+                    }
+                    else
+                    {
+                        Debug.LogWarning("[NodeEffects] MetaProgressionManager mangler; kan ikke init reroll capacity.");
+                    }
+                    return;
+                }
 
             default:
                 Debug.Log("[NodeEffects] No special handler for node '" + node.id + "'.");
@@ -120,7 +125,6 @@ public static class NodeEffects
             case "flat_hp": pbm.AddRuntimeBonus(BuffData.BuffType.MaxHP, value); break;
             case "flat_armor": pbm.AddRuntimeBonus(BuffData.BuffType.Armor, value); break;
             case "flat_hp_regen": pbm.AddRuntimeBonus(BuffData.BuffType.HPRegen, value); break;
-            // Tilføj evt. flere efter behov
             default:
                 Debug.LogWarning("[NodeEffects] Unknown effectKey '" + effectKey + "'.");
                 break;
@@ -129,7 +133,6 @@ public static class NodeEffects
         pbm.SavePersistentTotals();
     }
 
-    /// <summary> Bootstrapper PlayerBuffManager hvis den ikke findes. </summary>
     private static void EnsurePlayerBuffManager()
     {
         if (PlayerBuffManager.Instance != null) return;
