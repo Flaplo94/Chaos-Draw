@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   artifactName: Spare Rib
   description: "Grants one extra life. Don\u2019t ask where the rib came from."
-  icon: {fileID: 8674547931993360600, guid: e1e58481de2ecb74d9f8669bd859e475, type: 3}
+  icon: {fileID: 8389134475083476877, guid: bc9506c57f27b6f46b0e3f7616cb6f99, type: 3}
   rarity: 3
   internalID: SpareRib

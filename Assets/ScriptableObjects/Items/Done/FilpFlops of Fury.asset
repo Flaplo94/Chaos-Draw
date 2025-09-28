@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: FilpFlops of Fury
   description: Movement speed is increased by 10%.
-  icon: {fileID: 3928878328890046419, guid: 589a3164777c71149942855e90dc0c20, type: 3}
+  icon: {fileID: 8389134475083476877, guid: 39f5cd4729433374d8393b9142e768bf, type: 3}
   rarity: 1
   buffType: 7
   value: 0.1

@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   artifactName: Lucky Shot
   description: "Every 5th spell is cast twice. Luck? Skill? Let\u2019s say both."
-  icon: {fileID: -1424390915672370002, guid: c999ac66df0d1b84ab39cae00465152d, type: 3}
+  icon: {fileID: -41970534257140035, guid: 6d57edf390c456647befdf1a69cc3224, type: 3}
   rarity: 3
   internalID: LuckyShot

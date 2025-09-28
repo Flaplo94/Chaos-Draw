@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: Gold Nugget
   description: Enemies drop 10% more gold.
-  icon: {fileID: -6350371357635554078, guid: 37c2be2adfacf5c4ca5b7b58cf46a075, type: 3}
+  icon: {fileID: -8038976213705442086, guid: 2dc480c8c4149c54eae27d6c4e70e57c, type: 3}
   rarity: 3
   buffType: 15
   value: 0.2

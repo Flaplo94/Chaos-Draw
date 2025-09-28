@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   artifactName: Holy Cheese
   description: Summons a sacred cheese that orbits you and punishes the lactose intolerant.
-  icon: {fileID: 6582011127417039112, guid: 2845602743af60b4ebd7fb6880a4249e, type: 3}
+  icon: {fileID: 1581100681859306766, guid: 0992df40e64150d4ab3cfa2a37dc4726, type: 3}
   rarity: 0
   internalID: holycheese
