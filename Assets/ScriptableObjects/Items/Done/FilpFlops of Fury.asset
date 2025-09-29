@@ -16,6 +16,6 @@ MonoBehaviour:
   description: Movement speed is increased by 10%.
   icon: {fileID: 8389134475083476877, guid: 39f5cd4729433374d8393b9142e768bf, type: 3}
   rarity: 1
-  buffType: 7
+  buffType: 15
   value: 0.1
   internalID: filpflopsoffury

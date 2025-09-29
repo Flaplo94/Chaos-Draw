@@ -16,6 +16,6 @@ MonoBehaviour:
   description: Enemies drop 10% more gold.
   icon: {fileID: -8038976213705442086, guid: 2dc480c8c4149c54eae27d6c4e70e57c, type: 3}
   rarity: 3
-  buffType: 15
-  value: 1
+  buffType: 16
+  value: 0.1
   internalID: goldnugget
