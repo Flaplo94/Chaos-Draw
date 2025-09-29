@@ -10,7 +10,7 @@ public class PlayerThrowing : MonoBehaviour
 
     [Header("Fire")]
     public float baseCooldown = 0.30f;
-    [SerializeField] private float spreadDegrees = 0f;
+    [SerializeField] private float spreadDegrees = 0f; // angle step per extra projectile
 
     [Header("Refs")]
     public PlayerStats stats;
@@ -22,9 +22,9 @@ public class PlayerThrowing : MonoBehaviour
     [Header("Input System")]
     [SerializeField] private InputActionAsset inputActions;
 
-    // Artifact hooks
+    // Runtime (kept for compatibility with other scripts / inspector)
     [HideInInspector] public int extraProjectiles = 0;
-    [HideInInspector] public float fireRateMult = 1f;
+    [HideInInspector] public float fireRateMult = 1f; // <— RESTORED
     [HideInInspector] public float projectileSpeedMult = 1f;
 
     private float cooldown;
@@ -49,12 +49,24 @@ public class PlayerThrowing : MonoBehaviour
             if (attackAction != null)
                 attackAction.Enable();
         }
+
+        // Subscribe to buff changes so fireRateMult/extraProjectiles stay in sync
+        var pbm = PlayerBuffManager.Instance;
+        if (pbm != null)
+        {
+            pbm.OnValuesChanged += RecomputeFromBuffs;
+            RecomputeFromBuffs(); // initialize now
+        }
     }
 
     void OnDisable()
     {
         if (attackAction != null)
             attackAction.Disable();
+
+        var pbm = PlayerBuffManager.Instance;
+        if (pbm != null)
+            pbm.OnValuesChanged -= RecomputeFromBuffs;
     }
 
     void Update()
@@ -62,11 +74,9 @@ public class PlayerThrowing : MonoBehaviour
         if (cooldown > 0f) cooldown -= Time.unscaledDeltaTime;
         if (cooldown < 0f) cooldown = 0f;
 
-        // Continuous fire while held: if button is pressed and CD is ready, shoot now.
+        // Hold-to-fire
         if (attackAction != null && attackAction.IsPressed())
-        {
             TryFire();
-        }
     }
 
     private void TryFire()
@@ -79,6 +89,7 @@ public class PlayerThrowing : MonoBehaviour
         if (attackSfx != null && audioSource != null)
             audioSource.PlayOneShot(attackSfx);
 
+        // Cooldown scales with attack speed (1.10 = 10% faster  shorter CD)
         float effective = baseCooldown / Mathf.Max(0.01f, fireRateMult);
         cooldown = effective;
 
@@ -90,7 +101,6 @@ public class PlayerThrowing : MonoBehaviour
     {
         if (!cardPrefab || !firePoint) return;
 
-        // New Input System mouse position
         Vector2 mouseScreen = Mouse.current.position.ReadValue();
         Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(
             new Vector3(mouseScreen.x, mouseScreen.y, -Camera.main.transform.position.z)
@@ -98,18 +108,20 @@ public class PlayerThrowing : MonoBehaviour
         mouseWorld.z = 0f;
 
         Vector2 dir = ((Vector2)(mouseWorld - firePoint.position)).normalized;
+
+        // Main projectile
         SpawnCard(firePoint.position, dir);
 
-        if (extraProjectiles > 0)
+        // Exactly N extras with alternating spread around aim
+        int extras = Mathf.Max(0, extraProjectiles);
+        for (int k = 1; k <= extras; k++)
         {
-            int half = extraProjectiles;
-            for (int i = -half; i <= half; i++)
-            {
-                if (i == 0) continue;
-                float angle = i * spreadDegrees;
-                Vector2 d = (Quaternion.Euler(0, 0, angle) * dir).normalized;
-                SpawnCard(firePoint.position, d);
-            }
+            int side = (k % 2 == 1) ? -1 : 1; // left, right, left, right...
+            int step = (k + 1) / 2;           // 1,1,2,2,3,3...
+            float angle = side * step * spreadDegrees;
+
+            Vector2 d = (Quaternion.Euler(0, 0, angle) * dir).normalized;
+            SpawnCard(firePoint.position, d);
         }
     }
 
@@ -121,16 +133,33 @@ public class PlayerThrowing : MonoBehaviour
         {
             int baseDmg = bullet.damage;
             float globalMult = (stats != null) ? stats.damageMult : 1f;
-            float elemMult = 1f;
-
+            if (PlayerBuffManager.Instance != null)
+                globalMult = PlayerBuffManager.Instance.GetGenericDamageMult(); // 1.0 at fresh run
+            else if (stats != null)
+                globalMult = stats.damageMult;
             bullet.debugBaseDamage = baseDmg;
             bullet.debugGlobalMult = globalMult;
-            bullet.debugElementMult = elemMult;
+            bullet.debugElementMult = 1f;
 
             bullet.damage = Mathf.Max(1, Mathf.RoundToInt(baseDmg * globalMult));
         }
 
         if (go.TryGetComponent<Rigidbody2D>(out var rb))
             rb.linearVelocity = dir * (cardSpeed * Mathf.Max(0.01f, projectileSpeedMult));
+    }
+
+    // Keep local fields synced with PlayerBuffManager
+    private void RecomputeFromBuffs()
+    {
+        var pbm = PlayerBuffManager.Instance;
+        if (pbm == null)
+        {
+            extraProjectiles = 0;
+            fireRateMult = 1f;
+            return;
+        }
+
+        extraProjectiles = Mathf.Max(0, pbm.GetExtraProjectiles());
+        fireRateMult = Mathf.Max(0.01f, pbm.GetAttackSpeedMult()); // Gloves of Speed, etc. :contentReference[oaicite:1]{index=1}
     }
 }

@@ -17,5 +17,5 @@ MonoBehaviour:
   icon: {fileID: -8038976213705442086, guid: 2dc480c8c4149c54eae27d6c4e70e57c, type: 3}
   rarity: 3
   buffType: 15
-  value: 0.2
-  internalID: 
+  value: 1
+  internalID: goldnugget

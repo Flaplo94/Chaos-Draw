@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 22ee6802786c8ea4687f57e8e1665ca2, type: 3}
-  m_Name: Overcharge
+  m_Name: Gloves Of Speed
   m_EditorClassIdentifier: 
-  itemName: Overcharge
-  description: Basic-attacks shoot 1 extra projectile.
-  icon: {fileID: 2869580775176698672, guid: 5496c5ca45cefa74eba0ba7a92a1d0da, type: 3}
-  rarity: 1
+  itemName: Gloves Of Speed
+  description: Gain 10% more attack speed
+  icon: {fileID: -4902245710394564183, guid: 6af1457fab7069f43adb41b4d3b88af2, type: 3}
+  rarity: 4
   buffType: 12
   value: 1
-  internalID: 
+  internalID: glovesofspeed

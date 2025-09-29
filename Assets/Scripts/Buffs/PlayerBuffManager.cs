@@ -24,6 +24,7 @@ public class PlayerBuffManager : MonoBehaviour
     const string K_SHARDS = "PBM_shards";
     const string K_MANAREGEN = "PBM_manaregen";
     const string K_MANACOST = "PBM_manacost";
+    const string K_MANACOST_FLAT = "PBM_manacost_flat";
 
     [Header("Damage")]
     [SerializeField] private float genericDamageMult = 1f;
@@ -45,6 +46,7 @@ public class PlayerBuffManager : MonoBehaviour
     [Header("Mana / Magic")]
     [SerializeField] private float manaRegenMult = 1f;
     [SerializeField] private float manaCostReductionMult = 1f;
+    [SerializeField] private float manaCostFlat = 0f;
 
     [Header("Combat")]
     [SerializeField] private float attackSpeedMult = 1f;
@@ -125,6 +127,7 @@ public class PlayerBuffManager : MonoBehaviour
             // Mana / Magic
             case BuffData.BuffType.ManaRegen: manaRegenMult += sign * data.value; break;
             case BuffData.BuffType.ManaCostReduction: manaCostReductionMult += sign * data.value; break;
+            case BuffData.BuffType.ManaCostFlat: manaCostFlat += sign * data.value; break;
 
             // Combat
             case BuffData.BuffType.AttackSpeed: attackSpeedMult += sign * data.value; break;
@@ -163,6 +166,7 @@ public class PlayerBuffManager : MonoBehaviour
 
     public float GetManaRegenMult() => manaRegenMult;
     public float GetManaCostReductionMult() => manaCostReductionMult;
+    public float GetManaCostFlat() => manaCostFlat;
 
     // --- Persistence API (kaldes fra NodeEffects + på Awake) ---
     public void SavePersistentTotals()
@@ -188,6 +192,7 @@ public class PlayerBuffManager : MonoBehaviour
 
         PlayerPrefs.SetFloat(K_MANAREGEN, manaRegenMult);
         PlayerPrefs.SetFloat(K_MANACOST, manaCostReductionMult);
+        PlayerPrefs.SetFloat(K_MANACOST_FLAT, manaCostFlat);
 
         PlayerPrefs.Save();
     }
@@ -216,6 +221,7 @@ public class PlayerBuffManager : MonoBehaviour
 
         manaRegenMult = PlayerPrefs.GetFloat(K_MANAREGEN, 1f);
         manaCostReductionMult = PlayerPrefs.GetFloat(K_MANACOST, 1f);
+        manaCostFlat = PlayerPrefs.GetFloat(K_MANACOST_FLAT, 0f);
     }
 
     public static void ClearPersistentTotals()
@@ -225,7 +231,7 @@ public class PlayerBuffManager : MonoBehaviour
             K_MAXHP,K_SHIELDREGEN,K_ARMOR,K_HPREGEN,
             K_ATKSPD,K_EXTRAP,K_LIFESTEAL,
             K_MOVESPD,K_GOLD,K_SHARDS,
-            K_MANAREGEN,K_MANACOST
+            K_MANAREGEN,K_MANACOST, K_MANACOST_FLAT
         };
         foreach (var k in keys) PlayerPrefs.DeleteKey(k);
         PlayerPrefs.Save();
@@ -241,5 +247,15 @@ public class PlayerBuffManager : MonoBehaviour
             this.data = data;
             this.timeLeft = duration;
         }
+    }
+    public void ResetRunBuffsToPersisted(bool alsoClearSaves = false)
+    {
+        if (alsoClearSaves)
+            PlayerBuffManager.ClearPersistentTotals();   // one-time cleanup only
+
+        LoadPersistentTotals();                          // restore baseline (1.0x etc.)
+                                                         // If you keep any runtime-only containers, clear them here (e.g., active runtime buffs)
+
+        OnValuesChanged?.Invoke();                       // safe to invoke here
     }
 }

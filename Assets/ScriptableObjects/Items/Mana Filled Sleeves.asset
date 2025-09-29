@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 22ee6802786c8ea4687f57e8e1665ca2, type: 3}
-  m_Name: Elemental Efficiency
+  m_Name: Mana Filled Sleeves
   m_EditorClassIdentifier: 
-  itemName: Elemental Efficiency
+  itemName: Mana Filled Sleeves
   description: spells cost 1 less mana
   icon: {fileID: -6186231880139380768, guid: 31d683afd18755547999221a2352646f, type: 3}
   rarity: 4
-  buffType: 10
-  value: 1
-  internalID: 
+  buffType: 11
+  value: 5
+  internalID: manafilledsleeves

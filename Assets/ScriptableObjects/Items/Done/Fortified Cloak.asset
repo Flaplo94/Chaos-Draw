@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Fortified Cloak
   m_EditorClassIdentifier: 
   itemName: Fortified Cloak
-  description: Max HP is increased by 15%.
+  description: Max HP is increased by 10%.
   icon: {fileID: -8586417740124189794, guid: d72f68c2d2a75b2488f57dbee368aea2, type: 3}
   rarity: 0
   buffType: 5
-  value: 0.15
-  internalID: 
+  value: 0.1
+  internalID: fortifiedcloak

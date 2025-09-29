@@ -5,8 +5,8 @@ public class BrainDamageSystem : MonoBehaviour
 {
     static BrainDamageSystem _instance;
 
-    // Store originals as FLOATS to match Ability.manaCost
-    static readonly Dictionary<Ability, float> originalCosts = new();
+    // Store originals as INTS to match Ability.manaCost
+    static readonly Dictionary<Ability, int> originalCosts = new();
 
     void Awake()
     {
@@ -28,16 +28,16 @@ public class BrainDamageSystem : MonoBehaviour
     {
         Ensure();
 
-        // Shuffle 1/2/3/4  slot mapping
+        // Shuffle 1/2/3/4 slot mapping
         InputShuffleSystem.ShuffleKeys();
 
-        // Force every card’s mana cost to 1f
+        // Force every card’s mana cost to 1
         var all = Resources.LoadAll<Ability>(""); // load all Ability assets
         foreach (var a in all)
         {
             if (!a) continue;
-            if (!originalCosts.ContainsKey(a)) originalCosts[a] = a.manaCost; // float  float
-            a.manaCost = 1f; // use float literal
+            if (!originalCosts.ContainsKey(a)) originalCosts[a] = a.manaCost; // int -> int
+            a.manaCost = 1; // int
         }
 
         // Optional: nudge UI to refresh (safe if method not present)
@@ -51,7 +51,7 @@ public class BrainDamageSystem : MonoBehaviour
     public static void DisableAndRestore()
     {
         foreach (var kv in originalCosts)
-            if (kv.Key) kv.Key.manaCost = kv.Value; // restore float cost
+            if (kv.Key) kv.Key.manaCost = kv.Value; // restore int cost
         originalCosts.Clear();
         Debug.Log("[BrainDamage] Restored original mana costs.");
     }

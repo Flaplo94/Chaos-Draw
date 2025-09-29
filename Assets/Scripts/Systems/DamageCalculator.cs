@@ -88,4 +88,34 @@ public static class DamageCalculator
 
         return new DamageResult(intFinal, element);
     }
+
+    // ---------------- Lifesteal helper ----------------
+    /// <summary>
+    /// Call this immediately AFTER you've applied 'finalDamageDealt' to the enemy.
+    /// Heals the player for (finalDamageDealt * lifestealMult), at least 1 when >0.
+    /// Returns the actual heal amount applied (0 if none).
+    /// </summary>
+    public static int ApplyLifesteal(int finalDamageDealt, PlayerHealth playerOverride = null)
+    {
+        if (finalDamageDealt <= 0) return 0;
+
+        float ls = 0f;
+        var pbm = PlayerBuffManager.Instance;
+        if (pbm != null)
+            ls = Mathf.Max(0f, pbm.GetLifestealMult()); // 0.05 = 5% etc.
+
+        if (ls <= 0f) return 0;
+
+        int healAmt = Mathf.Max(1, Mathf.CeilToInt(finalDamageDealt * ls));
+
+        // Prefer provided player ref, otherwise use singleton or find one
+        PlayerHealth player = playerOverride ?? PlayerHealth.Instance ?? Object.FindFirstObjectByType<PlayerHealth>();
+        if (player != null && healAmt > 0)
+            player.Heal(healAmt);
+
+        if (DEBUG_LOG)
+            Debug.Log($"[LIFESTEAL] Dealt={finalDamageDealt} ls={ls:P0} -> Heal {healAmt}");
+
+        return healAmt;
+    }
 }

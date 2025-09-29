@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 22ee6802786c8ea4687f57e8e1665ca2, type: 3}
-  m_Name: Adaptive Power
+  m_Name: Vampiric Ring
   m_EditorClassIdentifier: 
-  itemName: Adaptive Power
-  description: Gain +5% damage for each active items.
-  icon: {fileID: -4902245710394564183, guid: 6af1457fab7069f43adb41b4d3b88af2, type: 3}
+  itemName: Vampiric Ring
+  description: Heal 5% of all damage you deal.
+  icon: {fileID: -8471532484696407613, guid: e61aa38a75e5ef945a272fd58671e40a, type: 3}
   rarity: 4
-  buffType: 0
+  buffType: 13
   value: 0.05
-  internalID: 
+  internalID: vampiricring

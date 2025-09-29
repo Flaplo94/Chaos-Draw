@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 14c410c306645854f92164f5ca6c4167, type: 3}
-  m_Name: SI_VampiricTouch
+  m_Name: SI_Ring Of Adaptive Power
   m_EditorClassIdentifier: 
   itemType: 1
   artifactData: {fileID: 0}
-  itemData: {fileID: 11400000, guid: eb100fdfb7f658446b18515de95961ae, type: 2}
+  itemData: {fileID: 11400000, guid: 976c23b0a0089574ea7b583b66e092c4, type: 2}
   serviceType: 0
   serviceIcon: {fileID: 0}
   basePrice: 50

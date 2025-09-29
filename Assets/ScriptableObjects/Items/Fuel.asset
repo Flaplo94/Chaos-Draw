@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 22ee6802786c8ea4687f57e8e1665ca2, type: 3}
-  m_Name: Vampiric Touch
+  m_Name: Fuel
   m_EditorClassIdentifier: 
-  itemName: Vampiric Touch
-  description: Heal 5% of all damage you deal.
-  icon: {fileID: -8471532484696407613, guid: e61aa38a75e5ef945a272fd58671e40a, type: 3}
-  rarity: 4
-  buffType: 13
-  value: 0.05
-  internalID: 
+  itemName: Fuel
+  description: Burn damage over time is increased by 10%.
+  icon: {fileID: 6240649592010973758, guid: ce71d7dce409fd2409caa5e80b1051c5, type: 3}
+  rarity: 2
+  buffType: 3
+  value: 0.1
+  internalID: fuel

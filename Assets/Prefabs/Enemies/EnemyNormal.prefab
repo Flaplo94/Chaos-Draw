@@ -188,7 +188,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ebfeac23010ef7b44b5d2f0f2555698c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  baseGold: 2
+  baseGold: 10
   perWaveScale: 0.1
 --- !u!114 &7941462592110301646
 MonoBehaviour:

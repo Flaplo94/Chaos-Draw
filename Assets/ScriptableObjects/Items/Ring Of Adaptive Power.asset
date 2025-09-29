@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 22ee6802786c8ea4687f57e8e1665ca2, type: 3}
-  m_Name: Fuel
+  m_Name: Ring Of Adaptive Power
   m_EditorClassIdentifier: 
-  itemName: Fuel
-  description: Burn damage over time is increased by 10%.
-  icon: {fileID: 6240649592010973758, guid: ce71d7dce409fd2409caa5e80b1051c5, type: 3}
-  rarity: 2
-  buffType: 3
-  value: 0.1
-  internalID: 
+  itemName: Ring Of Adaptive Power
+  description: Gain +5% damage for each active items.
+  icon: {fileID: -4902245710394564183, guid: 6af1457fab7069f43adb41b4d3b88af2, type: 3}
+  rarity: 4
+  buffType: 4
+  value: 0.05
+  internalID: ringofadaptivepower

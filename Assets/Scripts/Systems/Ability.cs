@@ -18,7 +18,7 @@ public class Ability : ScriptableObject
 
     [Header("Ability Settings (UI + Balance)")]
     [Min(0)] public int damage = 0;               //  NYT felt til kort-UI
-    [Min(0)] public float manaCost = 10f;         // mana cost for at spille ability
+    [Min(0)] public int manaCost = 10;         // mana cost for at spille ability
     [TextArea] public string description;         // kortbeskrivelse til reward card
 
     [Header("Rarity")]

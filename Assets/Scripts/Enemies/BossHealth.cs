@@ -84,6 +84,9 @@ public class BossHealth : MonoBehaviour
         if (DamageNumbers.Instance != null)
             DamageNumbers.Instance.Show(transform.position, amount, element);
 
+        // Lifesteal (centralized): heal player based on damage dealt
+        DamageCalculator.ApplyLifesteal(amount);
+
         if (flashOnLethalHit || currentHealth > 0)
             flash?.PlayFlash();
 

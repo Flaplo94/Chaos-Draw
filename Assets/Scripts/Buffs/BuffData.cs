@@ -34,6 +34,7 @@ public class BuffData : ScriptableObject
         // Mana / Magic
         ManaRegen,
         ManaCostReduction,
+        ManaCostFlat,        // flat reduction in mana cost
 
         // Offense
         AttackSpeed,

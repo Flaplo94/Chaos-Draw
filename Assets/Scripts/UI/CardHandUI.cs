@@ -116,6 +116,17 @@ public class CardHandUI : MonoBehaviour
         // Load all abilities from Resources
         allAbilities = new List<Ability>(Resources.LoadAll<Ability>(""));
 
+
+        if (PlayerBuffManager.Instance != null)
+            PlayerBuffManager.Instance.ResetRunBuffsToPersisted();
+
+        // make sure inventory starts clean for the run
+        if (PlayerInventory.Instance != null)
+        {
+            PlayerInventory.Instance.artifacts.Clear();
+            PlayerInventory.Instance.items.Clear();
+        }
+        PlayerBuffManager.Instance?.ResetRunBuffsToPersisted(alsoClearSaves: true);
         // Overskriv start-listen ud fra valgt element (Fire/Lightning) og
         // injicer evt. Healing starterkortet, hvis noden er koebt.
         OverrideStartingDeckFromSelectedElement();
@@ -182,11 +193,15 @@ public class CardHandUI : MonoBehaviour
         if (dimmer != null && !dimmer.dimmerOn)
         {
             var ability = (index >= 0 && hand != null && index < hand.Length) ? hand[index] : null;
-            if (ability != null && PlayerMana.Instance != null && PlayerMana.Instance.GetMana() < ability.manaCost)
+            if (ability != null && PlayerMana.Instance != null)
             {
-                var uiMsg = Object.FindFirstObjectByType<UIMessage>();
-                if (uiMsg != null) uiMsg.ShowMessage("Not enough mana!");
-                return;
+                int effectiveCost = GetEffectiveManaCost(ability); // NEW: use effective cost
+                if (PlayerMana.Instance.GetMana() < effectiveCost)
+                {
+                    var uiMsg = Object.FindFirstObjectByType<UIMessage>();
+                    if (uiMsg != null) uiMsg.ShowMessage("Not enough mana!");
+                    return;
+                }
             }
 
             TryUseCard(index);
@@ -324,7 +339,8 @@ public class CardHandUI : MonoBehaviour
             var ability = cardSlots[i].GetAbility();
             if (ability != null)
             {
-                bool notEnough = ability.manaCost > currentMana;
+                int effectiveCost = GetEffectiveManaCost(ability); // NEW: use effective cost
+                bool notEnough = effectiveCost > currentMana;
                 cardSlots[i].SetGreyedOut(notEnough);
             }
             else
@@ -773,7 +789,7 @@ public class CardHandUI : MonoBehaviour
             catch { }
         }
 
-        // PlayerPrefs fallback paa KEY_LEVELS-string: "id=lv|id=lv|..."
+        // PlayerPrefs fallback paa KEY_LEVELS-string: "id=lv|id=lv|."
         string id = string.IsNullOrEmpty(healingUnlockNode.id) ? healingUnlockNode.name : healingUnlockNode.id;
         string payload = PlayerPrefs.GetString("nodeLevels", "");
         if (!string.IsNullOrEmpty(payload))
@@ -822,5 +838,36 @@ public class CardHandUI : MonoBehaviour
             sb.Append(c);
         }
         return sb.ToString();
+    }
+
+    // ---------- NEW: single source of truth for mana cost ----------
+    private static int GetEffectiveManaCost(Ability ability)
+    {
+        if (ability == null) return 0;
+
+        int baseCost = ability.manaCost;
+
+        float mult = 1f;   // % reducer (1.0 = none)
+        float flat = 0f;   // flat -X (0 = none). Read via reflection if present.
+
+        var pbm = PlayerBuffManager.Instance;
+        if (pbm != null)
+        {
+            // existing API in your codebase
+            mult = pbm.GetManaCostReductionMult();
+
+            // Optional: if you've added GetManaCostFlat() in PlayerBuffManager,
+            // we’ll pick it up without introducing a compile-time dependency.
+            try
+            {
+                var m = pbm.GetType().GetMethod("GetManaCostFlat");
+                if (m != null && m.ReturnType == typeof(float))
+                    flat = (float)m.Invoke(pbm, null);
+            }
+            catch { /* safe fallback to 0 */ }
+        }
+
+        float reduced = (baseCost / Mathf.Max(0.01f, mult)) - flat;
+        return Mathf.Max(0, Mathf.CeilToInt(reduced));
     }
 }

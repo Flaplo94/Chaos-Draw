@@ -6,7 +6,7 @@ public class EnemyHealth : MonoBehaviour
 {
     [SerializeField] private int maxHealth = 3;
     [SerializeField] private bool flashOnLethalHit = true;
-    
+
 
     private int currentHealth;
     private HitFlash flash;
@@ -35,7 +35,6 @@ public class EnemyHealth : MonoBehaviour
 
     void Awake()
     {
-        
         currentHealth = maxHealth;
         flash = GetComponent<HitFlash>() ?? GetComponent<HitFlash>();
         if (enemyAnimator == null)
@@ -55,6 +54,9 @@ public class EnemyHealth : MonoBehaviour
         if (DamageNumbers.Instance != null)
             DamageNumbers.Instance.Show(transform.position, amount, element);
 
+        // Lifesteal (centralized): heal player based on damage dealt
+        DamageCalculator.ApplyLifesteal(amount);
+
         if (flashOnLethalHit || currentHealth > 0)
             flash?.PlayFlash();
 
@@ -62,24 +64,10 @@ public class EnemyHealth : MonoBehaviour
             Die();
     }
 
-    // === Basic attacks med lifesteal ===
+    // === Basic attacks: now just forward to standard damage (lifesteal handled centrally) ===
     public void TakeBasicAttackDamage(int amount, DamageElement element)
     {
-        if (amount <= 0) return;
-        if (isDead) return;
-
-        // Reuse standard apply logic (inkl. numbers/flash/death)
         TakeDamage(amount, element);
-
-        // Lifesteal fra basic attacks (heal spiller med damage * lifestealMult)
-        var pbm = PlayerBuffManager.Instance;
-        float ls = pbm ? pbm.GetLifestealMult() : 0f; // 0.10 = 10% lifesteal
-        if (ls > 0f && PlayerHealth.Instance != null)
-        {
-            int heal = Mathf.RoundToInt(amount * ls);
-            if (heal > 0)
-                PlayerHealth.Instance.Heal(heal);
-        }
     }
 
     public void Heal(int amount)
@@ -103,8 +91,6 @@ public class EnemyHealth : MonoBehaviour
         // Disable ALL colliders so bullets no longer hit
         foreach (var col in GetComponentsInChildren<Collider2D>())
             col.enabled = false;
-
-        
 
         OnAnyEnemyDied?.Invoke(this);
 

@@ -924,7 +924,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa2f8408707d59945a1efe7cd72c8f49, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startingGold: 200
+  startingGold: 2000
 --- !u!114 &124232705
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10690,6 +10690,7 @@ GameObject:
   - component: {fileID: 1484783538}
   - component: {fileID: 1484783537}
   - component: {fileID: 1484783539}
+  - component: {fileID: 1484783540}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -10753,6 +10754,7 @@ MonoBehaviour:
   hpRegenPer5Sec: 0
   manaRegenMult: 1
   manaCostReductionMult: 1
+  manaCostFlat: 0
   attackSpeedMult: 1
   extraProjectiles: 0
   lifestealMult: 0
@@ -10787,11 +10789,14 @@ MonoBehaviour:
   emptyBack: {fileID: 0}
   emptySlotSprite: {fileID: 21300000, guid: 43e39f2351196a44f87f11f1208df991, type: 3}
   startingDeckList:
-  - abilityName: Fireball
+  - abilityName: ChainLightning
     count: 5
-  fireStartAbilityName: Fireball
+  fireStartAbilityName: ChainLightning
   lightningStartAbilityName: LightningBall
   startCopies: 4
+  healingUnlockNode: {fileID: 0}
+  healingAbilityName: Healing
+  healingCopies: 1
   rewardUI: {fileID: 118609471}
   rewardCardsParent: {fileID: 118609472}
   rewardCardPrefab: {fileID: 4060490641503446627, guid: 3cdad6f5b5173fd44b42f5fdc87dc86a, type: 3}
@@ -10988,6 +10993,19 @@ MonoBehaviour:
   exitButton: {fileID: 34041226}
   retryStatsButton: {fileID: 500762361}
   exitStatsButton: {fileID: 1161467652}
+--- !u!114 &1484783540
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1484783529}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 960be9f58957c674984e369ecbbae466, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ownedItems: []
 --- !u!1 &1492965049
 GameObject:
   m_ObjectHideFlags: 0
