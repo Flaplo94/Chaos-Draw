@@ -10831,6 +10831,7 @@ MonoBehaviour:
   hpRegenPer5Sec: 0
   manaRegenMult: 1
   manaCostReductionMult: 1
+  manaCostFlat: 0
   attackSpeedMult: 1
   extraProjectiles: 0
   lifestealMult: 0
@@ -10870,6 +10871,9 @@ MonoBehaviour:
   fireStartAbilityName: Fireball
   lightningStartAbilityName: LightningBall
   startCopies: 4
+  healingUnlockNode: {fileID: 0}
+  healingAbilityName: Healing
+  healingCopies: 1
   rewardUI: {fileID: 118609471}
   rewardCardsParent: {fileID: 118609472}
   rewardCardPrefab: {fileID: 4060490641503446627, guid: 3cdad6f5b5173fd44b42f5fdc87dc86a, type: 3}
@@ -10878,7 +10882,7 @@ MonoBehaviour:
   uncommonIcon: {fileID: 5161444392629430826, guid: 95dbd4d9c75a1044896c5cec05d89783, type: 3}
   rareIcon: {fileID: -3252479772768385536, guid: 4af2e9ce7a574864db5eb79ca161ac9f, type: 3}
   epicIcon: {fileID: 1966742142728515324, guid: fcc2bb5d1e7e1fe42aee19268f49d445, type: 3}
-  legendaryIcon: {fileID: 5396587850919566051, guid: e6bc162209b8a3b409e4a4c89d3362df, type: 3}
+  legendaryIcon: {fileID: 6905277003593830246, guid: acb813d15c0af8945b133fcd7681c8f0, type: 3}
   audioSource: {fileID: 1484783535}
   shuffleClip: {fileID: 8300000, guid: c70d0821648a38b4694e915db39c8ad8, type: 3}
   shuffleDurationRange: {x: 1, y: 2}
