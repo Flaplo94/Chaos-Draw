@@ -17017,7 +17017,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5503c70ee0c3f05409b8a4c4109a1577, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameScene: Stefan TestScene
+  gameScene: GameScene
   DeckOfFateScene: DeckOfFate
   skillTreeScene: SkillTree
   optionsScene: Options
@@ -19072,7 +19072,7 @@ MonoBehaviour:
   deckName: {fileID: 139180663}
   tagline: {fileID: 617477795}
   startButton: {fileID: 1136355993}
-  gameSceneName: Stefan TestScene
+  gameSceneName: GameScene
   startingTitle: {fileID: 551925431}
   startingGridParent: {fileID: 1413844092}
   miniCardPrefab: {fileID: 5916744382997899067, guid: d72b94cb3bb16054e9d474d7038cb15c, type: 3}

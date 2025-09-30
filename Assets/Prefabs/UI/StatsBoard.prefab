@@ -497,10 +497,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3febbc3d24fb34346850ad60cdbc7759, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  timeText: {fileID: 7290826301332897375}
-  shardsText: {fileID: 433683695366741443}
-  waveText: {fileID: 3337743868878763434}
-  bossesText: {fileID: 7229274668050948754}
+  timeValue: {fileID: 0}
+  shardsValue: {fileID: 0}
+  waveValue: {fileID: 0}
+  bossesValue: {fileID: 0}
   retryButton: {fileID: 7258654455122690762}
   exitButton: {fileID: 9082837931373380446}
 --- !u!1 &4728667469065932567
