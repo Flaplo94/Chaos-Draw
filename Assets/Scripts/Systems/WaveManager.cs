@@ -210,7 +210,7 @@ public class WaveManager : MonoBehaviour
         }
 
         // Normal wave
-        int enemyCount = startEnemyCount + currentWave * 2;
+        int enemyCount = Mathf.RoundToInt(startEnemyCount * Mathf.Pow(1.2f, currentWave));
 
         bool singleTypeWave = (currentWave % 5 == 0);
         if (singleTypeWave)

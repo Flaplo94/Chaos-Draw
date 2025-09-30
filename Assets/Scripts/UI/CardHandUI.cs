@@ -733,7 +733,7 @@ public class CardHandUI : MonoBehaviour
 
         selectionHighlight.SetSiblingIndex(0);
 
-        var img = selectionHighlight.GetComponent<UnityEngine.UI.Image>();
+        var img = selectionHighlight.GetComponent<Image>();
         if (img) img.raycastTarget = false;
     }
 
