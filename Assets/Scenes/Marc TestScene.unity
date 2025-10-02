@@ -6950,6 +6950,11 @@ MonoBehaviour:
   cardSpeed: 10
   baseCooldown: 1
   spreadDegrees: 0
+  autoFireOnly: 1
+  targetSearchRadius: 13
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 640
   stats: {fileID: 838277007}
   attackSfx: {fileID: 8300000, guid: 708a1ca39b146634fa4dd9f840a05904, type: 3}
   audioSource: {fileID: 838277010}
