@@ -10875,7 +10875,7 @@ MonoBehaviour:
     count: 1
   fireStartAbilityName: Fireball
   lightningStartAbilityName: LightningBall
-  startCopies: 4
+  startCopies: 9
   healingUnlockNode: {fileID: 0}
   healingAbilityName: Healing
   healingCopies: 1
@@ -10895,6 +10895,7 @@ MonoBehaviour:
   manualShuffleBaseTime: 4
   selectionHighlight: {fileID: 68979839}
   decklessEnabled: 0
+  drawReplacementOnUse: 0
 --- !u!114 &1484783534
 MonoBehaviour:
   m_ObjectHideFlags: 0

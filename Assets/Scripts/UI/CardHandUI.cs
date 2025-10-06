@@ -93,6 +93,8 @@ public class CardHandUI : MonoBehaviour
     private int selectedIndex = -1;
 
     [HideInInspector] public bool decklessEnabled = false;
+    [Header("Hand draw rules")]
+    [SerializeField] private bool drawReplacementOnUse = false;
 
     [System.Serializable]
     public class StartingCard
@@ -160,9 +162,9 @@ public class CardHandUI : MonoBehaviour
         {
             reshuffleAction.performed += _ =>
             {
-                Debug.Log("Reshuffle pressed!");
+                Debug.Log("Discard+Redraw pressed!");
                 if (dimmer != null && !dimmer.dimmerOn)
-                    StartCoroutine(ManualShuffle());
+                    DiscardHandAndRedrawAndRefill();
             };
             reshuffleAction.Enable();
         }
@@ -267,7 +269,7 @@ public class CardHandUI : MonoBehaviour
         NotifyHandChanged();
     }
 
-    private System.Collections.IEnumerator ShuffleWithDelay(List<Ability> list)
+    private IEnumerator ShuffleWithDelay(List<Ability> list)
     {
         shuffleActive = true;
         StartShuffleSfx();
@@ -305,7 +307,8 @@ public class CardHandUI : MonoBehaviour
 
         UpdateDiscardText();
         UpdatePileUIs();
-        DrawCard(index);
+        if (drawReplacementOnUse)
+            DrawCard(index);
         NotifyHandChanged();
     }
 
@@ -870,4 +873,53 @@ public class CardHandUI : MonoBehaviour
         float reduced = (baseCost / Mathf.Max(0.01f, mult)) - flat;
         return Mathf.Max(0, Mathf.CeilToInt(reduced));
     }
+
+    private void DiscardHandAndRedrawAndRefill()
+    {
+        if (dimmer != null && dimmer.dimmerOn) return;
+
+        // 1) Discard current hand and clear UI
+        if (hand != null && cardSlots != null)
+        {
+            for (int i = 0; i < hand.Length; i++)
+            {
+                if (hand[i] != null)
+                {
+                    discardPile.Add(hand[i]);
+                    hand[i] = null;
+                    if (cardSlots[i] != null) cardSlots[i].Clear();
+                }
+            }
+        }
+
+        UpdateDiscardText();
+        UpdatePileUIs();
+
+        // 2) Redraw to full hand using your existing pipeline
+        // If the draw pile is short, kick off your ShuffleWithDelay coroutine,
+        // which already refills empty hand slots afterward.
+        int need = hand != null ? hand.Length : 0;
+        if (drawPile.Count < need && discardPile.Count > 0)
+        {
+            // Move discard into draw and do your animated shuffle; when it finishes,
+            // ShuffleWithDelay will call DrawCard for each empty slot.
+            drawPile.AddRange(discardPile);
+            discardPile.Clear();
+            StartCoroutine(ShuffleWithDelay(drawPile));
+        }
+        else
+        {
+            // We have enough cards now; draw immediately
+            for (int i = 0; i < need; i++)
+                if (hand[i] == null) DrawCard(i);
+        }
+
+        // 3) Refill mana (3)
+        if (PlayerMana.Instance != null)
+            PlayerMana.Instance.RefillToFull();
+
+        UpdateCardOverlays();
+        NotifyHandChanged();
+    }
+
 }

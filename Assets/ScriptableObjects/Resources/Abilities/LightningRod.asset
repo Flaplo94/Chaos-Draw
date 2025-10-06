@@ -17,7 +17,7 @@ MonoBehaviour:
   effectPrefab: {fileID: 4804991577932546782, guid: 604a5d0f1ce92474d909e6c86dbe5acd, type: 3}
   spawnAtMousePosition: 1
   damage: 5
-  manaCost: 10
+  manaCost: 1
   description: Summon a charged rod that connects with lightning, dealing damage
     to all enemies caught in its arcs.
   rarity: 0

@@ -17,7 +17,7 @@ MonoBehaviour:
   effectPrefab: {fileID: 5099764968069139248, guid: 87611a9aae58c4848826fe9e92975cef, type: 3}
   spawnAtMousePosition: 0
   damage: 5
-  manaCost: 10
+  manaCost: 1
   description: Heal yourself
   rarity: 0
   magicType: 2
