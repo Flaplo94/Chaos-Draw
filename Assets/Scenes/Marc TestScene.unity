@@ -7036,8 +7036,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40eb76c2d80d0d043b96517bc1910e1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxMana: 100
-  regenRate: 2
+  maxMana: 3
+  regenRate: 0
   currentMana: 0
   manaFill: {fileID: 1857681222}
   manaEffect: {fileID: 891682262}
