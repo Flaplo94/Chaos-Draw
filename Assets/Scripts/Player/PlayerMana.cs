@@ -7,8 +7,8 @@ public class PlayerMana : MonoBehaviour
     public static PlayerMana Instance { get; private set; }
 
     [Header("Mana Settings")]
-    public float maxMana = 100f;
-    public float regenRate = 5f;
+    public float maxMana = 3f;
+    public float regenRate = 0;
     public float currentMana;
 
     [Header("UI References")]
@@ -26,8 +26,7 @@ public class PlayerMana : MonoBehaviour
         }
         Instance = this;
 
-        currentMana = maxMana;
-        UpdateUI();
+        RefillToFull();
     }
 
     void Update()
@@ -41,7 +40,11 @@ public class PlayerMana : MonoBehaviour
             UpdateUI();
         }
     }
-
+    public void RefillToFull()
+    {
+        currentMana = maxMana;
+        UpdateUI();
+    }
     public bool TrySpend(float amount)
     {
         if (currentMana >= amount)

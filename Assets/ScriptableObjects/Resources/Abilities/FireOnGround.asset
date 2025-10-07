@@ -17,7 +17,7 @@ MonoBehaviour:
   effectPrefab: {fileID: 4804991577932546782, guid: ad655e86463b36d4a9430b78a142e9aa, type: 3}
   spawnAtMousePosition: 1
   damage: 10
-  manaCost: 15
+  manaCost: 1
   description: Ignite the ground beneath your enemies.  Enemies take damage while
     they remain in the flames
   rarity: 0
