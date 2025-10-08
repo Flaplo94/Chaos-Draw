@@ -14,7 +14,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 76683931486816045, guid: af535699c9caddd418ddb82d17593458, type: 3}
       propertyPath: maxHealth
-      value: 1000
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 251748052483166877, guid: af535699c9caddd418ddb82d17593458, type: 3}
       propertyPath: m_BodyType
@@ -170,6 +170,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 7502241114002446682, guid: af535699c9caddd418ddb82d17593458, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7941462592110301646}
+    - targetCorrespondingSourceObject: {fileID: 7502241114002446682, guid: af535699c9caddd418ddb82d17593458, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8330397069732981032}
   m_SourcePrefab: {fileID: 100100000, guid: af535699c9caddd418ddb82d17593458, type: 3}
 --- !u!1 &5679082729230498780 stripped
 GameObject:
@@ -202,3 +205,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea89865d8793cf94f8eed498f33c1d94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &8330397069732981032
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5679082729230498780}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4929ed0cb94400479d2fe81d1b6ce4c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shardsMin: 1
+  shardsMax: 3
+  xpMin: 1
+  xpMax: 2
+  applyShardGainMultiplier: 1
+  grantOnDestroy: 1
+  preventDoubleGrant: 1
+  popupPrefab: {fileID: 3318825124179351579, guid: f19c477282a6743498eb762d18b203f3, type: 3}
+  popupOffset: {x: 0, y: 0.8, z: 0}
+  popupLifetime: 1.2
+  popupRiseSpeed: 1
+  shardsColor: {r: 0.6, g: 0.9, b: 1, a: 1}
+  xpColor: {r: 0.9, g: 0.9, b: 0.5, a: 1}
