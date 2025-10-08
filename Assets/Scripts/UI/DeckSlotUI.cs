@@ -4,49 +4,113 @@ using TMPro;
 
 public class DeckSlotUI : MonoBehaviour
 {
+    public enum PlaceholderVisibility
+    {
+        OnlyWhenEmpty,  // vis kun placeholder når count == 0 (anbefalet)
+        Never,          // vis aldrig placeholder
+        Always          // vis altid placeholder (sjældent brugt)
+    }
+
     [Header("References")]
-    [SerializeField] private Image backImage;               // Face-down back image
-    [SerializeField] private TextMeshProUGUI countText;     // Count overlay
-    [SerializeField] private CanvasGroup cg;                // Optional group control
+    [SerializeField] private Image placeholderImage;            // DIT gamle BackImage (semi-transparent slot)
+    [SerializeField] private TextMeshProUGUI countText;         // tæller overlay
+    [SerializeField] private CanvasGroup cg;                    // valgfri fade/interaction
+
+    [Header("Stack Layers (Card1..Card5)")]
+    [Tooltip("Assign Card1..Card5 i rækkefølge. Viser kun de øverste N baseret på count.")]
+    [SerializeField] private Image[] stackLayers;
 
     [Header("Behavior")]
-    [SerializeField] private bool fadeWhenEmpty = true;           // Turn OFF on Discard pile
+    [SerializeField] private bool fadeWhenEmpty = true;
     [SerializeField] private float emptyAlpha = 0.35f;
-    [SerializeField] private bool hideBackWhenEmpty = true;       // Turn ON to hide back at 0
     [SerializeField] private bool disableInteractionWhenEmpty = true;
+    [SerializeField] private PlaceholderVisibility placeholderMode = PlaceholderVisibility.OnlyWhenEmpty;
 
-    public void Set(Sprite backSprite, int count)
+    [Header("Back handling for layers")]
+    [Tooltip("Når true, sættes deckets back-sprite på ALLE stackLayers (men ALDRIG på placeholderImage).")]
+    [SerializeField] private bool propagateBackToLayers = true;
+
+    private Sprite currentBackSprite; // rød/blå kortbagside til lagene
+
+    /// <summary>
+    /// Sæt deckets bagside (rød/blå) på LAGENE. Placeholder ændres ikke.
+    /// Kald dette når deck-type skifter.
+    /// </summary>
+    public void SetBackSprite(Sprite backSprite)
     {
-        bool empty = count <= 0;
+        currentBackSprite = backSprite;
 
-        // Back sprite + visibility
-        if (backImage != null)
+        if (propagateBackToLayers && stackLayers != null)
         {
-            backImage.sprite = backSprite;
-            // Hide the BACK when empty (counter still shows)
-            backImage.enabled = !(hideBackWhenEmpty && empty);
+            for (int i = 0; i < stackLayers.Length; i++)
+            {
+                if (stackLayers[i] != null)
+                    stackLayers[i].sprite = backSprite;
+            }
         }
+        // VIGTIGT: Ingen ændring af placeholderImage.sprite her!
+    }
 
-        // Counter always visible and crisp (never faded)
+    /// <summary>
+    /// Opdater visuel count + lag + placeholder. Kald når bunke-antal ændrer sig.
+    /// </summary>
+    public void SetCount(int count)
+    {
+        int clamped = Mathf.Max(0, count);
+        bool empty = clamped == 0;
+
+        // Counter
         if (countText != null)
-        {
-            countText.text = Mathf.Max(0, count).ToString();
-            // Ensure counter isn't faded by us
-            var c = countText.color;
-            if (c.a < 1f) { c.a = 1f; countText.color = c; }
-        }
+            countText.text = clamped.ToString();
 
-        // Optional: fade the WHOLE group (useful for draw pile). 
-        // For Discard pile, turn fadeWhenEmpty OFF in the Inspector.
+        // Fade/interaction
         if (cg != null)
         {
             cg.alpha = (fadeWhenEmpty && empty) ? emptyAlpha : 1f;
-
             if (disableInteractionWhenEmpty)
             {
                 cg.blocksRaycasts = !empty;
                 cg.interactable = !empty;
             }
         }
+
+        // Lag: vis kun de øverste N
+        if (stackLayers != null && stackLayers.Length > 0)
+        {
+            int show = Mathf.Clamp(clamped, 0, stackLayers.Length);
+            for (int i = 0; i < stackLayers.Length; i++)
+            {
+                if (stackLayers[i] != null)
+                    stackLayers[i].gameObject.SetActive(i < show);
+            }
+        }
+
+        // Placeholder (det “tomme slot”)
+        if (placeholderImage != null)
+        {
+            switch (placeholderMode)
+            {
+                case PlaceholderVisibility.OnlyWhenEmpty:
+                    placeholderImage.enabled = empty; // viser KUN når bunken er tom
+                    break;
+                case PlaceholderVisibility.Never:
+                    placeholderImage.enabled = false;
+                    break;
+                case PlaceholderVisibility.Always:
+                    placeholderImage.enabled = true;
+                    break;
+            }
+            // Tip: slå Raycast Target fra på placeholderImage i Inspector.
+        }
+    }
+
+    /// <summary>
+    /// Convenience hvis du tidligere kaldte Set(backSprite, count).
+    /// </summary>
+    public void Set(Sprite backSprite, int count)
+    {
+        if (backSprite != null && backSprite != currentBackSprite)
+            SetBackSprite(backSprite);
+        SetCount(count);
     }
 }
