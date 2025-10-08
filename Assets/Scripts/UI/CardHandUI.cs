@@ -96,6 +96,10 @@ public class CardHandUI : MonoBehaviour
     [Header("Hand draw rules")]
     [SerializeField] private bool drawReplacementOnUse = false;
 
+    [Header("Card Use Cooldown")]
+    [SerializeField] private float cardUseCooldown = 0.3f;
+    private bool cardUseOnCooldown = false;
+
     [System.Serializable]
     public class StartingCard
     {
@@ -190,6 +194,7 @@ public class CardHandUI : MonoBehaviour
 
     private void TryUseCardIfPossible(int index)
     {
+        if (cardUseOnCooldown) return;
         index = InputShuffleSystem.Map(index);
 
         if (dimmer != null && !dimmer.dimmerOn)
@@ -294,6 +299,7 @@ public class CardHandUI : MonoBehaviour
 
     private void TryUseCard(int index)
     {
+        if (cardUseOnCooldown) return;
         if (hand == null || index < 0 || index >= hand.Length) return;
         if (hand[index] == null) return;
 
@@ -302,6 +308,7 @@ public class CardHandUI : MonoBehaviour
 
         discardPile.Add(hand[index]);
         hand[index] = null;
+        StartCoroutine(CardUseCooldownRoutine());
 
         cardSlots[index].Clear();
 
@@ -928,5 +935,10 @@ public class CardHandUI : MonoBehaviour
         NotifyHandChanged();
     }
 
-
+    private IEnumerator CardUseCooldownRoutine()
+    {
+        cardUseOnCooldown = true;
+        yield return new WaitForSeconds(cardUseCooldown);
+        cardUseOnCooldown = false;
+    }
 }

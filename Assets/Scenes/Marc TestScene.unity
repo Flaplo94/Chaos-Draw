@@ -10896,6 +10896,7 @@ MonoBehaviour:
   selectionHighlight: {fileID: 68979839}
   decklessEnabled: 0
   drawReplacementOnUse: 0
+  cardUseCooldown: 0.3
 --- !u!114 &1484783534
 MonoBehaviour:
   m_ObjectHideFlags: 0
