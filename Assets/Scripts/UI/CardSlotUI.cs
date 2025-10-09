@@ -51,22 +51,21 @@ public class CardSlotUI : MonoBehaviour
         currentAbility = a;
         if (a == null) return;
 
-        // --- show full card ---
+        // Tænd den synlige kortbaggrund/ramme
         if (cardArt)
         {
-            cardArt.sprite = defaultFrameSprite;   // back to brown frame
+            cardArt.enabled = true;
+            cardArt.sprite = defaultFrameSprite; // din brune kort-ramme
             cardArt.color = Color.white;
         }
 
         SetContentActive(true);
 
-        // text & values
         if (nameText) nameText.text = a.abilityName;
         if (dmgText) dmgText.text = a.damage > 0 ? a.damage.ToString() : "—";
         if (manaText) manaText.text = a.manaCost.ToString("0");
-        if (descriptionText) descriptionText.text = ""; // no description in hand
+        if (descriptionText) descriptionText.text = "";
 
-        // icon
         if (iconImage)
         {
             iconImage.sprite = a.icon;
@@ -74,7 +73,6 @@ public class CardSlotUI : MonoBehaviour
             iconImage.preserveAspect = true;
         }
 
-        // rarity
         var hand = FindFirstObjectByType<CardHandUI>();
         if (rarityIcon && hand != null)
         {
@@ -82,45 +80,38 @@ public class CardSlotUI : MonoBehaviour
             rarityIcon.sprite = hand.GetRarityIcon(a.rarity);
         }
 
-        // hover payload
         var hover = GetComponent<CardHoverTrigger>();
         if (hover != null) hover.SetAbility(a);
-
-        // mana overlay state will be updated from CardHandUI.UpdateCardOverlays()
-        // via SetGreyedOut()
     }
 
     public void Clear()
     {
         currentAbility = null;
 
-        var hand = FindFirstObjectByType<CardHandUI>();
+        // Sluk rammen helt (ingen permanent slot)
         if (cardArt)
         {
-            // show blue empty board; fallback to prefab frame if not set
-            Sprite empty = hand ? hand.emptySlotSprite : null;
-            cardArt.sprite = empty ? empty : defaultFrameSprite;
+            cardArt.enabled = false;      // <-- vigtig linje
+            cardArt.sprite = defaultFrameSprite; // reset til sikkerhed
             cardArt.color = Color.white;
         }
 
-        // hide ALL other visuals so only the empty board remains
+        // Skjul alle kort-elementer
         SetContentActive(false);
 
-        // clean fields
+        // Ryd felter
         if (nameText) nameText.text = "";
         if (iconImage) { iconImage.sprite = null; iconImage.color = Color.clear; }
         if (dmgText) dmgText.text = "";
         if (manaText) manaText.text = "";
         if (descriptionText) descriptionText.text = "";
         if (rarityIcon) rarityIcon.enabled = false;
-
-        // ensure overlay is off for empty slots
         if (manaOverlay) manaOverlay.enabled = false;
 
-        // prevent hover from showing stale data
         var hover = GetComponent<CardHoverTrigger>();
         if (hover != null) hover.SetAbility(null);
     }
+
 
     public void SetGreyedOut(bool grey)
     {
