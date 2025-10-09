@@ -465,13 +465,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 330189d9a93233d48bb14f5206679de8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  backImage: {fileID: 1344168911}
+  placeholderImage: {fileID: 0}
   countText: {fileID: 1215132790}
   cg: {fileID: 30129170}
+  stackLayers: []
   fadeWhenEmpty: 0
   emptyAlpha: 0.35
-  hideBackWhenEmpty: 1
   disableInteractionWhenEmpty: 1
+  placeholderMode: 0
+  propagateBackToLayers: 1
 --- !u!114 &30129172
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8350,7 +8352,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 61.98, y: 26.82}
+  m_SizeDelta: {x: 79.4015, y: 14.91}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1070110129
 MonoBehaviour:
@@ -8372,7 +8374,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Items
+  m_text: ITEMS
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ec2d85607e6c39e44986bd51ac5b198e, type: 2}
   m_sharedMaterial: {fileID: -5878321975634312132, guid: ec2d85607e6c39e44986bd51ac5b198e, type: 2}
@@ -8406,7 +8408,7 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 1
-  m_HorizontalAlignment: 1
+  m_HorizontalAlignment: 2
   m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
@@ -13692,13 +13694,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 330189d9a93233d48bb14f5206679de8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  backImage: {fileID: 1415157326}
+  placeholderImage: {fileID: 0}
   countText: {fileID: 22611673}
   cg: {fileID: 1986872451}
+  stackLayers: []
   fadeWhenEmpty: 0
   emptyAlpha: 0.35
-  hideBackWhenEmpty: 1
   disableInteractionWhenEmpty: 1
+  placeholderMode: 0
+  propagateBackToLayers: 1
 --- !u!114 &1986872453
 MonoBehaviour:
   m_ObjectHideFlags: 0
