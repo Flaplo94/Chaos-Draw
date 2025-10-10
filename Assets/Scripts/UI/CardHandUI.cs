@@ -122,19 +122,16 @@ public class CardHandUI : MonoBehaviour
         // Load all abilities from Resources
         allAbilities = new List<Ability>(Resources.LoadAll<Ability>(""));
 
-
         if (PlayerBuffManager.Instance != null)
             PlayerBuffManager.Instance.ResetRunBuffsToPersisted();
 
-        // make sure inventory starts clean for the run
         if (PlayerInventory.Instance != null)
         {
             PlayerInventory.Instance.artifacts.Clear();
             PlayerInventory.Instance.items.Clear();
         }
         PlayerBuffManager.Instance?.ResetRunBuffsToPersisted(alsoClearSaves: true);
-        // Overskriv start-listen ud fra valgt element (Fire/Lightning) og
-        // injicer evt. Healing starterkortet, hvis noden er koebt.
+
         OverrideStartingDeckFromSelectedElement();
 
         CreateStartingDeck();
@@ -202,7 +199,7 @@ public class CardHandUI : MonoBehaviour
             var ability = (index >= 0 && hand != null && index < hand.Length) ? hand[index] : null;
             if (ability != null && PlayerMana.Instance != null)
             {
-                int effectiveCost = GetEffectiveManaCost(ability); // NEW: use effective cost
+                int effectiveCost = GetEffectiveManaCost(ability);
                 if (PlayerMana.Instance.GetMana() < effectiveCost)
                 {
                     var uiMsg = Object.FindFirstObjectByType<UIMessage>();
@@ -349,7 +346,7 @@ public class CardHandUI : MonoBehaviour
             var ability = cardSlots[i].GetAbility();
             if (ability != null)
             {
-                int effectiveCost = GetEffectiveManaCost(ability); // NEW: use effective cost
+                int effectiveCost = GetEffectiveManaCost(ability);
                 bool notEnough = effectiveCost > currentMana;
                 cardSlots[i].SetGreyedOut(notEnough);
             }
@@ -442,7 +439,6 @@ public class CardHandUI : MonoBehaviour
         rewardUI.SetActive(true);
         ClearRewardCardsParent();
 
-        // Filter by element AND unlocks (important)
         var element = SessionData.SelectedElement;
         List<Ability> pool = allAbilities
             .Where(a => a != null && a.magicType == element && CardUnlocks.IsAbilityUnlocked(a))
@@ -466,7 +462,6 @@ public class CardHandUI : MonoBehaviour
         }
     }
 
-    // === REROLL: public hook kaldes af CardRewardRerollController ===
     public void RegenerateChoices()
     {
         if (rewardUI == null || !rewardUI.activeSelf) return;
@@ -498,6 +493,10 @@ public class CardHandUI : MonoBehaviour
         rewardUI.SetActive(false);
         if (skipButton != null) skipButton.gameObject.SetActive(false);
         ClearRewardCardsParent();
+
+        // NEW: Fresh hand + full mana instantly on reward close (no cooldown)
+        ResetHandAndManaImmediate();
+
         PauseManager.ReleasePause();
     }
 
@@ -757,7 +756,6 @@ public class CardHandUI : MonoBehaviour
         TryUseCardIfPossible(index);
     }
 
-    // -------------------- START-DECK OVERRIDE + HEALING INJEKTION --------------------
     private void OverrideStartingDeckFromSelectedElement()
     {
         var element = SessionData.SelectedElement;
@@ -769,7 +767,6 @@ public class CardHandUI : MonoBehaviour
         startingDeckList.Clear();
         startingDeckList.Add(new StartingCard { abilityName = startName, count = startCopies });
 
-        // Injicer Healing hvis unlocked – tilfoejes som healingCopies i start-deck.
         TryInjectHealingIntoStartingList();
     }
 
@@ -780,7 +777,6 @@ public class CardHandUI : MonoBehaviour
         var heal = ResolveAbilityByName(healingAbilityName);
         if (heal == null) return;
 
-        // CreateStartingDeck matcher paa .name, saa vi bruger asset-navnet
         startingDeckList.Add(new StartingCard { abilityName = heal.name, count = Mathf.Max(1, healingCopies) });
     }
 
@@ -799,7 +795,6 @@ public class CardHandUI : MonoBehaviour
             catch { }
         }
 
-        // PlayerPrefs fallback paa KEY_LEVELS-string: "id=lv|id=lv|."
         string id = string.IsNullOrEmpty(healingUnlockNode.id) ? healingUnlockNode.name : healingUnlockNode.id;
         string payload = PlayerPrefs.GetString("nodeLevels", "");
         if (!string.IsNullOrEmpty(payload))
@@ -815,7 +810,6 @@ public class CardHandUI : MonoBehaviour
             }
         }
 
-        // Evt. enkelt-flag som ekstra fallback (hvis du saetter det i NodeEffects)
         if (PlayerPrefs.GetInt("starter_healing", 0) == 1) return true;
 
         return false;
@@ -826,7 +820,6 @@ public class CardHandUI : MonoBehaviour
         if (allAbilities == null || allAbilities.Count == 0) return null;
         string norm = Normalize(wanted);
 
-        // match baade asset .name og abilityName, case-insensitivt og uden mellemrum/underscores/bindestreger
         foreach (var a in allAbilities)
         {
             if (a == null) continue;
@@ -850,36 +843,33 @@ public class CardHandUI : MonoBehaviour
         return sb.ToString();
     }
 
-    // ---------- NEW: single source of truth for mana cost ----------
     private static int GetEffectiveManaCost(Ability ability)
     {
         if (ability == null) return 0;
 
         int baseCost = ability.manaCost;
 
-        float mult = 1f;   // % reducer (1.0 = none)
-        float flat = 0f;   // flat -X (0 = none). Read via reflection if present.
+        float mult = 1f;
+        float flat = 0f;
 
         var pbm = PlayerBuffManager.Instance;
         if (pbm != null)
         {
-            // existing API in your codebase
             mult = pbm.GetManaCostReductionMult();
 
-            // Optional: if you've added GetManaCostFlat() in PlayerBuffManager,
-            // we’ll pick it up without introducing a compile-time dependency.
             try
             {
                 var m = pbm.GetType().GetMethod("GetManaCostFlat");
                 if (m != null && m.ReturnType == typeof(float))
                     flat = (float)m.Invoke(pbm, null);
             }
-            catch { /* safe fallback to 0 */ }
+            catch { }
         }
 
         float reduced = (baseCost / Mathf.Max(0.01f, mult)) - flat;
         return Mathf.Max(0, Mathf.CeilToInt(reduced));
     }
+
     private void DiscardHandAndRedrawAndRefill()
     {
         if (dimmer != null && dimmer.dimmerOn) return;
@@ -888,7 +878,6 @@ public class CardHandUI : MonoBehaviour
 
     private IEnumerator DiscardHandCooldown()
     {
-        // Move everything to discard first
         if (hand != null && cardSlots != null)
         {
             for (int i = 0; i < hand.Length; i++)
@@ -907,10 +896,8 @@ public class CardHandUI : MonoBehaviour
         UpdateCardOverlays();
         NotifyHandChanged();
 
-        // Wait 2 seconds before redrawing
         yield return new WaitForSecondsRealtime(2f);
 
-        // Draw to full hand
         int need = hand != null ? hand.Length : 0;
         if (drawPile.Count < need && discardPile.Count > 0)
         {
@@ -924,7 +911,6 @@ public class CardHandUI : MonoBehaviour
                 if (hand[i] == null) DrawCard(i);
         }
 
-        // Refill mana
         if (PlayerMana.Instance != null)
             PlayerMana.Instance.RefillToFull();
 
@@ -940,5 +926,52 @@ public class CardHandUI : MonoBehaviour
         cardUseOnCooldown = true;
         yield return new WaitForSeconds(cardUseCooldown);
         cardUseOnCooldown = false;
+    }
+
+    // ===== NEW: Fresh hand + full mana (no cooldown), to be used after Shop/Reward =====
+    public void ResetHandAndManaImmediate()
+    {
+        // 1) Move current hand to discard and clear slots
+        if (hand != null && cardSlots != null)
+        {
+            for (int i = 0; i < hand.Length; i++)
+            {
+                if (hand[i] != null)
+                {
+                    discardPile.Add(hand[i]);
+                    hand[i] = null;
+                    if (cardSlots[i] != null) cardSlots[i].Clear();
+                }
+            }
+        }
+
+        UpdateDiscardText();
+        UpdatePileUIs();
+        UpdateCardOverlays();
+        NotifyHandChanged();
+
+        // 2) Ensure enough cards in draw, shuffle instantly if needed
+        int need = hand != null ? hand.Length : 0;
+        if (drawPile.Count < need && discardPile.Count > 0)
+        {
+            drawPile.AddRange(discardPile);
+            discardPile.Clear();
+            Shuffle(drawPile); // instant, no delay
+        }
+
+        // 3) Draw to full hand
+        for (int i = 0; i < need; i++)
+            if (hand[i] == null) DrawCard(i);
+
+        // 4) Full mana refill
+        if (PlayerMana.Instance != null)
+            PlayerMana.Instance.RefillToFull();
+
+        // 5) Final UI sync
+        UpdateDeckText();
+        UpdateDiscardText();
+        UpdatePileUIs();
+        UpdateCardOverlays();
+        NotifyHandChanged();
     }
 }
