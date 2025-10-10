@@ -12,7 +12,10 @@ public class CardSlotUI : MonoBehaviour
     [SerializeField] private TMP_Text manaText;    // ManaValue
     [SerializeField] private Image rarityIcon;     // RarityIcon
     [SerializeField] private TMP_Text descriptionText; // Description (kept empty for hand)
+
+    [Header("Mana Overlay")]
     [SerializeField] private Image manaOverlay;    // ManaOverlay (grey-out)
+    [SerializeField, Range(0f, 1f)] private float overlayAlpha = 0.6f;
 
     // Cached prefab frame sprite so we never need to wire it in Inspector
     private Sprite defaultFrameSprite;
@@ -38,11 +41,24 @@ public class CardSlotUI : MonoBehaviour
         goDescription = transform.Find("Description")?.gameObject;
         goRarityIcon = transform.Find("RarityIcon")?.gameObject;
 
+        // --- Robust overlay binding ---
+        if (!manaOverlay)
+            manaOverlay = transform.Find("ManaOverlay")?.GetComponent<Image>();
+
         if (manaOverlay)
         {
-            manaOverlay.enabled = false;
+            // make sure it's visible when enabled
+            var c = manaOverlay.color;
+            c.a = overlayAlpha;
+            manaOverlay.color = c;
+
+            // ensure it's above everything else
+            manaOverlay.transform.SetAsLastSibling();
+
+            manaOverlay.enabled = false;       // start hidden
             manaOverlay.raycastTarget = false; // never block clicks
         }
+
         if (rarityIcon) rarityIcon.enabled = false;
     }
 
@@ -51,22 +67,21 @@ public class CardSlotUI : MonoBehaviour
         currentAbility = a;
         if (a == null) return;
 
-        // --- show full card ---
+        // turn on the visible card background/frame
         if (cardArt)
         {
-            cardArt.sprite = defaultFrameSprite;   // back to brown frame
+            cardArt.enabled = true;
+            cardArt.sprite = defaultFrameSprite; // your brown frame sprite
             cardArt.color = Color.white;
         }
 
         SetContentActive(true);
 
-        // text & values
         if (nameText) nameText.text = a.abilityName;
         if (dmgText) dmgText.text = a.damage > 0 ? a.damage.ToString() : "—";
         if (manaText) manaText.text = a.manaCost.ToString("0");
-        if (descriptionText) descriptionText.text = ""; // no description in hand
+        if (descriptionText) descriptionText.text = "";
 
-        // icon
         if (iconImage)
         {
             iconImage.sprite = a.icon;
@@ -74,7 +89,6 @@ public class CardSlotUI : MonoBehaviour
             iconImage.preserveAspect = true;
         }
 
-        // rarity
         var hand = FindFirstObjectByType<CardHandUI>();
         if (rarityIcon && hand != null)
         {
@@ -82,42 +96,37 @@ public class CardSlotUI : MonoBehaviour
             rarityIcon.sprite = hand.GetRarityIcon(a.rarity);
         }
 
-        // hover payload
         var hover = GetComponent<CardHoverTrigger>();
         if (hover != null) hover.SetAbility(a);
 
-        // mana overlay state will be updated from CardHandUI.UpdateCardOverlays()
-        // via SetGreyedOut()
+        // keep overlay on top after Show()
+        if (manaOverlay) manaOverlay.transform.SetAsLastSibling();
     }
 
     public void Clear()
     {
         currentAbility = null;
 
-        var hand = FindFirstObjectByType<CardHandUI>();
+        // turn the frame fully off (no permanent slot)
         if (cardArt)
         {
-            // show blue empty board; fallback to prefab frame if not set
-            Sprite empty = hand ? hand.emptySlotSprite : null;
-            cardArt.sprite = empty ? empty : defaultFrameSprite;
+            cardArt.enabled = false;
+            cardArt.sprite = defaultFrameSprite;
             cardArt.color = Color.white;
         }
 
-        // hide ALL other visuals so only the empty board remains
+        // hide all card elements
         SetContentActive(false);
 
-        // clean fields
+        // clear fields
         if (nameText) nameText.text = "";
         if (iconImage) { iconImage.sprite = null; iconImage.color = Color.clear; }
         if (dmgText) dmgText.text = "";
         if (manaText) manaText.text = "";
         if (descriptionText) descriptionText.text = "";
         if (rarityIcon) rarityIcon.enabled = false;
-
-        // ensure overlay is off for empty slots
         if (manaOverlay) manaOverlay.enabled = false;
 
-        // prevent hover from showing stale data
         var hover = GetComponent<CardHoverTrigger>();
         if (hover != null) hover.SetAbility(null);
     }
@@ -125,7 +134,18 @@ public class CardSlotUI : MonoBehaviour
     public void SetGreyedOut(bool grey)
     {
         // Called by CardHandUI.UpdateCardOverlays()
-        if (manaOverlay) manaOverlay.enabled = grey && currentAbility != null;
+        if (!manaOverlay || currentAbility == null)
+            return;
+
+        // keep overlay above siblings
+        manaOverlay.transform.SetAsLastSibling();
+
+        // ensure alpha in case prefab color was reset
+        var c = manaOverlay.color;
+        c.a = overlayAlpha;
+        manaOverlay.color = c;
+
+        manaOverlay.enabled = grey;
     }
 
     public Ability GetAbility() => currentAbility;

@@ -184,7 +184,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &8298632723074599606
 RectTransform:
   m_ObjectHideFlags: 0
@@ -467,6 +467,7 @@ MonoBehaviour:
   rarityIcon: {fileID: 8018995383471970929}
   descriptionText: {fileID: 3812573084427280752}
   manaOverlay: {fileID: 5445362895133683085}
+  overlayAlpha: 0.95
 --- !u!114 &8011601042770954483
 MonoBehaviour:
   m_ObjectHideFlags: 0

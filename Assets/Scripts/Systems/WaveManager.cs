@@ -53,9 +53,8 @@ public class WaveManager : MonoBehaviour
     [Header("Scene Transition")]
     [SerializeField] public string afterWave20Scene = "TYscene";
 
-    private int bossesKilled = 0; // track bosses killed
+    private int bossesKilled = 0;
 
-    // --- ADD: guard mod dobbelt EndRun ---
     private bool runEnded = false;
 
     public int CurrentWave => currentWave;
@@ -72,7 +71,6 @@ public class WaveManager : MonoBehaviour
         if (musicManager != null && normalMusic != null)
             musicManager.PlayMusic(normalMusic);
 
-        // --- ADD: Lyt på spiller-død og afslut run ---
         if (PlayerHealth.Instance != null)
             PlayerHealth.Instance.OnDeath += HandlePlayerDeath;
 
@@ -96,7 +94,6 @@ public class WaveManager : MonoBehaviour
         {
             waveInProgress = false;
 
-            // YEETCUBE: wave just ended -> clear wave-long effects
             YeetCubeSystem.OnWaveEnd();
 
             if (bossHealthBarUI.activeSelf)
@@ -119,7 +116,7 @@ public class WaveManager : MonoBehaviour
 #if UNITY_EDITOR
         if (Input.GetKeyDown(KeyCode.B))
         {
-            currentWave = 9;               // eller 19 for boss 2
+            currentWave = 9;
             enemiesInWave.Clear();
             waveInProgress = false;
             StopAllCoroutines();
@@ -138,7 +135,6 @@ public class WaveManager : MonoBehaviour
         OnWaveStarted?.Invoke(currentWave);
         OnWaveChanged?.Invoke(currentWave);
 
-        // YEETCUBE: new wave started -> roll & apply the new effect
         YeetCubeSystem.OnWaveStart();
 
         if (currentWave % 5 == 0 && unlockedEnemyTypes < enemyPrefabs.Length)
@@ -148,7 +144,6 @@ public class WaveManager : MonoBehaviour
 
         enemiesInWave.Clear();
 
-        // Boss waves
         if (currentWave % 10 == 0)
         {
             bossHealthBarUI.SetActive(true);
@@ -176,7 +171,7 @@ public class WaveManager : MonoBehaviour
                 bh.OnDeath += () =>
                 {
                     enemiesInWave.Remove(boss);
-                    bossesKilled++; // increment bosses killed
+                    bossesKilled++;
 
                     if (musicManager != null && normalMusic != null)
                         musicManager.PlayMusic(normalMusic);
@@ -209,7 +204,6 @@ public class WaveManager : MonoBehaviour
             yield break;
         }
 
-        // Normal wave
         int enemyCount = Mathf.RoundToInt(startEnemyCount * Mathf.Pow(1.2f, currentWave));
 
         bool singleTypeWave = (currentWave % 5 == 0);
@@ -274,6 +268,10 @@ public class WaveManager : MonoBehaviour
         if (ShopManager.Instance != null)
             ShopManager.Instance.OnClosed -= HandleShopClosedAfterWave;
 
+        // NEW: Fresh hand + full mana instantly when leaving Shop
+        if (cardHandUI != null)
+            cardHandUI.ResetHandAndManaImmediate();
+
         StartCoroutine(NextWave());
     }
 
@@ -288,10 +286,9 @@ public class WaveManager : MonoBehaviour
 
     public void EndRun()
     {
-        if (runEnded) return; // --- ADD guard ---
+        if (runEnded) return;
         runEnded = true;
 
-        // --- ADD: Første død = lås skill tree op (persist) ---
         if (MetaProgressionManager.Instance != null && !MetaProgressionManager.Instance.skillTreeUnlocked)
         {
             MetaProgressionManager.Instance.skillTreeUnlocked = true;
