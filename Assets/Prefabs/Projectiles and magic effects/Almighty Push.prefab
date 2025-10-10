@@ -44,13 +44,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0250d572af4533b4584c6f80c987f960, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  radius: 6
+  range: 10
   innerRadius: 0
-  pushForce: 18
+  pushForce: 10000
   impulseBoost: 0
   enemyLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 640
   selfDestructAfter: 0.25
   applyStun: 0
   stunDuration: 0.15

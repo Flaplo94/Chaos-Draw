@@ -21,4 +21,4 @@ MonoBehaviour:
   description: Pushes enemies away in a ring.
   rarity: 0
   magicType: 2
-  previewMode: 0
+  previewMode: 2

@@ -1,9 +1,9 @@
 using UnityEngine;
-
+using System.Collections;
 public class AlmightyPush : MonoBehaviour, IAbilityBehavior
 {
     [Header("Push Settings")]
-    [SerializeField] private float radius = 6f;
+    [SerializeField] private float range = 6f;
     [SerializeField] private float innerRadius = 0f;
     [SerializeField] private float pushForce = 18f;       // continuous force
     [SerializeField] private float impulseBoost = 0f;     // one-time impulse
@@ -45,13 +45,13 @@ public class AlmightyPush : MonoBehaviour, IAbilityBehavior
         switch (rarity)
         {
             case Rarity.Uncommon:
-                radius *= 1.10f; pushForce *= 1.10f; break;
+                range *= 1.10f; pushForce *= 1.10f; break;
             case Rarity.Rare:
-                radius *= 1.25f; pushForce *= 1.20f; break;
+                range *= 1.25f; pushForce *= 1.20f; break;
             case Rarity.Epic:
-                radius *= 1.40f; pushForce *= 1.30f; impulseBoost += 2f; break;
+                range *= 1.40f; pushForce *= 1.30f; impulseBoost += 2f; break;
             case Rarity.Legendary:
-                radius *= 1.60f; pushForce *= 1.40f; impulseBoost += 4f; applyStun = true; stunDuration = Mathf.Max(stunDuration, 0.2f); break;
+                range *= 1.60f; pushForce *= 1.40f; impulseBoost += 4f; applyStun = true; stunDuration = Mathf.Max(stunDuration, 0.2f); break;
         }
         return true;
     }
@@ -67,7 +67,7 @@ public class AlmightyPush : MonoBehaviour, IAbilityBehavior
             LuckyShotSystem.OnSpellCast(() =>
             {
                 Vector2 fwd = (castDir.sqrMagnitude > 0.0001f) ? castDir.normalized : Vector2.right;
-                float fwdDist = Mathf.Max(duplicateForwardOffsetMin, radius * duplicateForwardOffsetScale);
+                float fwdDist = Mathf.Max(duplicateForwardOffsetMin, range * duplicateForwardOffsetScale);
                 Vector3 p2 = transform.position + (Vector3)(fwd * fwdDist);
 
                 var dup = Instantiate(gameObject, p2, transform.rotation);
@@ -86,25 +86,33 @@ public class AlmightyPush : MonoBehaviour, IAbilityBehavior
 
     private void DoPush()
     {
-        float r = Mathf.Max(0f, radius);
+        float r = Mathf.Max(0f, range);
         float inner = Mathf.Clamp(innerRadius, 0f, r);
 
         Collider2D[] hits = (enemyLayer.value == 0)
             ? Physics2D.OverlapCircleAll(transform.position, r)
             : Physics2D.OverlapCircleAll(transform.position, r, enemyLayer);
 
-        if (hits == null || hits.Length == 0) return;
+        if (hits == null || hits.Length == 0)
+        {
+            Debug.Log("[AlmightyPush] No targets found in radius " + r);
+            return;
+        }
 
         Vector2 center = transform.position;
+        Debug.Log($"[AlmightyPush] Pushing {hits.Length} colliders within radius {r}");
 
         foreach (var h in hits)
         {
             if (!h) continue;
 
-            // Only affect actual enemies/bosses (consistent with your other abilities)
-            bool isEnemy = h.TryGetComponent(out EnemyHealth eh);
-            bool isBoss = h.TryGetComponent(out BossHealth bh);
-            if (!isEnemy && !isBoss) continue;
+            // Accept anything with enemy tag or movement scripts
+            bool hasFollow = h.TryGetComponent<EnemyFollow>(out _);
+            bool hasFly = h.TryGetComponent<FlyingEnemy>(out _);
+            bool tagged = h.CompareTag("Enemy");
+
+            if (!hasFollow && !hasFly && !tagged)
+                continue;
 
             Vector2 delta = (Vector2)h.transform.position - center;
             float dist = delta.magnitude;
@@ -112,22 +120,47 @@ public class AlmightyPush : MonoBehaviour, IAbilityBehavior
 
             Vector2 dir = delta / Mathf.Max(dist, 0.001f);
 
-            var rb = h.attachedRigidbody;
-            if (rb != null)
-            {
-                // light falloff so nearer targets get slightly more oomph
-                float falloff = 1f - Mathf.Clamp01((dist - inner) / Mathf.Max(0.001f, (r - inner)));
-                float applied = pushForce * (0.75f + 0.25f * falloff);
+            // Calculate distance based on radius/pushForce
+            float falloff = 1f - Mathf.Clamp01((dist - inner) / Mathf.Max(0.001f, (r - inner)));
+            float shoveDistance = Mathf.Clamp(pushForce * falloff * 0.15f, 1.5f, 10f);
 
-                rb.AddForce(dir * applied, ForceMode2D.Force);
-                if (impulseBoost > 0f)
-                    rb.AddForce(dir * impulseBoost, ForceMode2D.Impulse);
-            }
+            // Smooth movement over a few frames so it's visible
+            StartCoroutine(KnockbackTransform(h.transform, dir, shoveDistance, 0.10f));
 
             if (applyStun)
-                StunReceiver.ApplyTo(h.transform, stunDuration); // same utility used in GodSpeed
+                StartCoroutine(DelayedStun(h.transform, stunDuration, 0.12f));
         }
     }
+
+
+    private IEnumerator KnockbackTransform(Transform target, Vector2 dir, float distance, float duration)
+    {
+        if (target == null) yield break;
+
+        Vector3 start = target.position;
+        Vector3 end = start + (Vector3)(dir.normalized * distance);
+
+        float t = 0f;
+        while (t < duration && target != null)
+        {
+            t += Time.deltaTime;
+            float alpha = t / Mathf.Max(0.0001f, duration);
+            // Ease-out
+            alpha = 1f - (1f - alpha) * (1f - alpha);
+            target.position = Vector3.Lerp(start, end, alpha);
+            yield return null;
+        }
+
+        if (target != null) target.position = end;
+    }
+
+    private IEnumerator DelayedStun(Transform targetRoot, float duration, float delay)
+    {
+        if (targetRoot == null) yield break;
+        if (delay > 0f) yield return new WaitForSeconds(delay);
+        StunReceiver.ApplyTo(targetRoot, duration);
+    }
+
 
     // Kept for consistency with abilities that drive SFX via Animation Events
     public void PlayImpactSound()
@@ -143,7 +176,7 @@ public class AlmightyPush : MonoBehaviour, IAbilityBehavior
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = new Color(0.25f, 0.6f, 1f, 0.35f);
-        Gizmos.DrawWireSphere(transform.position, radius);
+        Gizmos.DrawWireSphere(transform.position, range);
 
         if (innerRadius > 0f)
         {
