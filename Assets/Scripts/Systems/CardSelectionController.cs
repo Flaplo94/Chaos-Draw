@@ -161,6 +161,7 @@ public class CardSelectionController : MonoBehaviour
     private void OnSmartStart(InputAction.CallbackContext ctx)
     {
         if (!systemEnabled) return;
+        if (selectedIndex < 0) return;
         var a = handUI != null ? handUI.GetAbilityAt(selectedIndex) : null;
         if (a == null || indicator == null) return;
         indicator.ShowPreviewFor(a);
@@ -188,12 +189,36 @@ public class CardSelectionController : MonoBehaviour
 
     private void SelectIndex(int index)
     {
+        if (handUI == null)
+        {
+            selectedIndex = -1;
+            stickyId = null;
+            return;
+        }
+
+        if (index < 0)
+        {
+            selectedIndex = -1;
+            handUI.SetSelectedIndex(-1); // clears highlight in UI
+            stickyId = null;
+            UpdateNameLabel();           // hides name
+            return;
+        }
+
         selectedIndex = Mathf.Clamp(index, 0, Mathf.Max(0, handUI.HandLength - 1));
-        handUI.SetSelectedIndex(selectedIndex);
-
         var a = handUI.GetAbilityAt(selectedIndex);
-        stickyId = a != null ? GetAbilityId(a) : null;
 
+        if (a == null)
+        {
+            selectedIndex = -1;
+            handUI.SetSelectedIndex(-1);
+            stickyId = null;
+            UpdateNameLabel();
+            return;
+        }
+
+        handUI.SetSelectedIndex(selectedIndex);
+        stickyId = GetAbilityId(a);
         UpdateNameLabel();
     }
     private void UpdateNameLabel()
@@ -225,17 +250,17 @@ public class CardSelectionController : MonoBehaviour
             int r = Wrap(from + d, count); if (handUI.GetAbilityAt(r) != null) return r;
             int l = Wrap(from - d, count); if (handUI.GetAbilityAt(l) != null) return l;
         }
-        return 0;
+        return -1;
     }
     private int FindFirstNonNull(int start)
     {
-        int count = handUI.HandLength;
+        int count = handUI != null ? handUI.HandLength : 0;
         for (int i = 0; i < count; i++)
         {
             int idx = Wrap(start + i, count);
             if (handUI.GetAbilityAt(idx) != null) return idx;
         }
-        return 0;
+        return -1;
     }
     private static int Wrap(int i, int count)
     {

@@ -725,7 +725,13 @@ public class CardHandUI : MonoBehaviour
     {
         if (selectionHighlight == null || cardSlots == null) return;
 
-        if (selectedIndex < 0 || selectedIndex >= cardSlots.Length || cardSlots[selectedIndex] == null)
+        bool invalid =
+            selectedIndex < 0 ||
+            selectedIndex >= cardSlots.Length ||
+            cardSlots[selectedIndex] == null ||
+            GetAbilityAt(selectedIndex) == null; // NEW: hide when no card in the slot
+
+        if (invalid)
         {
             selectionHighlight.gameObject.SetActive(false);
             return;
@@ -739,7 +745,6 @@ public class CardHandUI : MonoBehaviour
         selectionHighlight.anchorMax = new Vector2(1, 1);
         selectionHighlight.offsetMin = Vector2.zero;
         selectionHighlight.offsetMax = Vector2.zero;
-
         selectionHighlight.SetSiblingIndex(0);
 
         var img = selectionHighlight.GetComponent<Image>();
