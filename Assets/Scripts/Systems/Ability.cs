@@ -1,7 +1,7 @@
 using UnityEngine;
 
 public enum Rarity { Common, Uncommon, Rare, Epic, Legendary }
-public enum MagicType { Fire, Lightning, Other }
+public enum MagicType { Fire, Lightning, Utility }
 public enum SmartcastMode { Auto, LineFromPlayer, CircleOnPlayer, CircleOnMouse, ConeFromPlayer }
 
 [CreateAssetMenu(fileName = "NewAbility", menuName = "Abilities/Ability")]
@@ -18,14 +18,14 @@ public class Ability : ScriptableObject
 
     [Header("Ability Settings (UI + Balance)")]
     [Min(0)] public int damage = 0;               //  NYT felt til kort-UI
-    [Min(0)] public int manaCost = 10;         // mana cost for at spille ability
+    [Min(0)] public int manaCost = 1;         // mana cost for at spille ability
     [TextArea] public string description;         // kortbeskrivelse til reward card
 
     [Header("Rarity")]
     public Rarity rarity = Rarity.Common;
 
     [Header("Magic Type (informativ – bruges i ability scripts)")]
-    public MagicType magicType = MagicType.Other;
+    public MagicType magicType = MagicType.Utility;
 
     [Header("Smartcast Preview (optional)")]
     public SmartcastMode previewMode = SmartcastMode.Auto;

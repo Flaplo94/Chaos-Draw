@@ -46,6 +46,14 @@ public class EnemyFollow : MonoBehaviour
     {
         if (isDead) { rb.linearVelocity = Vector2.zero; return; }
 
+        // ADD: skip all steering while stunned so knockback is visible
+        // Implement StunReceiver.IsStunned(GameObject) (or adapt this line to your StunReceiver API)
+        if (StunReceiver.IsStunned(gameObject))
+        {
+            rb.linearVelocity = Vector2.zero;
+            return;
+        }
+
         // reacquire if needed
         if (player == null)
         {
@@ -115,14 +123,12 @@ public class EnemyFollow : MonoBehaviour
         }
         if (count > 0) separation /= count;
 
-        // --- NEW: obstacle avoidance ---
+        // obstacle avoidance
         Vector2 avoid = Vector2.zero;
         RaycastHit2D hit = Physics2D.Raycast(rb.position, toTarget, avoidDistance, obstacleMask);
         if (hit.collider != null)
         {
-            // calculate a perpendicular direction to slide around the obstacle
             Vector2 perp = Vector2.Perpendicular(hit.normal).normalized;
-            // choose the side pointing more toward the target
             if (Vector2.Dot(perp, toTarget) < 0) perp = -perp;
             avoid = perp * avoidStrength;
         }
@@ -142,5 +148,16 @@ public class EnemyFollow : MonoBehaviour
     {
         isDead = true;
         rb.linearVelocity = Vector2.zero;
+    }
+
+    [ContextMenu("DebugKick")]
+    public void DebugKick()
+    {
+        var rb = GetComponent<Rigidbody2D>();
+        if (rb != null)
+        {
+            Debug.Log($"[DEBUG] Applying test impulse to {name}");
+            rb.AddForce(Vector2.up * 20f, ForceMode2D.Impulse);
+        }
     }
 }

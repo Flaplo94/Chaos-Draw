@@ -9,7 +9,7 @@ public class StunReceiver : MonoBehaviour
     [Tooltip("If off, this unit will ignore stun attempts.")]
     public bool canBeStunned = true;
 
-    public bool IsStunned { get; private set; }
+    public bool IsCurrentlyStunned { get; private set; }
 
     private float timer;
     private readonly List<Behaviour> disabledBehaviours = new List<Behaviour>();
@@ -26,7 +26,7 @@ public class StunReceiver : MonoBehaviour
 
     void Update()
     {
-        if (!IsStunned) return;
+        if (!IsCurrentlyStunned) return;
         timer -= Time.deltaTime;
         if (timer <= 0f) ExitStun();
     }
@@ -35,14 +35,14 @@ public class StunReceiver : MonoBehaviour
     {
         if (!canBeStunned || duration <= 0f) return;
 
-        if (!IsStunned) EnterStun();
+        if (!IsCurrentlyStunned) EnterStun();
         // If already stunned, extend the timer to the longest remaining
         timer = Mathf.Max(timer, duration);
     }
 
     private void EnterStun()
     {
-        IsStunned = true;
+        IsCurrentlyStunned = true;
 
         // Freeze physics (if present)
         if (rb != null)
@@ -86,7 +86,7 @@ public class StunReceiver : MonoBehaviour
             rb.linearVelocity = savedVel;
         }
 
-        IsStunned = false;
+        IsCurrentlyStunned = false;
         timer = 0f;
     }
 
@@ -111,5 +111,14 @@ public class StunReceiver : MonoBehaviour
         var s = targetRoot.GetComponent<StunReceiver>();
         if (!s) s = targetRoot.gameObject.AddComponent<StunReceiver>();
         s.ApplyStun(duration);
+    }
+
+    public static bool IsStunned(GameObject go)
+    {
+        if (go == null) return false;
+        StunReceiver sr;
+        if (go.TryGetComponent(out sr))
+            return sr != null && sr.enabled && sr.IsCurrentlyStunned;
+        return false;
     }
 }
