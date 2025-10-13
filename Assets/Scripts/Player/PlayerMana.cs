@@ -67,7 +67,7 @@ public class PlayerMana : MonoBehaviour
 
     private void UpdateUI()
     {
-        float ratio = currentMana / maxMana;
+        float ratio = maxMana > 0f ? currentMana / maxMana : 0f;
 
         if (manaFill != null)
             manaFill.fillAmount = ratio;
@@ -76,7 +76,7 @@ public class PlayerMana : MonoBehaviour
             manaEffect.fillAmount = ratio;
 
         if (manaText != null)
-            manaText.text = $"{Mathf.FloorToInt(currentMana)}/{Mathf.FloorToInt(maxMana)}";
+            manaText.text = Mathf.FloorToInt(currentMana).ToString();
 
         if (edgeVfx != null && manaFill != null)
         {
@@ -87,6 +87,7 @@ public class PlayerMana : MonoBehaviour
             );
         }
     }
+
     public float GetMana() => currentMana;
     public float GetMaxMana() => maxMana;
 }

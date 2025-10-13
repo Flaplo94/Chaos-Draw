@@ -107,7 +107,6 @@ RectTransform:
   - {fileID: 170857060069396479}
   - {fileID: 1513762258059800735}
   - {fileID: 1513762257587064122}
-  - {fileID: 7215064007546423793}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -643,6 +642,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1513762257574484259}
+  - {fileID: 7215064007546423793}
   - {fileID: 5635866273280165614}
   - {fileID: 1513762257719543349}
   m_Father: {fileID: 1513762257062463544}
@@ -728,12 +728,12 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5995505127276028656}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1513762257062463544}
+  m_Father: {fileID: 170857060069396479}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -768,7 +768,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 100/100
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 7561f316ddc2b73499654b47ee6e8368, type: 2}
   m_sharedMaterial: {fileID: -8986524278479716717, guid: 7561f316ddc2b73499654b47ee6e8368, type: 2}
@@ -795,8 +795,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 100
-  m_fontSizeBase: 100
+  m_fontSize: 108.3
+  m_fontSizeBase: 108.3
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
