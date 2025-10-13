@@ -17,8 +17,8 @@ MonoBehaviour:
   tagline: 'Aggressive
 
     Damage over Time'
-  icon: {fileID: -5458898548463836727, guid: c23d37ce10cdff24fa3b3b03aedc6b0b, type: 3}
-  banner: {fileID: -5458898548463836727, guid: c23d37ce10cdff24fa3b3b03aedc6b0b, type: 3}
+  icon: {fileID: -4562668387381167726, guid: 9d1eb9f1db8a411498d1f24f5eb24836, type: 3}
+  banner: {fileID: -4562668387381167726, guid: 9d1eb9f1db8a411498d1f24f5eb24836, type: 3}
   uiTint: {r: 1, g: 1, b: 1, a: 1}
   unlockedByDefault: 1
   startingCardsPreview:
