@@ -200,7 +200,7 @@ public class PlayerHealth : MonoBehaviour
             hpEffect.fillAmount = ratio;
 
         if (hpText != null)
-            hpText.text = $"{currentHealth}/{maxHealth}";
+            hpText.text = currentHealth.ToString();
 
         if (edgeVfx != null && healthFill != null)
         {
@@ -211,6 +211,7 @@ public class PlayerHealth : MonoBehaviour
             );
         }
     }
+
 
     // --- Simpel regen pr. 5 sek baseret på PBM:
     private void StartHPRegen()
