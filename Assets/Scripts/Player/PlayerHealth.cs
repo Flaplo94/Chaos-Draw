@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections.Generic;
 
 public class PlayerHealth : MonoBehaviour
 {
@@ -28,6 +29,8 @@ public class PlayerHealth : MonoBehaviour
     // Tracking for MaxHP-buffs & regen
     private int baseMaxHealth;
     private Coroutine regenRoutine;
+
+    private readonly Dictionary<object, float> _incomingDamageMults = new Dictionary<object, float>();
 
     void Awake()
     {
@@ -121,7 +124,7 @@ public class PlayerHealth : MonoBehaviour
             float mult = 1f - red; // 0.10 -> 90% damage
             amount = Mathf.Max(0, Mathf.RoundToInt(amount * mult));
         }
-
+        amount = Mathf.RoundToInt(amount * GetCombinedIncomingDamageMultiplier());
         currentHealth -= amount;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
 
@@ -232,5 +235,29 @@ public class PlayerHealth : MonoBehaviour
                 }
             }
         }
+    }
+
+    /// Register a multiplier to incoming damage (e.g., 0.5f = take 50% damage).
+    public void AddIncomingDamageMultiplier(object owner, float multiplier)
+    {
+        if (owner == null) return;
+        // clamp to sane range; allow >1 for vulnerability effects too
+        float m = Mathf.Max(0f, multiplier);
+        _incomingDamageMults[owner] = m;
+    }
+
+    /// Remove a previously-registered multiplier for this owner.
+    public void RemoveIncomingDamageMultiplier(object owner)
+    {
+        if (owner == null) return;
+        _incomingDamageMults.Remove(owner);
+    }
+
+    /// Helper to combine all active multipliers (multiplicative stacking)
+    private float GetCombinedIncomingDamageMultiplier()
+    {
+        float m = 1f;
+        foreach (var kv in _incomingDamageMults) m *= kv.Value;
+        return m;
     }
 }

@@ -9,8 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 847208665296442257}
+  - component: {fileID: -812183276265814189}
   m_Layer: 0
-  m_Name: Blink
+  m_Name: Sprint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -31,3 +32,23 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-812183276265814189
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2944390290535495576}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f2da39e0ea983945ab7065c80e1d2e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  duration: 3
+  speedMultiplier: 2
+  auraController: {fileID: 0}
+  auraLoopState: Loop
+  auraAlpha: 0.4
+  startSfx: {fileID: 0}
+  endSfx: {fileID: 0}
+  audioSource: {fileID: 0}
