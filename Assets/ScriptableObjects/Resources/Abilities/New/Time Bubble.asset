@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Time Bubble
   m_EditorClassIdentifier: 
   abilityName: Time Bubble
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 0683c504453e1b54ab07289d0b642e09, type: 3}
   effectPrefab: {fileID: 0}
   spawnAtMousePosition: 0
   damage: 0

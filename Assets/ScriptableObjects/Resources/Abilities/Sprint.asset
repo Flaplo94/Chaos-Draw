@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 810580b0db5b0e84587b09ccac852a30, type: 3}
-  m_Name: Stoneform
+  m_Name: Sprint
   m_EditorClassIdentifier: 
-  abilityName: Stoneform
-  icon: {fileID: 0}
-  effectPrefab: {fileID: 0}
+  abilityName: Sprint
+  icon: {fileID: 21300000, guid: a9b0bd20366ceb140931b8cc41ff67bb, type: 3}
+  effectPrefab: {fileID: 2944390290535495576, guid: 8e79d8f0ae52ac24b8df3700bb03a844, type: 3}
   spawnAtMousePosition: 0
   damage: 0
-  manaCost: 2
-  description: "\u221250% damage taken for 3s but \u221220% movement speed."
+  manaCost: 1
+  description: +100% movement speed for 3s.
   rarity: 0
   magicType: 2
-  previewMode: 0
+  previewMode: 2

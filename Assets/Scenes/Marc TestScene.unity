@@ -10978,7 +10978,7 @@ MonoBehaviour:
   startingDeckList:
   - abilityName: Healing
     count: 1
-  fireStartAbilityName: Almighty Push
+  fireStartAbilityName: Stoneform
   lightningStartAbilityName: LightningBall
   startCopies: 9
   healingUnlockNode: {fileID: 0}
