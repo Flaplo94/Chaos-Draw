@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class Bullet : MonoBehaviour
 {
@@ -22,6 +23,29 @@ public class Bullet : MonoBehaviour
 
     private Rigidbody2D rb;
 
+    // — external slow registry for zones like Time Bubble —
+    private readonly Dictionary<object, float> _externalSpeedMults
+        = new Dictionary<object, float>();
+    [SerializeField] private float minExternalSpeedMult = 0.10f; // floor so bullets never freeze
+    private float _lastAppliedExternalMult = 1f;
+    public void AddExternalSpeedMultiplier(object owner, float multiplier)
+    {
+        if (owner == null) return;
+        _externalSpeedMults[owner] = Mathf.Clamp01(multiplier);
+    }
+    public void RemoveExternalSpeedMultiplier(object owner)
+    {
+        if (owner == null) return;
+        _externalSpeedMults.Remove(owner);
+    }
+    private float GetCombinedExternalSpeedMultiplier()
+    {
+        float m = 1f;
+        foreach (var kv in _externalSpeedMults) m *= kv.Value;
+        return Mathf.Clamp01(m);
+    }
+
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -37,6 +61,28 @@ public class Bullet : MonoBehaviour
         }
     }
 
+    private void FixedUpdate()
+    {
+        if (!rb || !rb.simulated) return;
+
+        // Compute target external multiplier. When no sources -> 1f (restore speed).
+        float targetMult = (_externalSpeedMults.Count == 0)
+            ? 1f
+            : Mathf.Max(minExternalSpeedMult, GetCombinedExternalSpeedMultiplier());
+
+        // If multiplier changed since last tick, scale velocity by the delta (NOT compounding).
+        if (!Mathf.Approximately(targetMult, _lastAppliedExternalMult))
+        {
+            // Handle the rare case where _lastAppliedExternalMult == 0 (shouldn’t happen with our floor).
+            float safeLast = (_lastAppliedExternalMult <= 0.0001f) ? 1f : _lastAppliedExternalMult;
+            float factor = targetMult / safeLast;
+
+            rb.linearVelocity *= factor;
+            _lastAppliedExternalMult = targetMult;
+        }
+    }
+
+
     // Trigger-collision
     void OnTriggerEnter2D(Collider2D other) => HandleHit(other ? other.gameObject : null);
 
@@ -47,9 +93,7 @@ public class Bullet : MonoBehaviour
     {
         if (!hit) return;
 
-        var enemy = hit.GetComponent<EnemyHealth>()
-                 ?? hit.GetComponentInParent<EnemyHealth>()
-                 ?? hit.GetComponentInChildren<EnemyHealth>();
+        var enemy = hit.GetComponent<EnemyHealth>();
 
         if (enemy != null)
         {
@@ -63,9 +107,7 @@ public class Bullet : MonoBehaviour
             return;
         }
 
-        var boss = hit.GetComponent<BossHealth>()
-                ?? hit.GetComponentInParent<BossHealth>()
-                ?? hit.GetComponentInChildren<BossHealth>();
+        var boss = hit.GetComponent<BossHealth>();
 
         if (boss != null)
         {
