@@ -76,8 +76,32 @@ public class Ability : ScriptableObject
             return false;
         }
 
-        // Brug mana efter vellykket init
-        if (!PlayerMana.Instance.TrySpend(manaCost))
+        // --- NEW: spend the SAME effective cost the UI shows (mult + flat, min 0) ---
+        int effectiveCost = manaCost;
+        var pbm = PlayerBuffManager.Instance;
+        if (pbm != null)
+        {
+            float mult = 1f;
+            float flat = 0f;
+
+            // same mult used in CardHandUI.GetEffectiveManaCost()
+            mult = pbm.GetManaCostReductionMult();
+
+            // same flat used in CardHandUI (via reflection)
+            try
+            {
+                var m = pbm.GetType().GetMethod("GetManaCostFlat");
+                if (m != null && m.ReturnType == typeof(float))
+                    flat = (float)m.Invoke(pbm, null);
+            }
+            catch { }
+
+            float reduced = (manaCost / Mathf.Max(0.01f, mult)) - flat;
+            effectiveCost = Mathf.Max(0, Mathf.CeilToInt(reduced));
+        }
+
+        // Brug mana efter vellykket init (med rabatten anvendt)
+        if (!PlayerMana.Instance.TrySpend(effectiveCost))
         {
             Destroy(obj);
             return false;
@@ -85,4 +109,5 @@ public class Ability : ScriptableObject
 
         return true;
     }
+
 }

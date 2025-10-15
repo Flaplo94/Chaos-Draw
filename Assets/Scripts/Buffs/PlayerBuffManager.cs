@@ -61,6 +61,7 @@ public class PlayerBuffManager : MonoBehaviour
     private readonly List<ActiveBuff> activeBuffs = new();
     public IReadOnlyList<ActiveBuff> ActiveBuffs => activeBuffs;
 
+    private int _flowCharges = 0;
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -166,7 +167,16 @@ public class PlayerBuffManager : MonoBehaviour
 
     public float GetManaRegenMult() => manaRegenMult;
     public float GetManaCostReductionMult() => manaCostReductionMult;
-    public float GetManaCostFlat() => manaCostFlat;
+    public float GetManaCostFlat()
+    {
+        // Each active Flow charge reduces by 1. Only one applies per cast.
+        float v = (_flowCharges > 0) ? 1f : 0f;
+#if UNITY_EDITOR
+        Debug.Log($"[PBM] GetManaCostFlat() => {v} (charges={_flowCharges})");
+#endif
+        return v;
+    }
+
 
     // --- Persistence API (kaldes fra NodeEffects + på Awake) ---
     public void SavePersistentTotals()
@@ -257,5 +267,54 @@ public class PlayerBuffManager : MonoBehaviour
                                                          // If you keep any runtime-only containers, clear them here (e.g., active runtime buffs)
 
         OnValuesChanged?.Invoke();                       // safe to invoke here
+    }
+    public void AddFlowCharges(int n)
+    {
+        if (n <= 0) return;
+        _flowCharges += n;
+#if UNITY_EDITOR
+        Debug.Log($"[PBM] Flow +{n} -> charges={_flowCharges}");
+#endif
+        OnValuesChanged?.Invoke();
+    }
+    public void ConsumeOneFlowChargeIfActive()
+    {
+        if (_flowCharges > 0)
+        {
+            _flowCharges--;
+#if UNITY_EDITOR
+            Debug.Log($"[PBM] Flow consume -> charges={_flowCharges}");
+#endif
+            OnValuesChanged?.Invoke();
+        }
+    }
+    public int ComputeEffectiveManaCost(int baseCost)
+    {
+        float mult = 1f;
+        float flat = 0f;
+
+        // Your existing reduction mult
+        mult = GetManaCostReductionMult();
+
+        // CardHandUI already looks for this via reflection; reuse it directly.
+        try
+        {
+            var m = GetType().GetMethod("GetManaCostFlat");
+            if (m != null && m.ReturnType == typeof(float))
+                flat = (float)m.Invoke(this, null);
+        }
+        catch { }
+
+        float reduced = (baseCost / Mathf.Max(0.01f, mult)) - flat;
+        return Mathf.Max(0, Mathf.CeilToInt(reduced));
+    }
+    public void ResetFlowCharges()
+    {
+        if (_flowCharges != 0)
+        {
+            _flowCharges = 0;
+            Debug.Log("[PBM] Flow charges reset (R pressed).");
+            OnValuesChanged?.Invoke();
+        }
     }
 }

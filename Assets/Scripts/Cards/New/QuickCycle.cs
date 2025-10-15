@@ -1,16 +1,26 @@
 using UnityEngine;
+using System.Collections;
 
-public class QuickCycle : MonoBehaviour
+public class QuickCycle : MonoBehaviour, IAbilityBehavior
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public bool Initialize(Vector2 _, Rarity __)
     {
-        
+        StartCoroutine(Execute());
+        return true; // consume the cast
     }
 
-    // Update is called once per frame
-    void Update()
+    private IEnumerator Execute()
     {
-        
+        // Wait one frame so the played QuickCycle is already discarded/cleared by the hand system
+        yield return null;
+
+        var hand = Object.FindFirstObjectByType<CardHandUI>();
+        if (hand != null)
+        {
+            hand.DiscardOneRandomCard(); // discards one remaining card if any
+            hand.DrawExactly(2);         // draws up to 2 new cards (never fills to 4)
+        }
+
+        Destroy(gameObject);
     }
 }

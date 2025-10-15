@@ -167,7 +167,10 @@ public class CardHandUI : MonoBehaviour
             {
                 Debug.Log("Discard+Redraw pressed!");
                 if (dimmer != null && !dimmer.dimmerOn)
+                {
                     DiscardHandAndRedrawAndRefill();
+                    PlayerBuffManager.Instance?.ResetFlowCharges();
+                }
             };
             reshuffleAction.Enable();
         }
@@ -305,6 +308,8 @@ public class CardHandUI : MonoBehaviour
         bool success = hand[index].Activate();
         if (!success) return;
 
+        PlayerBuffManager.Instance?.ConsumeOneFlowChargeIfActive();
+
         discardPile.Add(hand[index]);
         hand[index] = null;
         StartCoroutine(CardUseCooldownRoutine());
@@ -365,6 +370,8 @@ public class CardHandUI : MonoBehaviour
             return emptyBack ? emptyBack : otherBack;
 
         var top = ReferenceEquals(pile, discardPile) ? pile[^1] : pile[0];
+        if (top == null)
+            return emptyBack ? emptyBack : otherBack;
         return GetBackFor(top.magicType);
     }
 
@@ -380,6 +387,10 @@ public class CardHandUI : MonoBehaviour
 
     private void UpdatePileUIs()
     {
+        // NEW: strip stray nulls once (cheap)
+        for (int i = discardPile.Count - 1; i >= 0; i--)
+            if (discardPile[i] == null) discardPile.RemoveAt(i);
+
         if (drawPileUI != null)
             drawPileUI.Set(GetTopBackFromPile(drawPile), drawPile.Count);
 
@@ -1004,6 +1015,91 @@ public class CardHandUI : MonoBehaviour
                 DrawCard(i); // uses your existing single-slot draw (will gracefully handle if deck still runs out)
         }
 
+        UpdateDeckText();
+        UpdatePileUIs();
+        UpdateCardOverlays();
+        NotifyHandChanged();
+    }
+    public bool DiscardOneRandomCard()
+    {
+        if (hand == null) return false;
+
+        var idxs = new List<int>();
+        for (int i = 0; i < hand.Length; i++)
+            if (hand[i] != null) idxs.Add(i);
+        if (idxs.Count == 0) return false;
+
+        int slot = Random.Range(0, idxs.Count);
+
+        var card = hand[slot];
+        if (card == null) return false; // slot got cleared meanwhile; bail safely
+
+        // add to discard only if non-null
+        discardPile.Add(card);
+
+        hand[slot] = null;
+        if (cardSlots != null && slot < cardSlots.Length && cardSlots[slot] != null)
+            cardSlots[slot].Clear();
+
+        UpdateDiscardText();
+        UpdatePileUIs();
+        UpdateCardOverlays();
+        NotifyHandChanged();
+        return true;
+    }
+    public void DrawExactly(int count)
+    {
+        if (hand == null || count <= 0) return;
+
+        // how many empty slots do we actually have?
+        int empty = 0;
+        for (int i = 0; i < hand.Length; i++)
+            if (hand[i] == null) empty++;
+
+        int want = Mathf.Min(count, empty);
+        if (want <= 0) return;
+
+        //  Up-front reshuffle if draw pile can't cover what we want
+        if (drawPile.Count < want && discardPile.Count > 0)
+        {
+            drawPile.AddRange(discardPile);
+            discardPile.Clear();
+            Shuffle(drawPile); // instant
+            UpdateDiscardText();
+            UpdateDeckText();
+            UpdatePileUIs();
+        }
+
+        int drawn = 0;
+        while (drawn < want)
+        {
+            // find next empty slot
+            int slot = -1;
+            for (int i = 0; i < hand.Length; i++)
+            {
+                if (hand[i] == null) { slot = i; break; }
+            }
+            if (slot == -1) break;
+
+            // Safeguard reshuffle mid-loop if we just ran out
+            if (drawPile.Count == 0 && discardPile.Count > 0)
+            {
+                drawPile.AddRange(discardPile);
+                discardPile.Clear();
+                Shuffle(drawPile);
+                UpdateDiscardText();
+                UpdateDeckText();
+                UpdatePileUIs();
+            }
+
+            if (drawPile.Count == 0) break; // nothing to draw, bail
+
+            // draw ONE into that slot using your existing path
+            DrawCard(slot);
+            drawn++;
+        }
+
+        // final UI sync
         UpdateDeckText();
         UpdatePileUIs();
         UpdateCardOverlays();

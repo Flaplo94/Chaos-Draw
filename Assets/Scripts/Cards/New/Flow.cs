@@ -1,16 +1,29 @@
 using UnityEngine;
+using System.Collections;
 
-public class Flow : MonoBehaviour
+public class Flow : MonoBehaviour, IAbilityBehavior
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    [SerializeField] private int charges = 2; // next 2 cards cost -1
+
+    // Initialize is called BEFORE Ability.Activate() spends mana.
+    // We defer granting charges by one frame so Flow doesn't discount itself.
+    public bool Initialize(Vector2 _, Rarity __)
     {
-        
+        StartCoroutine(GrantChargesNextFrame());
+        return true; // cast succeeds
     }
 
-    // Update is called once per frame
-    void Update()
+    private IEnumerator GrantChargesNextFrame()
     {
-        
+        // Wait one frame: Ability.Activate() will compute/spend cost this frame.
+        yield return null;
+
+        var pbm = PlayerBuffManager.Instance ?? FindFirstObjectByType<PlayerBuffManager>();
+        if (pbm != null)
+        {
+            pbm.AddFlowCharges(charges); // now only the NEXT casts get -1
+        }
+
+        Destroy(gameObject); // clean up the effect prefab
     }
 }
