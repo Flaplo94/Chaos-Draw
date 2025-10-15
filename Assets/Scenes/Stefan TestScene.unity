@@ -509,7 +509,6 @@ GameObject:
   - component: {fileID: 51869307}
   - component: {fileID: 51869310}
   - component: {fileID: 51869309}
-  - component: {fileID: 51869308}
   m_Layer: 5
   m_Name: SelectionHighlight
   m_TagString: Untagged
@@ -526,7 +525,7 @@ RectTransform:
   m_GameObject: {fileID: 51869306}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.7, y: 2.6, z: 0}
+  m_LocalScale: {x: 1.65, y: 2.61, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1597212919}
@@ -536,21 +535,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &51869308
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 51869306}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
-  m_EffectDistance: {x: 1, y: -1}
-  m_UseGraphicAlpha: 1
 --- !u!114 &51869309
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -571,7 +555,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: -8132171096860679671, guid: 8ef507f78ab20d04a8d2ab7da6ac43ae, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -4666,8 +4650,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07e18abbbf3ccc043a4315d551249f69, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
-  currentHealth: 100
+  maxHealth: 50
+  currentHealth: 50
   extraLives: 0
   healthFill: {fileID: 1533218594}
   hpEffect: {fileID: 891682262}
@@ -12621,7 +12605,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4466527929794740339, guid: ff498b22369daaf4bbebbb18e7d6a343, type: 3}
       propertyPath: m_fontSize
-      value: 350
+      value: 250
       objectReference: {fileID: 0}
     - target: {fileID: 4466527929794740339, guid: ff498b22369daaf4bbebbb18e7d6a343, type: 3}
       propertyPath: m_fontAsset
@@ -12645,23 +12629,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4466527929794740339, guid: ff498b22369daaf4bbebbb18e7d6a343, type: 3}
       propertyPath: m_fontSizeBase
-      value: 350
+      value: 250
       objectReference: {fileID: 0}
     - target: {fileID: 4466527929794740339, guid: ff498b22369daaf4bbebbb18e7d6a343, type: 3}
       propertyPath: m_sharedMaterial
       value: 
-      objectReference: {fileID: -5878321975634312132, guid: ec2d85607e6c39e44986bd51ac5b198e, type: 2}
-    - target: {fileID: 4466527929794740339, guid: ff498b22369daaf4bbebbb18e7d6a343, type: 3}
-      propertyPath: m_enableAutoSizing
-      value: 0
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 2100000, guid: 65eab98abe91f004691834e7e689d795, type: 2}
     - target: {fileID: 4466527929794740339, guid: ff498b22369daaf4bbebbb18e7d6a343, type: 3}
       propertyPath: m_fontColor32.rgba
       value: 4294967295
-      objectReference: {fileID: 0}
-    - target: {fileID: 4466527929794740339, guid: ff498b22369daaf4bbebbb18e7d6a343, type: 3}
-      propertyPath: m_overrideHtmlColors
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4466527929794740339, guid: ff498b22369daaf4bbebbb18e7d6a343, type: 3}
       propertyPath: m_hasFontAssetChanged
@@ -14590,7 +14566,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9217108837530423724, guid: 996fdb6ee0621fa48ad3792b307cb63a, type: 3}
       propertyPath: m_fontSize
-      value: 247.75
+      value: 250
       objectReference: {fileID: 0}
     - target: {fileID: 9217108837530423724, guid: 996fdb6ee0621fa48ad3792b307cb63a, type: 3}
       propertyPath: m_fontAsset
@@ -14598,24 +14574,16 @@ PrefabInstance:
       objectReference: {fileID: 11400000, guid: ec2d85607e6c39e44986bd51ac5b198e, type: 2}
     - target: {fileID: 9217108837530423724, guid: 996fdb6ee0621fa48ad3792b307cb63a, type: 3}
       propertyPath: m_fontStyle
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9217108837530423724, guid: 996fdb6ee0621fa48ad3792b307cb63a, type: 3}
       propertyPath: m_fontSizeBase
-      value: 247.75
-      objectReference: {fileID: 0}
-    - target: {fileID: 9217108837530423724, guid: 996fdb6ee0621fa48ad3792b307cb63a, type: 3}
-      propertyPath: m_isRightToLeft
-      value: 0
+      value: 250
       objectReference: {fileID: 0}
     - target: {fileID: 9217108837530423724, guid: 996fdb6ee0621fa48ad3792b307cb63a, type: 3}
       propertyPath: m_sharedMaterial
       value: 
-      objectReference: {fileID: -5878321975634312132, guid: ec2d85607e6c39e44986bd51ac5b198e, type: 2}
-    - target: {fileID: 9217108837530423724, guid: 996fdb6ee0621fa48ad3792b307cb63a, type: 3}
-      propertyPath: m_enableAutoSizing
-      value: 0
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 2100000, guid: 65eab98abe91f004691834e7e689d795, type: 2}
     - target: {fileID: 9217108837530423724, guid: 996fdb6ee0621fa48ad3792b307cb63a, type: 3}
       propertyPath: m_hasFontAssetChanged
       value: 0

@@ -729,7 +729,7 @@ public class CardHandUI : MonoBehaviour
             selectedIndex < 0 ||
             selectedIndex >= cardSlots.Length ||
             cardSlots[selectedIndex] == null ||
-            GetAbilityAt(selectedIndex) == null; // NEW: hide when no card in the slot
+            GetAbilityAt(selectedIndex) == null;
 
         if (invalid)
         {
@@ -737,19 +737,35 @@ public class CardHandUI : MonoBehaviour
             return;
         }
 
+        // 1) Flyt highlight ind i den valgte slot og stræk til hele kortet
         var slotRect = cardSlots[selectedIndex].GetComponent<RectTransform>();
-        selectionHighlight.gameObject.SetActive(true);
+        if (slotRect == null)
+        {
+            selectionHighlight.gameObject.SetActive(false);
+            return;
+        }
 
+        selectionHighlight.gameObject.SetActive(true);
         selectionHighlight.SetParent(slotRect, false);
-        selectionHighlight.anchorMin = new Vector2(0, 0);
-        selectionHighlight.anchorMax = new Vector2(1, 1);
+        selectionHighlight.anchorMin = new Vector2(0f, 0f);
+        selectionHighlight.anchorMax = new Vector2(1f, 1f);
         selectionHighlight.offsetMin = Vector2.zero;
         selectionHighlight.offsetMax = Vector2.zero;
-        selectionHighlight.SetSiblingIndex(0);
 
+        // 2) Læg highlight lige under ManaOverlay (ellers nær toppen som fallback)
+        int targetIndex = Mathf.Max(0, slotRect.childCount - 1); // fallback: næstøverst
+        var manaOverlay = slotRect.Find("ManaOverlay") as RectTransform;
+        if (manaOverlay != null)
+        {
+            targetIndex = manaOverlay.GetSiblingIndex(); // lander lige før overlay
+        }
+        selectionHighlight.SetSiblingIndex(targetIndex);
+
+        // 3) Sørg for at highlight ikke fanger input
         var img = selectionHighlight.GetComponent<Image>();
-        if (img) img.raycastTarget = false;
+        if (img != null) img.raycastTarget = false;
     }
+
 
     private void NotifyHandChanged()
     {
