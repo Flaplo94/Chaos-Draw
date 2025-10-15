@@ -99,6 +99,8 @@ public class CardHandUI : MonoBehaviour
     [Header("Card Use Cooldown")]
     [SerializeField] private float cardUseCooldown = 0.3f;
     private bool cardUseOnCooldown = false;
+    [SerializeField] private CardHandArc handArc;
+
 
     [System.Serializable]
     public class StartingCard
@@ -685,8 +687,12 @@ public class CardHandUI : MonoBehaviour
     public void SetSelectedIndex(int index)
     {
         selectedIndex = index;
-        UpdateSelectionHighlight();
+        UpdateSelectionHighlight();           // existing highlight logic
+
+        if (handArc != null)
+            handArc.SetSelectedIndex(selectedIndex);   // <-- vigtigt: giv buen besked
     }
+
 
     public int HandLength
     {
