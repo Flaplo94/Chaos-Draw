@@ -1,23 +1,22 @@
 using UnityEngine;
 
-public class Recharge : MonoBehaviour
+public class Recharge : MonoBehaviour, IAbilityBehavior
 {
-    [SerializeField] private int amount = 1; // +1 temp mana (tweakable if you ever want +2, etc.)
+    [SerializeField] private int amount = 1; // +1 mana immediately
 
-    void Start()
+    public bool Initialize(Vector2 _, Rarity __)
     {
         var mana = FindFirstObjectByType<PlayerMana>();
         if (mana == null)
         {
             Debug.LogWarning("[Recharge] No PlayerMana found in scene.");
             Destroy(gameObject);
-            return;
+            return true; // still consume the card so it doesn't hang
         }
 
-        // Assumes your mana system has a temp-mana API like this:
         mana.GainMana(amount);
 
-        // Done instantly; no lingering object
         Destroy(gameObject);
+        return true;
     }
 }

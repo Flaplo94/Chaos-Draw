@@ -1,23 +1,27 @@
+using System.Collections;
 using UnityEngine;
 
-public class DoOver : MonoBehaviour
+public class DoOver : MonoBehaviour, IAbilityBehavior
 {
-    private CardHandUI hand;
-
-    void Start()
+    public bool Initialize(Vector2 _, Rarity __)
     {
-        hand = FindFirstObjectByType<CardHandUI>();
-        if (hand == null)
-        {
-            Debug.LogWarning("[DoOver] No CardHandUI found in scene!");
-            Destroy(gameObject);
-            return;
-        }
+        // Wait a frame so TryUseCard() can move the played card to discard + clear its slot.
+        StartCoroutine(ExecuteNextFrame());
+        return true; // treat cast as consumed
+    }
 
-        // Discard everything, then draw a new hand
-        //hand.DiscardHand();
-        //hand.DrawToHandSize();
+    private IEnumerator ExecuteNextFrame()
+    {
+        yield return null; // next frame: the used slot is now null
 
-        Destroy(gameObject); // instantly done
+        var hand = FindFirstObjectByType<CardHandUI>();
+        if (hand == null) { Destroy(gameObject); yield break; }
+
+        hand.DiscardHandOnly();
+        hand.DrawFullHand();
+
+        Destroy(gameObject);
     }
 }
+
+

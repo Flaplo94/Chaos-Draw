@@ -11002,6 +11002,7 @@ MonoBehaviour:
   decklessEnabled: 0
   drawReplacementOnUse: 0
   cardUseCooldown: 0.3
+  handArc: {fileID: 0}
 --- !u!114 &1484783534
 MonoBehaviour:
   m_ObjectHideFlags: 0

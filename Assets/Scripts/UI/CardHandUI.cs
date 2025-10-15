@@ -538,51 +538,6 @@ public class CardHandUI : MonoBehaviour
         return Rarity.Common;
     }
 
-    private IEnumerator ManualShuffle()
-    {
-        List<Ability> allCards = new();
-        allCards.AddRange(drawPile);
-        allCards.AddRange(discardPile);
-
-        for (int i = 0; i < hand.Length; i++)
-        {
-            if (hand[i] != null)
-            {
-                allCards.Add(hand[i]);
-                hand[i] = null;
-                cardSlots[i].Clear();
-            }
-        }
-
-        drawPile.Clear();
-        discardPile.Clear();
-
-        UpdateDiscardText();
-        UpdateDeckText();
-        UpdatePileUIs();
-
-        shuffleActive = true;
-        StartShuffleSfx();
-
-        yield return new WaitForSeconds(currentManualShuffleTime);
-
-        StopShuffleSfx();
-        shuffleActive = false;
-
-        drawPile.AddRange(allCards);
-        Shuffle(drawPile);
-
-        UpdateDiscardText();
-        UpdateDeckText();
-        UpdatePileUIs();
-
-        for (int i = 0; i < hand.Length; i++)
-            DrawCard(i);
-
-        currentManualShuffleTime += 2f;
-        NotifyHandChanged();
-    }
-
     public void OnWaveCompleted()
     {
         waveCount++;
@@ -997,6 +952,59 @@ public class CardHandUI : MonoBehaviour
         // 5) Final UI sync
         UpdateDeckText();
         UpdateDiscardText();
+        UpdatePileUIs();
+        UpdateCardOverlays();
+        NotifyHandChanged();
+    }
+    public void DiscardHandOnly()
+    {
+        if (hand == null || cardSlots == null) return;
+
+        for (int i = 0; i < hand.Length; i++)
+        {
+            if (hand[i] != null)
+            {
+                discardPile.Add(hand[i]);
+                hand[i] = null;
+                if (cardSlots[i] != null) cardSlots[i].Clear();
+            }
+        }
+
+        UpdateDiscardText();
+        UpdatePileUIs();
+        UpdateCardOverlays();
+        NotifyHandChanged();
+    }
+    public void DrawFullHand()
+    {
+        if (hand == null) return;
+
+        // count how many cards we need
+        int need = 0;
+        for (int i = 0; i < hand.Length; i++)
+            if (hand[i] == null) need++;
+
+        if (need <= 0) return;
+
+        // If we don't have enough in draw, fold in discard and shuffle instantly (no coroutine/delay)
+        if (drawPile.Count < need && discardPile.Count > 0)
+        {
+            drawPile.AddRange(discardPile);
+            discardPile.Clear();
+            Shuffle(drawPile); // instant shuffle
+            UpdateDiscardText();
+            UpdateDeckText();
+            UpdatePileUIs();
+        }
+
+        // Now draw into all empty slots
+        for (int i = 0; i < hand.Length; i++)
+        {
+            if (hand[i] == null)
+                DrawCard(i); // uses your existing single-slot draw (will gracefully handle if deck still runs out)
+        }
+
+        UpdateDeckText();
         UpdatePileUIs();
         UpdateCardOverlays();
         NotifyHandChanged();
