@@ -1886,7 +1886,7 @@ MonoBehaviour:
   normalMusic: {fileID: 8300000, guid: 9438a510557d9044b9d3db1950aba009, type: 3}
   boss1Music: {fileID: 8300000, guid: 578896b009485bc44a1f6ea1ca69cb97, type: 3}
   boss2Music: {fileID: 8300000, guid: 52b261eec4f366447b17d436f3e8e1c9, type: 3}
-  startEnemyCount: 20
+  startEnemyCount: 2
   timeBetweenWaves: 0.5
   waveText: {fileID: 2018384954}
   afterWave20Scene: TYscene
@@ -10978,7 +10978,7 @@ MonoBehaviour:
   startingDeckList:
   - abilityName: Healing
     count: 1
-  fireStartAbilityName: Time Bubble
+  fireStartAbilityName: Recharge
   lightningStartAbilityName: LightningBall
   startCopies: 9
   healingUnlockNode: {fileID: 0}

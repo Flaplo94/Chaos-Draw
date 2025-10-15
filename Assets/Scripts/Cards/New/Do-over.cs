@@ -1,16 +1,23 @@
 using UnityEngine;
 
-public class Do_over : MonoBehaviour
+public class DoOver : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    private CardHandUI hand;
+
     void Start()
     {
-        
-    }
+        hand = FindFirstObjectByType<CardHandUI>();
+        if (hand == null)
+        {
+            Debug.LogWarning("[DoOver] No CardHandUI found in scene!");
+            Destroy(gameObject);
+            return;
+        }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        // Discard everything, then draw a new hand
+        //hand.DiscardHand();
+        //hand.DrawToHandSize();
+
+        Destroy(gameObject); // instantly done
     }
 }
