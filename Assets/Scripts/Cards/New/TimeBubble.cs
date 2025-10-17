@@ -84,6 +84,10 @@ public class TimeBubble : MonoBehaviour, IAbilityBehavior
         {
             var b = hits[i] ? hits[i].GetComponent<Bullet>() : null;
             if (b != null) b.AddExternalSpeedMultiplier(this, slowMultiplier);
+
+            // NEW: also slow enemy bullets already inside
+            var eb = hits[i] ? hits[i].GetComponent<EnemyBullet>() : null;
+            if (eb != null) eb.AddExternalSpeedMultiplier(this, slowMultiplier);
         }
     }
 
@@ -93,6 +97,14 @@ public class TimeBubble : MonoBehaviour, IAbilityBehavior
         if (bullet != null)
         {
             bullet.AddExternalSpeedMultiplier(this, slowMultiplier);
+            return; // do NOT add TimeBubbleEffector to bullets
+        }
+
+        // NEW: enemy bullet support
+        var enemyBullet = other.GetComponent<EnemyBullet>();
+        if (enemyBullet != null)
+        {
+            enemyBullet.AddExternalSpeedMultiplier(this, slowMultiplier);
             return; // do NOT add TimeBubbleEffector to bullets
         }
 
@@ -109,6 +121,14 @@ public class TimeBubble : MonoBehaviour, IAbilityBehavior
         if (bullet != null)
         {
             bullet.RemoveExternalSpeedMultiplier(this);
+            return; // nothing else for bullets
+        }
+
+        // NEW: enemy bullet support
+        var enemyBullet = other.GetComponent<EnemyBullet>();
+        if (enemyBullet != null)
+        {
+            enemyBullet.RemoveExternalSpeedMultiplier(this);
             return; // nothing else for bullets
         }
 
@@ -145,6 +165,15 @@ public class TimeBubble : MonoBehaviour, IAbilityBehavior
                 b.RemoveExternalSpeedMultiplier(this);
                 continue; // skip to next collider
             }
+
+            // NEW: enemy bullet support
+            var eb = results[i] ? results[i].GetComponent<EnemyBullet>() : null;
+            if (eb != null)
+            {
+                eb.RemoveExternalSpeedMultiplier(this);
+                continue;
+            }
+
             var eff = results[i] ? results[i].GetComponent<TimeBubbleEffector>() : null;
             if (eff) eff.RemoveSource(this);
         }

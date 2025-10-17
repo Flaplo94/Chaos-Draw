@@ -60,6 +60,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "Card 5",
+                    "type": "Button",
+                    "id": "c19edace-6028-4ff5-b143-b341f36fa2c5",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Reshuffle",
                     "type": "Button",
                     "id": "e06df7b0-a75b-4891-846f-6012be38b531",
@@ -259,6 +268,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "Smartcast",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "87c12a4e-e32f-4118-a172-3d271d8806d9",
+                    "path": "<Keyboard>/5",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Card 5",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

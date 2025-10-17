@@ -178,7 +178,7 @@ MonoBehaviour:
   hitTriggerName: Hit
   shieldSR: {fileID: 2751747927999673603}
   followTarget: {fileID: 0}
-  followOffset: {x: 0, y: 0, z: 0}
+  followOffset: {x: 0, y: 0.72, z: 0}
   shieldRadius: 0.15
   stackSpacing: 0.2
 --- !u!95 &-898444186571195675

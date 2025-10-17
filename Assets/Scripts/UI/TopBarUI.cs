@@ -15,6 +15,9 @@ public class TopBarUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI goldText;
     [SerializeField] private TextMeshProUGUI waveText;
 
+    // --- Added: robust wallet hook state
+    private Wallet _subscribedWallet;
+
     void OnEnable()
     {
         // Inventory events
@@ -30,12 +33,8 @@ public class TopBarUI : MonoBehaviour
                 AddItemIcon(buff);
         }
 
-        // Wallet events
-        if (Wallet.Instance != null)
-        {
-            Wallet.Instance.OnGoldChanged += UpdateGold;
-            UpdateGold(Wallet.Instance.CurrentGold); // init
-        }
+        // Wallet events (robust to load order)
+        TryHookWallet();
 
         // Wave events
         if (WaveManager.Instance != null)
@@ -43,6 +42,12 @@ public class TopBarUI : MonoBehaviour
             WaveManager.Instance.OnWaveChanged += UpdateWave;
             UpdateWave(WaveManager.Instance.CurrentWave); // init
         }
+    }
+
+    void Update()
+    {
+        // In case Wallet appears later (scene order), this will hook once and no-op afterwards.
+        TryHookWallet();
     }
 
     void OnDisable()
@@ -53,11 +58,30 @@ public class TopBarUI : MonoBehaviour
             PlayerInventory.Instance.OnItemAdded -= AddItemIcon;
         }
 
-        if (Wallet.Instance != null)
-            Wallet.Instance.OnGoldChanged -= UpdateGold;
+        // Unhook wallet safely if we were subscribed
+        if (_subscribedWallet != null)
+        {
+            _subscribedWallet.OnGoldChanged -= UpdateGold;
+            _subscribedWallet = null;
+        }
 
         if (WaveManager.Instance != null)
             WaveManager.Instance.OnWaveChanged -= UpdateWave;
+    }
+
+    // --- Added: late-binding wallet subscribe helper
+    private void TryHookWallet()
+    {
+        var w = Wallet.Instance;
+        if (w == null || w == _subscribedWallet) return;
+
+        // unhook previous (should be null normally)
+        if (_subscribedWallet != null)
+            _subscribedWallet.OnGoldChanged -= UpdateGold;
+
+        _subscribedWallet = w;
+        _subscribedWallet.OnGoldChanged += UpdateGold;
+        UpdateGold(_subscribedWallet.CurrentGold); // initial value
     }
 
     private void AddArtifactIcon(ArtifactData artifact)
@@ -76,10 +100,19 @@ public class TopBarUI : MonoBehaviour
         if (img) img.sprite = item.icon;
     }
 
+    // --- Optional: warn once if goldText is not assigned
+    private bool _warnedGoldText;
     private void UpdateGold(int amount)
     {
         if (goldText != null)
+        {
             goldText.text = amount.ToString();
+        }
+        else if (!_warnedGoldText)
+        {
+            _warnedGoldText = true;
+            Debug.LogWarning("[TopBarUI] goldText is not assigned.");
+        }
     }
 
     private void UpdateWave(int wave)

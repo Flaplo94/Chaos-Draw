@@ -78,6 +78,7 @@ public class CardHandUI : MonoBehaviour
     private InputAction card2Action;
     private InputAction card3Action;
     private InputAction card4Action;
+    private InputAction card5Action;
     private InputAction reshuffleAction;
 
     private int waveCount = 0;
@@ -166,12 +167,14 @@ public class CardHandUI : MonoBehaviour
         card2Action = playerMap.FindAction("Card 2");
         card3Action = playerMap.FindAction("Card 3");
         card4Action = playerMap.FindAction("Card 4");
+        card5Action = playerMap.FindAction("Card 5");
         reshuffleAction = playerMap.FindAction("Reshuffle");
 
         if (card1Action != null) { card1Action.performed += _ => TryUseCardIfPossible(0); card1Action.Enable(); }
         if (card2Action != null) { card2Action.performed += _ => TryUseCardIfPossible(1); card2Action.Enable(); }
         if (card3Action != null) { card3Action.performed += _ => TryUseCardIfPossible(2); card3Action.Enable(); }
         if (card4Action != null) { card4Action.performed += _ => TryUseCardIfPossible(3); card4Action.Enable(); }
+        if (card5Action != null) { card5Action.performed += _ => TryUseCardIfPossible(4); card5Action.Enable(); }
         if (reshuffleAction != null)
         {
             reshuffleAction.performed += _ =>
@@ -197,6 +200,7 @@ public class CardHandUI : MonoBehaviour
         if (card2Action != null) card2Action.Disable();
         if (card3Action != null) card3Action.Disable();
         if (card4Action != null) card4Action.Disable();
+        if (card5Action != null) card5Action.Disable();
         if (reshuffleAction != null) reshuffleAction.Disable();
     }
 
