@@ -170,6 +170,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 7502241114002446682, guid: af535699c9caddd418ddb82d17593458, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2385041227429706494}
+    - targetCorrespondingSourceObject: {fileID: 7502241114002446682, guid: af535699c9caddd418ddb82d17593458, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -4553525140231250223}
   m_SourcePrefab: {fileID: 100100000, guid: af535699c9caddd418ddb82d17593458, type: 3}
 --- !u!1 &5679082729230498780 stripped
 GameObject:
@@ -210,3 +213,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea89865d8793cf94f8eed498f33c1d94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &-4553525140231250223
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5679082729230498780}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4929ed0cb94400479d2fe81d1b6ce4c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shardsMin: 0
+  shardsMax: 0
+  xpMin: 1
+  xpMax: 2
+  applyShardGainMultiplier: 1
+  grantOnDestroy: 0
+  preventDoubleGrant: 1
+  popupPrefab: {fileID: 3318825124179351579, guid: f19c477282a6743498eb762d18b203f3, type: 3}
+  explicitCanvas: {fileID: 0}
+  popupOffset: {x: 0, y: 0.8, z: 0}
+  shardsColor: {r: 0.6, g: 0.9, b: 1, a: 1}
+  xpColor: {r: 0.95, g: 0.95, b: 0.55, a: 1}

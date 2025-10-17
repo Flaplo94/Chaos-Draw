@@ -233,12 +233,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4929ed0cb94400479d2fe81d1b6ce4c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shardsMin: 1
-  shardsMax: 3
-  xpMin: 1
-  xpMax: 2
+  shardsMin: 10
+  shardsMax: 30
+  xpMin: 10
+  xpMax: 20
   applyShardGainMultiplier: 1
-  grantOnDestroy: 1
+  grantOnDestroy: 0
   preventDoubleGrant: 1
   popupPrefab: {fileID: 3318825124179351579, guid: f19c477282a6743498eb762d18b203f3, type: 3}
   explicitCanvas: {fileID: 0}

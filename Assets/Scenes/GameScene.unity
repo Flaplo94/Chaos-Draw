@@ -465,13 +465,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 330189d9a93233d48bb14f5206679de8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  backImage: {fileID: 1344168911}
+  placeholderImage: {fileID: 0}
   countText: {fileID: 1215132790}
   cg: {fileID: 30129170}
+  stackLayers: []
   fadeWhenEmpty: 0
   emptyAlpha: 0.35
-  hideBackWhenEmpty: 1
   disableInteractionWhenEmpty: 1
+  placeholderMode: 0
+  propagateBackToLayers: 1
 --- !u!114 &30129172
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -981,8 +983,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardHandUI: {fileID: 1484783533}
   playerTransform: {fileID: 838276999}
-  minSpawnDistance: 15
-  spawnRadius: 25
+  minSpawnDistance: 20
+  spawnRadius: 30
   enemyPrefabs:
   - {fileID: 7502241114002446682, guid: af535699c9caddd418ddb82d17593458, type: 3}
   - {fileID: 5679082729230498780, guid: c25de75b8a76d504aa0ed013b1634e16, type: 3}
@@ -1005,7 +1007,7 @@ MonoBehaviour:
   boss1Music: {fileID: 8300000, guid: 578896b009485bc44a1f6ea1ca69cb97, type: 3}
   boss2Music: {fileID: 8300000, guid: 52b261eec4f366447b17d436f3e8e1c9, type: 3}
   startEnemyCount: 25
-  timeBetweenWaves: 2
+  timeBetweenWaves: 0.3
   waveText: {fileID: 2018384954}
   afterWave20Scene: TYscene
 --- !u!114 &162957844 stripped
@@ -3975,6 +3977,7 @@ RectTransform:
   - {fileID: 345565414}
   - {fileID: 1951909323}
   - {fileID: 346591070}
+  - {fileID: 1324111348}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -4493,7 +4496,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.707, y: -0.068, z: 0}
-  m_LocalScale: {x: 5, y: 5, z: 1}
+  m_LocalScale: {x: 8, y: 8, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2091777804}
@@ -4517,6 +4520,11 @@ MonoBehaviour:
   cardSpeed: 10
   baseCooldown: 1
   spreadDegrees: 0
+  autoFireOnly: 1
+  targetSearchRadius: 30
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 640
   stats: {fileID: 838277007}
   attackSfx: {fileID: 8300000, guid: 708a1ca39b146634fa4dd9f840a05904, type: 3}
   audioSource: {fileID: 838277010}
@@ -4598,8 +4606,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40eb76c2d80d0d043b96517bc1910e1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxMana: 100
-  regenRate: 2
+  maxMana: 3
+  regenRate: 0
   currentMana: 0
   manaFill: {fileID: 1857681222}
   manaEffect: {fileID: 891682262}
@@ -7703,6 +7711,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1315065542}
   m_CullTransparentMesh: 1
+--- !u!224 &1324111348 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 3429743963017995728, guid: f19c477282a6743498eb762d18b203f3, type: 3}
+  m_PrefabInstance: {fileID: 1898958771}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1332648084
 GameObject:
   m_ObjectHideFlags: 0
@@ -8423,6 +8436,9 @@ MonoBehaviour:
   manualShuffleBaseTime: 4
   selectionHighlight: {fileID: 2035726359}
   decklessEnabled: 0
+  drawReplacementOnUse: 0
+  cardUseCooldown: 0.3
+  handArc: {fileID: 0}
 --- !u!114 &1484783534
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11270,6 +11286,103 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1878867140}
   m_CullTransparentMesh: 1
+--- !u!1001 &1898958771
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 793357399}
+    m_Modifications:
+    - target: {fileID: 3429743963017995728, guid: f19c477282a6743498eb762d18b203f3, type: 3}
+      propertyPath: m_Pivot.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3429743963017995728, guid: f19c477282a6743498eb762d18b203f3, type: 3}
+      propertyPath: m_Pivot.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3429743963017995728, guid: f19c477282a6743498eb762d18b203f3, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3429743963017995728, guid: f19c477282a6743498eb762d18b203f3, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3429743963017995728, guid: f19c477282a6743498eb762d18b203f3, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3429743963017995728, guid: f19c477282a6743498eb762d18b203f3, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3429743963017995728, guid: f19c477282a6743498eb762d18b203f3, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 3429743963017995728, guid: f19c477282a6743498eb762d18b203f3, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 3429743963017995728, guid: f19c477282a6743498eb762d18b203f3, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3429743963017995728, guid: f19c477282a6743498eb762d18b203f3, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3429743963017995728, guid: f19c477282a6743498eb762d18b203f3, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3429743963017995728, guid: f19c477282a6743498eb762d18b203f3, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3429743963017995728, guid: f19c477282a6743498eb762d18b203f3, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3429743963017995728, guid: f19c477282a6743498eb762d18b203f3, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3429743963017995728, guid: f19c477282a6743498eb762d18b203f3, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3429743963017995728, guid: f19c477282a6743498eb762d18b203f3, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -1032.8689
+      objectReference: {fileID: 0}
+    - target: {fileID: 3429743963017995728, guid: f19c477282a6743498eb762d18b203f3, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -572.9619
+      objectReference: {fileID: 0}
+    - target: {fileID: 3429743963017995728, guid: f19c477282a6743498eb762d18b203f3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3429743963017995728, guid: f19c477282a6743498eb762d18b203f3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3429743963017995728, guid: f19c477282a6743498eb762d18b203f3, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4657006798162364211, guid: f19c477282a6743498eb762d18b203f3, type: 3}
+      propertyPath: m_Name
+      value: PopupText
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: f19c477282a6743498eb762d18b203f3, type: 3}
 --- !u!114 &1907498218 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6371448568293407061, guid: 004d9b5113b2bed49bffaeee03a9cf33, type: 3}
@@ -11753,13 +11866,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 330189d9a93233d48bb14f5206679de8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  backImage: {fileID: 1415157326}
+  placeholderImage: {fileID: 0}
   countText: {fileID: 22611673}
   cg: {fileID: 1986872451}
+  stackLayers: []
   fadeWhenEmpty: 0
   emptyAlpha: 0.35
-  hideBackWhenEmpty: 1
   disableInteractionWhenEmpty: 1
+  placeholderMode: 0
+  propagateBackToLayers: 1
 --- !u!114 &1986872453
 MonoBehaviour:
   m_ObjectHideFlags: 0

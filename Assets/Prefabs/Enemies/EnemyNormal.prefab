@@ -222,7 +222,7 @@ MonoBehaviour:
   xpMin: 1
   xpMax: 2
   applyShardGainMultiplier: 1
-  grantOnDestroy: 1
+  grantOnDestroy: 0
   preventDoubleGrant: 1
   popupPrefab: {fileID: 3318825124179351579, guid: f19c477282a6743498eb762d18b203f3, type: 3}
   explicitCanvas: {fileID: 0}

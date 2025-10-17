@@ -222,11 +222,10 @@ MonoBehaviour:
   xpMin: 1
   xpMax: 2
   applyShardGainMultiplier: 1
-  grantOnDestroy: 1
+  grantOnDestroy: 0
   preventDoubleGrant: 1
   popupPrefab: {fileID: 3318825124179351579, guid: f19c477282a6743498eb762d18b203f3, type: 3}
+  explicitCanvas: {fileID: 0}
   popupOffset: {x: 0, y: 0.8, z: 0}
-  popupLifetime: 1.2
-  popupRiseSpeed: 1
   shardsColor: {r: 0.6, g: 0.9, b: 1, a: 1}
   xpColor: {r: 0.9, g: 0.9, b: 0.5, a: 1}

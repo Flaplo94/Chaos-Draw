@@ -103,7 +103,8 @@ public class BossHealth : MonoBehaviour
     {
         if (isDead) return;
         isDead = true;
-
+        var drops = GetComponent<EnemyMetaDrops>();
+        if (drops) drops.GrantRewards();
         foreach (var col in GetComponentsInChildren<Collider2D>())
             col.enabled = false;
 

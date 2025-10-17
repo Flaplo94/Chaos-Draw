@@ -87,7 +87,8 @@ public class EnemyHealth : MonoBehaviour
 
         GetComponent<EnemyFollow>()?.Kill();
         GetComponent<FlyingEnemy>()?.Kill();
-
+        var drops = GetComponent<EnemyMetaDrops>();
+        if (drops) drops.GrantRewards();
         // Disable ALL colliders so bullets no longer hit
         foreach (var col in GetComponentsInChildren<Collider2D>())
             col.enabled = false;
