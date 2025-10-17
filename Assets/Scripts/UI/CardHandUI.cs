@@ -38,6 +38,14 @@ public class CardHandUI : MonoBehaviour
     [SerializeField] private string lightningStartAbilityName = "LightningBall";
     [SerializeField][Min(1)] private int startCopies = 4;
 
+    [Header("Start Spells (New) — exact cards per element")]
+    [SerializeField] private List<StartCardDef> fireStartDeck = new();      // e.g. 3x Fireball, 2x FireBird, 2x Shield
+    [SerializeField] private List<StartCardDef> lightningStartDeck = new(); // e.g. 3x ChainLightning, 2x LightningBall, 2x Shield
+
+    [Tooltip("If ON, starting deck will skip cards that are still locked.")]
+    [SerializeField] private bool respectUnlocksForStartingDeck = false;
+
+
     [Header("Healing Starter (SkillTree-gated)")]
     [Tooltip("Node der unlocker Healing-starterkortet (fx 'healing_unlocked').")]
     [SerializeField] private NodeData healingUnlockNode;
@@ -78,9 +86,7 @@ public class CardHandUI : MonoBehaviour
     private readonly List<Ability> discardPile = new();
     private Ability[] hand;
 
-    [SerializeField] private float manualShuffleBaseTime = 4f;
-    private float currentManualShuffleTime;
-
+    
     private Dimmer dimmer;
     internal Sprite cardFrameSprite;
 
@@ -108,11 +114,16 @@ public class CardHandUI : MonoBehaviour
         public string abilityName;
         public int count;
     }
-
+    [System.Serializable]
+    public class StartCardDef
+    {
+        public string abilityName;
+        [Min(1)] public int copies = 1;
+    }
     private void Start()
     {
         dimmer = FindFirstObjectByType<Dimmer>();
-        currentManualShuffleTime = manualShuffleBaseTime;
+        
 
         if (!handParent) return;
 
@@ -225,13 +236,54 @@ public class CardHandUI : MonoBehaviour
         discardPile.Clear();
         UpdateDiscardText();
 
-        foreach (var entry in startingDeckList)
+        // NEW: pick the element-specific list if present
+        var element = SessionData.SelectedElement;
+        List<StartCardDef> elementList = null;
+        switch (element)
         {
-            Ability match = allAbilities.Find(a => a.name == entry.abilityName);
-            if (match == null) continue;
+            case MagicType.Fire:
+                elementList = fireStartDeck;
+                break;
+            case MagicType.Lightning:
+                elementList = lightningStartDeck;
+                break;
+            // add more cases here if you have more elements
+            default:
+                elementList = null;
+                break;
+        }
 
-            for (int i = 0; i < entry.count; i++)
-                deck.Add(match);
+        bool usedElementList = elementList != null && elementList.Count > 0;
+
+        if (usedElementList)
+        {
+            // Build from per-element exact list
+            for (int i = 0; i < elementList.Count; i++)
+            {
+                var entry = elementList[i];
+                if (string.IsNullOrWhiteSpace(entry.abilityName)) continue;
+
+                var match = ResolveAbilityByName(entry.abilityName);
+                if (match == null) continue;
+
+                if (!respectUnlocksForStartingDeck || CardUnlocks.IsAbilityUnlocked(match))
+                {
+                    for (int c = 0; c < Mathf.Max(1, entry.copies); c++)
+                        deck.Add(match);
+                }
+            }
+        }
+        else
+        {
+            // FALLBACK: your existing startingDeckList behavior (unchanged)
+            foreach (var entry in startingDeckList)
+            {
+                Ability match = allAbilities.Find(a => a.name == entry.abilityName);
+                if (match == null) continue;
+
+                for (int i = 0; i < entry.count; i++)
+                    deck.Add(match);
+            }
         }
 
         drawPile.AddRange(deck);
@@ -454,7 +506,7 @@ public class CardHandUI : MonoBehaviour
 
         var element = SessionData.SelectedElement;
         List<Ability> pool = allAbilities
-            .Where(a => a != null && a.magicType == element && CardUnlocks.IsAbilityUnlocked(a))
+            .Where(a => a != null && (a.magicType == element || a.magicType == MagicType.Utility) && CardUnlocks.IsAbilityUnlocked(a))
             .ToList();
 
         Shuffle(pool);
@@ -483,7 +535,7 @@ public class CardHandUI : MonoBehaviour
 
         var element = SessionData.SelectedElement;
         List<Ability> pool = allAbilities
-            .Where(a => a != null && a.magicType == element && CardUnlocks.IsAbilityUnlocked(a))
+            .Where(a => a != null && (a.magicType == element || a.magicType == MagicType.Utility) && CardUnlocks.IsAbilityUnlocked(a))
             .ToList();
 
         Shuffle(pool);
@@ -808,18 +860,82 @@ public class CardHandUI : MonoBehaviour
         return false;
     }
 
-    private Ability ResolveAbilityByName(string wanted)
+    private Ability ResolveAbilityByName(string name)
     {
-        if (allAbilities == null || allAbilities.Count == 0) return null;
-        string norm = Normalize(wanted);
-
-        foreach (var a in allAbilities)
+        if (string.IsNullOrEmpty(name)) return null;
+        for (int i = 0; i < allAbilities.Count; i++)
         {
-            if (a == null) continue;
-            if (!string.IsNullOrEmpty(a.name) && Normalize(a.name) == norm) return a;
-            if (!string.IsNullOrEmpty(a.abilityName) && Normalize(a.abilityName) == norm) return a;
+            var a = allAbilities[i];
+            if (a != null && string.Equals(a.name, name, System.StringComparison.OrdinalIgnoreCase))
+                return a;
         }
         return null;
+    }
+    private void AddStartingCardsForSelectedElement(List<Ability> deck)
+    {
+        var element = SessionData.SelectedElement;
+
+        // Choose list for current element
+        List<StartCardDef> list = null;
+        switch (element)
+        {
+            case MagicType.Fire: list = fireStartDeck; break;
+            case MagicType.Lightning: list = lightningStartDeck; break;
+            default: list = null; break; // add more elements if you have them
+        }
+
+        bool usedNewLists = false;
+
+        // Use NEW per-element list if present
+        if (list != null && list.Count > 0)
+        {
+            usedNewLists = true;
+
+            foreach (var def in list)
+            {
+                if (string.IsNullOrWhiteSpace(def.abilityName)) continue;
+
+                var ability = ResolveAbilityByName(def.abilityName);
+                if (ability == null)
+                {
+                    Debug.LogWarning($"[CardHandUI] Start card not found: '{def.abilityName}'.");
+                    continue;
+                }
+
+                // Optional: respect unlocks
+                if (respectUnlocksForStartingDeck && !CardUnlocks.IsAbilityUnlocked(ability))
+                    continue;
+
+                int copies = Mathf.Max(1, def.copies);
+                for (int i = 0; i < copies; i++)
+                    deck.Add(ability);
+            }
+        }
+
+        // Fallback to your legacy single-name + startCopies if list was empty
+        if (!usedNewLists)
+        {
+            string legacyName = null;
+            switch (element)
+            {
+                case MagicType.Fire: legacyName = fireStartAbilityName; break;
+                case MagicType.Lightning: legacyName = lightningStartAbilityName; break;
+            }
+
+            if (!string.IsNullOrEmpty(legacyName))
+            {
+                var ability = ResolveAbilityByName(legacyName);
+                if (ability == null)
+                {
+                    Debug.LogWarning($"[CardHandUI] Legacy start card not found: '{legacyName}'.");
+                }
+                else
+                {
+                    for (int i = 0; i < Mathf.Max(1, startCopies); i++)
+                        deck.Add(ability);
+                }
+            }
+        }
     }
 
     private static string Normalize(string s)

@@ -1459,11 +1459,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6025914219636400322, guid: e755abf4448b25343bed57a7b6fdd8f0, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -147.6
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6025914219636400322, guid: e755abf4448b25343bed57a7b6fdd8f0, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -31
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6025914219636400322, guid: e755abf4448b25343bed57a7b6fdd8f0, type: 3}
       propertyPath: m_LocalPosition.z
@@ -2822,11 +2822,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6025914219636400322, guid: e755abf4448b25343bed57a7b6fdd8f0, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -49.200012
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6025914219636400322, guid: e755abf4448b25343bed57a7b6fdd8f0, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -31
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6025914219636400322, guid: e755abf4448b25343bed57a7b6fdd8f0, type: 3}
       propertyPath: m_LocalPosition.z
@@ -5130,11 +5130,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6025914219636400322, guid: e755abf4448b25343bed57a7b6fdd8f0, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 147.59998
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6025914219636400322, guid: e755abf4448b25343bed57a7b6fdd8f0, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -31
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6025914219636400322, guid: e755abf4448b25343bed57a7b6fdd8f0, type: 3}
       propertyPath: m_LocalPosition.z
@@ -6046,11 +6046,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6025914219636400322, guid: e755abf4448b25343bed57a7b6fdd8f0, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 49.19998
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6025914219636400322, guid: e755abf4448b25343bed57a7b6fdd8f0, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -31
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6025914219636400322, guid: e755abf4448b25343bed57a7b6fdd8f0, type: 3}
       propertyPath: m_LocalPosition.z
@@ -10975,12 +10975,25 @@ MonoBehaviour:
   otherBack: {fileID: -5171164590855401287, guid: 32d03660b5bb14649bc55e3a177ae9b6, type: 3}
   emptyBack: {fileID: 0}
   emptySlotSprite: {fileID: 21300000, guid: 43e39f2351196a44f87f11f1208df991, type: 3}
-  startingDeckList:
-  - abilityName: Healing
-    count: 1
+  startingDeckList: []
   fireStartAbilityName: Oil Field
   lightningStartAbilityName: LightningBall
   startCopies: 9
+  fireStartDeck:
+  - abilityName: Fireball
+    copies: 3
+  - abilityName: FireBird
+    copies: 2
+  - abilityName: Shield
+    copies: 2
+  lightningStartDeck:
+  - abilityName: ChainLightning
+    copies: 3
+  - abilityName: LightningBall
+    copies: 2
+  - abilityName: Shield
+    copies: 2
+  respectUnlocksForStartingDeck: 1
   healingUnlockNode: {fileID: 0}
   healingAbilityName: Healing
   healingCopies: 1
@@ -10997,7 +11010,6 @@ MonoBehaviour:
   shuffleClip: {fileID: 8300000, guid: c70d0821648a38b4694e915db39c8ad8, type: 3}
   shuffleDurationRange: {x: 1, y: 2}
   inputActions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
-  manualShuffleBaseTime: 4
   selectionHighlight: {fileID: 68979839}
   decklessEnabled: 0
   drawReplacementOnUse: 0
