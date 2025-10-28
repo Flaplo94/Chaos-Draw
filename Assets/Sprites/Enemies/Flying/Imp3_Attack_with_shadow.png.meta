@@ -774,6 +774,8 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
+      Imp3_Attack_with_shadow_0: -5586018186243220312
+      Imp3_Attack_with_shadow_1: 6911796510922219726
       Imp3_Attack_with_shadow_10: -1761520197
       Imp3_Attack_with_shadow_11: 8777880
       Imp3_Attack_with_shadow_12: 1869922603
@@ -784,10 +786,13 @@ TextureImporter:
       Imp3_Attack_with_shadow_17: -639465157
       Imp3_Attack_with_shadow_18: 817139635
       Imp3_Attack_with_shadow_19: -736120883
+      Imp3_Attack_with_shadow_2: -2030549210563374444
       Imp3_Attack_with_shadow_20: 336260696
       Imp3_Attack_with_shadow_21: 579357427
       Imp3_Attack_with_shadow_22: -496963218
       Imp3_Attack_with_shadow_23: 1960406475
+      Imp3_Attack_with_shadow_3: -9108561076537034846
+      Imp3_Attack_with_shadow_4: 8906946038254036717
       Imp3_Attack_with_shadow_5: -1600859407
       Imp3_Attack_with_shadow_6: 1787827777
       Imp3_Attack_with_shadow_7: 1161393003

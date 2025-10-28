@@ -427,10 +427,15 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
+      Lightning_0: -894095381526335850
+      Lightning_1: 1757268892636325777
+      Lightning_2: -3844808008048746940
+      Lightning_3: 2027566014926527852
       Lightning_4: -128290630
       Lightning_5: 1657397585
       Lightning_6: -829725906
       Lightning_7: -985630832
+      Lightning_8: -5350416157769289158
       Lightning_9: 1087306492
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0

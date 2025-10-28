@@ -989,6 +989,8 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
+      Beholder3_Walk_with_shadow_0: -3346725561709987076
+      Beholder3_Walk_with_shadow_1: 1194629840221397425
       Beholder3_Walk_with_shadow_10: 1624299389
       Beholder3_Walk_with_shadow_11: 296996829
       Beholder3_Walk_with_shadow_12: 684781396
@@ -999,6 +1001,7 @@ TextureImporter:
       Beholder3_Walk_with_shadow_17: -1522262793
       Beholder3_Walk_with_shadow_18: -1982602655
       Beholder3_Walk_with_shadow_19: 3885907
+      Beholder3_Walk_with_shadow_2: -3573635949636134445
       Beholder3_Walk_with_shadow_20: -942226072
       Beholder3_Walk_with_shadow_21: -1081116660
       Beholder3_Walk_with_shadow_22: -674442357
@@ -1009,8 +1012,13 @@ TextureImporter:
       Beholder3_Walk_with_shadow_27: -1700525772
       Beholder3_Walk_with_shadow_28: -2032326682
       Beholder3_Walk_with_shadow_29: -1832759767
+      Beholder3_Walk_with_shadow_3: -6051774801400693812
       Beholder3_Walk_with_shadow_30: -1074391789
       Beholder3_Walk_with_shadow_31: 567402807
+      Beholder3_Walk_with_shadow_4: 4017321734092130911
+      Beholder3_Walk_with_shadow_5: 3117319817668779493
+      Beholder3_Walk_with_shadow_6: 6508904476022844751
+      Beholder3_Walk_with_shadow_7: -5101019925275132611
       Beholder3_Walk_with_shadow_8: -1802256930
       Beholder3_Walk_with_shadow_9: -333872499
   mipmapLimitGroupName: 

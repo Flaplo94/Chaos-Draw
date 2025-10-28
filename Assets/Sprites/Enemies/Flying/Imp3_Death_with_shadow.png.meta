@@ -1186,6 +1186,8 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
+      Imp3_Death_with_shadow_0: 3445588757959933495
+      Imp3_Death_with_shadow_1: 803790635752455208
       Imp3_Death_with_shadow_10: 921996576
       Imp3_Death_with_shadow_11: -582053483
       Imp3_Death_with_shadow_12: -1815494927
@@ -1196,6 +1198,7 @@ TextureImporter:
       Imp3_Death_with_shadow_17: -1471838861
       Imp3_Death_with_shadow_18: 785109301
       Imp3_Death_with_shadow_19: -582937097
+      Imp3_Death_with_shadow_2: 315548231438902185
       Imp3_Death_with_shadow_20: -1271295318
       Imp3_Death_with_shadow_21: -2038512450
       Imp3_Death_with_shadow_22: 1524459106
@@ -1206,6 +1209,7 @@ TextureImporter:
       Imp3_Death_with_shadow_27: -916850144
       Imp3_Death_with_shadow_28: 1112485436
       Imp3_Death_with_shadow_29: -1592603817
+      Imp3_Death_with_shadow_3: -4869202401474915307
       Imp3_Death_with_shadow_30: 1161628842
       Imp3_Death_with_shadow_31: 1047581416
       Imp3_Death_with_shadow_32: -978067391
