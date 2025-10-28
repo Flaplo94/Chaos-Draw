@@ -10528,6 +10528,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 936212018283015748, guid: aedb3d858583a2b4e98ae2d8586cc06a, type: 3}
+      propertyPath: m_text
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2313844525652323512, guid: aedb3d858583a2b4e98ae2d8586cc06a, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -10724,6 +10728,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: TopBar
       objectReference: {fileID: 0}
+    - target: {fileID: 6863362332709479739, guid: aedb3d858583a2b4e98ae2d8586cc06a, type: 3}
+      propertyPath: m_Spacing
+      value: -7.3
+      objectReference: {fileID: 0}
     - target: {fileID: 7542119128514331475, guid: aedb3d858583a2b4e98ae2d8586cc06a, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -10796,12 +10804,20 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8657612207836811643, guid: aedb3d858583a2b4e98ae2d8586cc06a, type: 3}
+      propertyPath: m_text
+      value: WAVE
+      objectReference: {fileID: 0}
     - target: {fileID: 8706113515773542378, guid: aedb3d858583a2b4e98ae2d8586cc06a, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8706113515773542378, guid: aedb3d858583a2b4e98ae2d8586cc06a, type: 3}
       propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8706113515773542378, guid: aedb3d858583a2b4e98ae2d8586cc06a, type: 3}
+      propertyPath: m_SizeDelta.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8706113515773542378, guid: aedb3d858583a2b4e98ae2d8586cc06a, type: 3}
@@ -10819,6 +10835,14 @@ PrefabInstance:
     - target: {fileID: 8706113515773542378, guid: aedb3d858583a2b4e98ae2d8586cc06a, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8855049894244106124, guid: aedb3d858583a2b4e98ae2d8586cc06a, type: 3}
+      propertyPath: m_Spacing
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 8855049894244106124, guid: aedb3d858583a2b4e98ae2d8586cc06a, type: 3}
+      propertyPath: m_Padding.m_Right
+      value: 83
       objectReference: {fileID: 0}
     - target: {fileID: 9028654464152216339, guid: aedb3d858583a2b4e98ae2d8586cc06a, type: 3}
       propertyPath: m_Pivot.x

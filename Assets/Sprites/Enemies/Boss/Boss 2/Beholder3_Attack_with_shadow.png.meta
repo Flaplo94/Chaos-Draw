@@ -1422,6 +1422,10 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
+      Beholder3_Attack_with_shadow_0: -463356793911452657
+      Beholder3_Attack_with_shadow_1: 7028221958800588378
+      Beholder3_Attack_with_shadow_10: -7219672930649251334
+      Beholder3_Attack_with_shadow_11: 243968950297896429
       Beholder3_Attack_with_shadow_12: 1685346609
       Beholder3_Attack_with_shadow_13: -804642879
       Beholder3_Attack_with_shadow_14: 518514468
@@ -1430,6 +1434,7 @@ TextureImporter:
       Beholder3_Attack_with_shadow_17: -702189101
       Beholder3_Attack_with_shadow_18: 1137037837
       Beholder3_Attack_with_shadow_19: 1188622082
+      Beholder3_Attack_with_shadow_2: -26404584012462337
       Beholder3_Attack_with_shadow_20: 100092839
       Beholder3_Attack_with_shadow_21: -809018652
       Beholder3_Attack_with_shadow_22: -448800565
@@ -1440,6 +1445,7 @@ TextureImporter:
       Beholder3_Attack_with_shadow_27: 1669787730
       Beholder3_Attack_with_shadow_28: 2067007822
       Beholder3_Attack_with_shadow_29: -1785012751
+      Beholder3_Attack_with_shadow_3: -3078336869133019177
       Beholder3_Attack_with_shadow_30: -358780076
       Beholder3_Attack_with_shadow_31: -881701836
       Beholder3_Attack_with_shadow_32: -151243061
@@ -1450,6 +1456,7 @@ TextureImporter:
       Beholder3_Attack_with_shadow_37: -1321876021
       Beholder3_Attack_with_shadow_38: -1821093572
       Beholder3_Attack_with_shadow_39: -328647032
+      Beholder3_Attack_with_shadow_4: 3973750375304970294
       Beholder3_Attack_with_shadow_40: -1502053404
       Beholder3_Attack_with_shadow_41: -2056863463
       Beholder3_Attack_with_shadow_42: 113801676
@@ -1458,6 +1465,11 @@ TextureImporter:
       Beholder3_Attack_with_shadow_45: 263121084
       Beholder3_Attack_with_shadow_46: -1591128961
       Beholder3_Attack_with_shadow_47: 549479332
+      Beholder3_Attack_with_shadow_5: 9131340428175663124
+      Beholder3_Attack_with_shadow_6: -3207322786961533004
+      Beholder3_Attack_with_shadow_7: -964422137901160978
+      Beholder3_Attack_with_shadow_8: -2573355746038757042
+      Beholder3_Attack_with_shadow_9: -655828465102366464
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

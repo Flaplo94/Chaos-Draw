@@ -980,6 +980,8 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
+      Rat2_Attack_full_0: -1748380952697410239
+      Rat2_Attack_full_1: -5067380471212684129
       Rat2_Attack_full_10: 949566280
       Rat2_Attack_full_11: 1729875481
       Rat2_Attack_full_12: -73726964
@@ -990,6 +992,7 @@ TextureImporter:
       Rat2_Attack_full_17: 1039446451
       Rat2_Attack_full_18: -1275454755
       Rat2_Attack_full_19: 1183244943
+      Rat2_Attack_full_2: -1128135477582603298
       Rat2_Attack_full_20: -1216539221
       Rat2_Attack_full_21: 691927846
       Rat2_Attack_full_22: 937244392
@@ -1000,9 +1003,13 @@ TextureImporter:
       Rat2_Attack_full_27: 1979449590
       Rat2_Attack_full_28: -22648439
       Rat2_Attack_full_29: -404693388
+      Rat2_Attack_full_3: -2887849301573259751
       Rat2_Attack_full_30: -42048774
       Rat2_Attack_full_31: -191317605
+      Rat2_Attack_full_4: 4790669808721643248
+      Rat2_Attack_full_5: -8046793881483263409
       Rat2_Attack_full_6: 341138368
+      Rat2_Attack_full_7: 1137966352269764775
       Rat2_Attack_full_8: 8888287
       Rat2_Attack_full_9: -249067625
   mipmapLimitGroupName: 
