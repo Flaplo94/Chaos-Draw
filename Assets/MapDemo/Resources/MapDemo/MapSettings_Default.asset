@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ec2fdf33194e6f46beda050e41476d6, type: 3}
+  m_Name: MapSettings_Default
+  m_EditorClassIdentifier: 
+  nodeBaseSprite: {fileID: 0}
+  nodeRingSprite: {fileID: 0}
+  edgeLineSprite: {fileID: 0}
+  edgeArrowSprite: {fileID: 0}
+  nodeStyles:
+  - type: 0
+    label: Start
+    color: {r: 0.101960786, g: 0.7372549, b: 0.6117647, a: 0}
+    icon: {fileID: 21300000, guid: 28b59397bf84fe34a89bdd78ba1d9649, type: 3}
+  - type: 1
+    label: Normal
+    color: {r: 0.6039216, g: 0.6431373, b: 0.69803923, a: 0}
+    icon: {fileID: 21300000, guid: 28b59397bf84fe34a89bdd78ba1d9649, type: 3}
+  - type: 2
+    label: Event
+    color: {r: 0.94509804, g: 0.76862746, b: 0.05882353, a: 0}
+    icon: {fileID: 21300000, guid: 30eeb957416dfc0469bd3ad58155d64f, type: 3}
+  - type: 3
+    label: Shop
+    color: {r: 0.18039216, g: 0.8, b: 0.44313726, a: 0}
+    icon: {fileID: 21300000, guid: 7c1e0da1c8f82244bbbd97d6c02098d4, type: 3}
+  - type: 4
+    label: Elite
+    color: {r: 0.90588236, g: 0.29803923, b: 0.23529412, a: 0}
+    icon: {fileID: 21300000, guid: d36655aa86b2e71459078764724f221a, type: 3}
+  - type: 5
+    label: Special
+    color: {r: 0.5568628, g: 0.26666668, b: 0.6784314, a: 0}
+    icon: {fileID: 21300000, guid: b855fd6869a9c9144833fdfc5a8c3ab0, type: 3}
+  - type: 6
+    label: Boss
+    color: {r: 0.20392157, g: 0.28627452, b: 0.36862746, a: 0}
+    icon: {fileID: 21300000, guid: 5e69e8d8171aac74e8305c6c7c2eab11, type: 3}
