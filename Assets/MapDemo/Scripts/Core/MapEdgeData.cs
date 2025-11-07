@@ -1,16 +1,14 @@
-using UnityEngine;
+using System;
 
-public class MapEdgeData : MonoBehaviour
+[Serializable]
+public class MapEdgeData
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    public int fromNodeId;
+    public int toNodeId;
 
-    // Update is called once per frame
-    void Update()
+    public MapEdgeData(int from, int to)
     {
-        
+        fromNodeId = from;
+        toNodeId = to;
     }
 }

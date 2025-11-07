@@ -1,16 +1,15 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
-public class MapNodeData : MonoBehaviour
+[Serializable]
+public class MapNodeData
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    public int id;                 // unique per map
+    public int rowIndex;           // 0..(totalRows-1)
+    public int colIndex;           // index within its row (after x-sort)
+    public Vector2 anchoredPos;    // UI anchoredPosition in the map area
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    // Neighbors one row below (DAG: edges always go r -> r+1)
+    public List<int> outgoing = new List<int>();
 }

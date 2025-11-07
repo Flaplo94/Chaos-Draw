@@ -1,31 +1,25 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MapManagerController : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    [SerializeField] private MapManager mapManager;
+    [SerializeField] private Button regenerateButton;
+    [SerializeField] private Button resetButton;
+
+    private void Awake()
     {
-        
+        if (regenerateButton != null)
+            regenerateButton.onClick.AddListener(mapManager.RegenerateMap);
+
+        if (resetButton != null)
+            resetButton.onClick.AddListener(mapManager.ResetPath);
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Start()
     {
-        
-    }
-
-    public void Generate()
-    {
-        
-    }
-
-    public void Clear()
-    {
-
-    }
-
-    public void Draw()
-    {
-
+        // First click makes a map, but it's convenient to auto-generate on load too.
+        // If you prefer first-click-only, delete this line.
+        // mapManager.RegenerateMap();
     }
 }
