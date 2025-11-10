@@ -2,6 +2,16 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum EncounterType
+{
+    Normal,
+    SpecialEvent,
+    Elite,
+    Event,
+    Shop,
+    Boss
+}
+
 [Serializable]
 public class MapNodeData
 {
@@ -12,4 +22,6 @@ public class MapNodeData
 
     // Neighbors one row below (DAG: edges always go r -> r+1)
     public List<int> outgoing = new List<int>();
+
+    public EncounterType encounterType = EncounterType.Normal;
 }

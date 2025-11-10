@@ -2,6 +2,7 @@ using MapDemo.Settings;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Diagnostics;
 
 public class MapManager : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class MapManager : MonoBehaviour
     [SerializeField] private RectTransform edgesParent;
     [SerializeField] private GameObject nodePrefab;    // UI Button/Image (RectTransform + Button + Image)
     [SerializeField] private GameObject edgePrefab;    // Prefab with an Image (root or child)
+    [SerializeField] private MapBottomInfo bottomInfo;
 
     [Header("Layout")]
     [SerializeField, Min(3)] private int totalRows = 15;
@@ -56,11 +58,17 @@ public class MapManager : MonoBehaviour
     // Called by Regenerate button
     public void RegenerateMap()
     {
+        var stopwatch = Stopwatch.StartNew();
+
         ClearAllRuntime();
         GenerateGraph();
         BuildEdges();
         BuildNodes();
         SetupStartNode();
+
+        stopwatch.Stop();
+
+        UpdateBottomInfo(stopwatch.ElapsedMilliseconds);
     }
 
     // Called by Reset button (same layout, restart path)
@@ -257,7 +265,7 @@ public class MapManager : MonoBehaviour
                 var rt = go.GetComponent<RectTransform>();
                 if (rt == null)
                 {
-                    Debug.LogError("NodePrefab root needs a RectTransform.");
+                    UnityEngine.Debug.LogError("NodePrefab root needs a RectTransform.");
                     continue;
                 }
 
@@ -266,13 +274,13 @@ public class MapManager : MonoBehaviour
                 var nodeBtn = go.GetComponent<MapNodeButton>();
                 if (nodeBtn == null)
                 {
-                    Debug.LogError("NodePrefab is missing MapNodeButton on the root.");
+                    UnityEngine.Debug.LogError("NodePrefab is missing MapNodeButton on the root.");
                     continue;
                 }
 
                 if (nodeBtn.button == null || nodeBtn.baseImage == null)
                 {
-                    Debug.LogError("MapNodeButton: assign Button + BaseImage (and Ring/Icon) in the prefab.");
+                    UnityEngine.Debug.LogError("MapNodeButton: assign Button + BaseImage (and Ring/Icon) in the prefab.");
                     continue;
                 }
 
@@ -308,10 +316,6 @@ public class MapManager : MonoBehaviour
         }
     }
 
-
-
-
-
     private void BuildEdges()
     {
         edgeImages.Clear();
@@ -326,7 +330,7 @@ public class MapManager : MonoBehaviour
             var img = go.GetComponent<Image>() ?? go.GetComponentInChildren<Image>();
             if (img == null)
             {
-                Debug.LogError("Edge prefab must have an Image.");
+                UnityEngine.Debug.LogError("Edge prefab must have an Image.");
                 Destroy(go);
                 continue;
             }
@@ -393,7 +397,7 @@ public class MapManager : MonoBehaviour
         {
             if (clicked.rowIndex != 0)
             {
-                Debug.Log("You must start at the top node.");
+                UnityEngine.Debug.Log("You must start at the top node.");
                 return;
             }
 
@@ -426,7 +430,7 @@ public class MapManager : MonoBehaviour
 
         if (!isConnected)
         {
-            Debug.Log("That node is not connected to your current node.");
+            UnityEngine.Debug.Log("That node is not connected to your current node.");
             return;
         }
 
@@ -454,7 +458,7 @@ public class MapManager : MonoBehaviour
         // If last row: lock everything, path complete
         if (clicked.rowIndex == Graph.totalRows - 1)
         {
-            Debug.Log("Reached final node.");
+            UnityEngine.Debug.Log("Reached final node.");
             DisableAllNodes();
         }
     }
@@ -556,4 +560,27 @@ public class MapManager : MonoBehaviour
             }
         }
     }
+
+    private void UpdateBottomInfo(long generationMs)
+    {
+        if (bottomInfo == null)
+            return;
+
+        // Count encounters by type
+        var counts = new Dictionary<string, int>();
+
+        for (int r = 0; r < Graph.rows.Count; r++)
+        {
+            foreach (var node in Graph.rows[r])
+            {
+                string key = node.encounterType.ToString();
+                if (!counts.ContainsKey(key))
+                    counts[key] = 0;
+                counts[key]++;
+            }
+        }
+
+        bottomInfo.ShowInfo(generationMs, counts);
+    }
+
 }
