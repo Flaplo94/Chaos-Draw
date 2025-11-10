@@ -330,7 +330,7 @@ public class MapManager : MonoBehaviour
             return;
 
         var start = Graph.rows[0][0];
-
+        HighlightReachableEdges(Graph.rows[0][0]);
         // only this node clickable initially
         if (nodeButtons.TryGetValue(start.id, out var btn))
             btn.SetInteractable(true);
@@ -363,6 +363,7 @@ public class MapManager : MonoBehaviour
             clickedBtn.SetSelected();
             DisableAllNodes();
             EnableNextRow(clicked);
+            
             return;
         }
 
@@ -410,6 +411,7 @@ public class MapManager : MonoBehaviour
         clickedBtn.SetSelected();
         DisableAllNodes();
         EnableNextRow(clicked);
+        HighlightReachableEdges(clicked);
 
         // If last row: lock everything, path complete
         if (clicked.rowIndex == Graph.totalRows - 1)
@@ -481,5 +483,39 @@ public class MapManager : MonoBehaviour
         }
 
         return xs;
+    }
+    private void HighlightReachableEdges(MapNodeData fromNode)
+    {
+        if (fromNode == null) return;
+
+        // 1) Dim all edges except the travelled ones
+        foreach (var kvp in edgeImages)
+        {
+            var img = kvp.Value;
+            if (img == null) continue;
+
+            // Skip already travelled (the yellow ones)
+            if (img.color == travelledEdgeColor)
+                continue;
+
+            var c = img.color;
+            c.a = unusedEdgeAlpha; // dim everything else
+            img.color = c;
+        }
+
+        // 2) Brighten all edges leaving the current node
+        foreach (var edge in Graph.edges)
+        {
+            if (edge.fromNodeId == fromNode.id)
+            {
+                if (edgeImages.TryGetValue((edge.fromNodeId, edge.toNodeId), out var img))
+                {
+                    // brighten reachable edges
+                    var c = img.color;
+                    c.a = 1f;
+                    img.color = c;
+                }
+            }
+        }
     }
 }
