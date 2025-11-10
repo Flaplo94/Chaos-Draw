@@ -1,3 +1,4 @@
+using MapDemo.Settings;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -31,6 +32,10 @@ public class MapManager : MonoBehaviour
     [Header("Random")]
     [SerializeField] private bool useFixedSeed = false;
     [SerializeField] private int seed = 123456;
+
+    [Header("Map Style")]
+    [SerializeField] private MapSettings mapSettings;
+
 
     // Data
     public MapGraph Graph { get; private set; } = new MapGraph();
@@ -240,6 +245,7 @@ public class MapManager : MonoBehaviour
     private void BuildNodes()
     {
         nodeButtons.Clear();
+        currentNode = null;
 
         for (int r = 0; r < Graph.rows.Count; r++)
         {
@@ -251,7 +257,7 @@ public class MapManager : MonoBehaviour
                 var rt = go.GetComponent<RectTransform>();
                 if (rt == null)
                 {
-                    Debug.LogError("Node prefab requires a RectTransform on the root.");
+                    Debug.LogError("NodePrefab root needs a RectTransform.");
                     continue;
                 }
 
@@ -259,28 +265,52 @@ public class MapManager : MonoBehaviour
 
                 var nodeBtn = go.GetComponent<MapNodeButton>();
                 if (nodeBtn == null)
-                    nodeBtn = go.AddComponent<MapNodeButton>();
-
-                if (nodeBtn.button == null)
-                    nodeBtn.button = go.GetComponent<Button>();
-                if (nodeBtn.button == null)
                 {
-                    Debug.LogError("Node prefab requires a Button on the root.");
+                    Debug.LogError("NodePrefab is missing MapNodeButton on the root.");
                     continue;
                 }
 
-                if (nodeBtn.background == null)
-                    nodeBtn.background = go.GetComponent<Image>();
+                if (nodeBtn.button == null || nodeBtn.baseImage == null)
+                {
+                    Debug.LogError("MapNodeButton: assign Button + BaseImage (and Ring/Icon) in the prefab.");
+                    continue;
+                }
 
+                // Decide node type based on row
+                MapNodeType nodeType = MapNodeType.Normal;
+                if (r == 0) nodeType = MapNodeType.Start;
+                else if (r == Graph.totalRows - 1) nodeType = MapNodeType.Boss;
+
+                // Style it
+                if (mapSettings != null)
+                    nodeBtn.ApplyStyle(mapSettings, nodeType);
+
+                // Register and hook click
                 nodeBtn.nodeId = node.id;
                 nodeButtons[node.id] = nodeBtn;
 
                 nodeBtn.button.onClick.RemoveAllListeners();
-                nodeBtn.button.onClick.AddListener(() => OnNodeClicked(node.id));
+                int capturedId = node.id;
+                nodeBtn.button.onClick.AddListener(() => OnNodeClicked(capturedId));
+
                 nodeBtn.SetInteractable(false);
             }
         }
+
+        // Enable only the start node & highlight edges from it
+        if (Graph.rows.Count > 0 && Graph.rows[0].Count > 0)
+        {
+            var start = Graph.rows[0][0];
+            if (nodeButtons.TryGetValue(start.id, out var startBtn))
+                startBtn.SetInteractable(true);
+
+            HighlightReachableEdges(start);
+        }
     }
+
+
+
+
 
     private void BuildEdges()
     {
@@ -299,6 +329,14 @@ public class MapManager : MonoBehaviour
                 Debug.LogError("Edge prefab must have an Image.");
                 Destroy(go);
                 continue;
+            }
+
+            if (mapSettings != null && img != null)
+            {
+                if (mapSettings.edgeLineSprite != null)
+                    img.sprite = mapSettings.edgeLineSprite;
+
+                img.color = Color.white; // or your custom color if you add one later
             }
 
             img.raycastTarget = false;

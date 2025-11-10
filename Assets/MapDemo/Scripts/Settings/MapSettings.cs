@@ -2,6 +2,7 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 
+
 namespace MapDemo.Settings
 {
     // Enum used by MapSettings. This does not need to match any existing project enum.
