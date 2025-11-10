@@ -13,6 +13,8 @@ public class MapManager : MonoBehaviour
     [SerializeField] private GameObject nodePrefab;    // UI Button/Image (RectTransform + Button + Image)
     [SerializeField] private GameObject edgePrefab;    // Prefab with an Image (root or child)
     [SerializeField] private MapBottomInfo bottomInfo;
+    [SerializeField] private bool labelsEnabled = false;
+    [SerializeField] private bool dimmingEnabled = true;
 
     [Header("Layout")]
     [SerializeField, Min(3)] private int totalRows = 15;
@@ -293,6 +295,21 @@ public class MapManager : MonoBehaviour
                 if (mapSettings != null)
                     nodeBtn.ApplyStyle(mapSettings, nodeType);
 
+                // Set label text from MapSettings style (if it has one)
+                if (mapSettings != null && nodeBtn.labelText != null)
+                {
+                    string label = null;
+
+                    if (mapSettings.TryGetStyle(nodeType, out var style) && !string.IsNullOrEmpty(style.label))
+                        label = style.label;
+                    else
+                        label = nodeType.ToString(); // fallback
+
+                    nodeBtn.SetLabel(label);
+                    // Visibility controlled by global toggle; default OFF so start hidden
+                    nodeBtn.SetLabelVisible(labelsEnabled);
+                }
+
                 // Register and hook click
                 nodeBtn.nodeId = node.id;
                 nodeButtons[node.id] = nodeBtn;
@@ -530,32 +547,68 @@ public class MapManager : MonoBehaviour
     {
         if (fromNode == null) return;
 
-        // 1) Dim all edges except the travelled ones
+        // If dimming is OFF: show all edges at normal alpha, keep travelled edges colored
+        if (!dimmingEnabled)
+        {
+            foreach (var kvp in edgeImages)
+            {
+                var img = kvp.Value;
+                if (img == null) continue;
+
+                // If this is a travelled edge (yellow or your travelled color), keep as-is
+                if (img.color == travelledEdgeColor)
+                    continue;
+
+                var c = img.color;
+                c.a = edgeAlpha;
+                img.color = c;
+            }
+
+            return;
+        }
+
+        // Dimming is ON:
+
+        // 1) Dim all non-travelled edges
         foreach (var kvp in edgeImages)
         {
             var img = kvp.Value;
             if (img == null) continue;
 
-            // Skip already travelled (the yellow ones)
             if (img.color == travelledEdgeColor)
+            {
+                // keep travelled edges fully visible
+                var c = img.color;
+                c.a = 1f;
+                img.color = c;
                 continue;
+            }
 
-            var c = img.color;
-            c.a = unusedEdgeAlpha; // dim everything else
-            img.color = c;
+            var dim = img.color;
+            dim.a = unusedEdgeAlpha;
+            img.color = dim;
         }
 
-        // 2) Brighten all edges leaving the current node
+        // 2) Brighten reachable edges from current node
         foreach (var edge in Graph.edges)
         {
             if (edge.fromNodeId == fromNode.id)
             {
                 if (edgeImages.TryGetValue((edge.fromNodeId, edge.toNodeId), out var img))
                 {
-                    // brighten reachable edges
-                    var c = img.color;
-                    c.a = 1f;
-                    img.color = c;
+                    // If already travelled, keep travelled color
+                    if (img.color == travelledEdgeColor)
+                    {
+                        var c = img.color;
+                        c.a = 1f;
+                        img.color = c;
+                    }
+                    else
+                    {
+                        var c = img.color;
+                        c.a = 1f;
+                        img.color = c;
+                    }
                 }
             }
         }
@@ -589,4 +642,38 @@ public class MapManager : MonoBehaviour
 
         bottomInfo.ShowInfo(generationMs, oneChoiceNodes, encounterCounts);
     }
+
+    public void SetSeed(int newSeed)
+    {
+        useFixedSeed = true;
+        seed = newSeed;
+    }
+
+    public void UseRandomSeed()
+    {
+        useFixedSeed = false;
+        // Optional: seed = Random.Range(int.MinValue, int.MaxValue);
+    }
+
+    public void SetLabelsEnabled(bool enabled)
+    {
+        labelsEnabled = enabled;
+
+        foreach (var kvp in nodeButtons)
+        {
+            kvp.Value.SetLabelVisible(labelsEnabled);
+        }
+    }
+
+    public void SetDimmingEnabled(bool enabled)
+    {
+        dimmingEnabled = enabled;
+
+        // Re-apply current highlight state
+        if (currentNode != null)
+            HighlightReachableEdges(currentNode);
+        else if (Graph.rows.Count > 0 && Graph.rows[0].Count > 0)
+            HighlightReachableEdges(Graph.rows[0][0]);
+    }
+
 }

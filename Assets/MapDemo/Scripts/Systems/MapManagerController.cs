@@ -1,25 +1,77 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class MapManagerController : MonoBehaviour
 {
     [SerializeField] private MapManager mapManager;
     [SerializeField] private Button regenerateButton;
     [SerializeField] private Button resetButton;
+    [SerializeField] private TMP_InputField seedInput;
+    [SerializeField] private Toggle labelsToggle;
+    [SerializeField] private Toggle dimmingToggle;
 
     private void Awake()
     {
         if (regenerateButton != null)
-            regenerateButton.onClick.AddListener(mapManager.RegenerateMap);
+            regenerateButton.onClick.AddListener(OnRegenerateClicked);
 
         if (resetButton != null)
-            resetButton.onClick.AddListener(mapManager.ResetPath);
+            resetButton.onClick.AddListener(OnResetClicked);
+
+        if (labelsToggle != null)
+            labelsToggle.onValueChanged.AddListener(OnLabelsToggleChanged);
+
+        if (dimmingToggle != null)
+            dimmingToggle.onValueChanged.AddListener(OnDimmingToggleChanged);
     }
 
-    private void Start()
+    private void OnRegenerateClicked()
     {
-        // First click makes a map, but it's convenient to auto-generate on load too.
-        // If you prefer first-click-only, delete this line.
-        // mapManager.RegenerateMap();
+        if (mapManager == null) return;
+
+        int seedValue;
+        if (seedInput != null &&
+            !string.IsNullOrWhiteSpace(seedInput.text) &&
+            int.TryParse(seedInput.text, out seedValue))
+        {
+            mapManager.SetSeed(seedValue);
+        }
+        else
+        {
+            mapManager.UseRandomSeed();
+        }
+
+        mapManager.RegenerateMap();
+
+        // Re-apply toggles after regeneration
+        if (labelsToggle != null)
+            mapManager.SetLabelsEnabled(labelsToggle.isOn);
+
+        if (dimmingToggle != null)
+            mapManager.SetDimmingEnabled(dimmingToggle.isOn);
+    }
+
+    private void OnResetClicked()
+    {
+        if (mapManager == null) return;
+
+        mapManager.ResetPath();
+
+        // Re-apply dimming after reset
+        if (dimmingToggle != null)
+            mapManager.SetDimmingEnabled(dimmingToggle.isOn);
+    }
+
+    private void OnLabelsToggleChanged(bool value)
+    {
+        if (mapManager == null) return;
+        mapManager.SetLabelsEnabled(value);
+    }
+
+    private void OnDimmingToggleChanged(bool value)
+    {
+        if (mapManager == null) return;
+        mapManager.SetDimmingEnabled(value);
     }
 }

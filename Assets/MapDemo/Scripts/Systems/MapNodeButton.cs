@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using MapDemo.Settings;
+using TMPro;
 
 public class MapNodeButton : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class MapNodeButton : MonoBehaviour
     public Image baseImage;      // "Base" image under Button
     public Image ringImage;      // "Ring" image under Button
     public Image iconImage;      // "Icon" image under Button
+    public TMP_Text labelText;
 
     private Color baseColor = Color.white;
 
@@ -111,4 +113,19 @@ public class MapNodeButton : MonoBehaviour
         c.g = 1f; // cheap highlight tweak
         baseImage.color = c;
     }
+
+    public void SetLabel(string text)
+    {
+        if (labelText == null) return;
+
+        labelText.text = text;
+    }
+
+    public void SetLabelVisible(bool visible)
+    {
+        if (labelText == null) return;
+
+        labelText.gameObject.SetActive(visible && !string.IsNullOrEmpty(labelText.text));
+    }
+
 }
