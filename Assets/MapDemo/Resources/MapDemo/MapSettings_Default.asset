@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2ec2fdf33194e6f46beda050e41476d6, type: 3}
   m_Name: MapSettings_Default
   m_EditorClassIdentifier: 
-  nodeBaseSprite: {fileID: 0}
-  nodeRingSprite: {fileID: 0}
-  edgeLineSprite: {fileID: 0}
-  edgeArrowSprite: {fileID: 0}
+  nodeBaseSprite: {fileID: 21300000, guid: a7b3c09690759e74fb6f00c7689c8eca, type: 3}
+  nodeRingSprite: {fileID: 21300000, guid: 9f0b3446303c45641b9c3971f7310202, type: 3}
+  edgeLineSprite: {fileID: 21300000, guid: 051f23627e63aa940a3fa3d94676c4d4, type: 3}
+  edgeArrowSprite: {fileID: 21300000, guid: ca93f24b3914d4d46a80f570dc66f608, type: 3}
   nodeStyles:
   - type: 0
     label: Start
