@@ -7,7 +7,7 @@ public class MapBottomInfo : MonoBehaviour
 {
     [SerializeField] private TMP_Text infoText; // drag your text component here
 
-    public void ShowInfo(long generationMs, Dictionary<string, int> encounterCounts)
+    public void ShowInfo(long generationMs, int oneChoiceNodes, Dictionary<string, int> encounterCounts)
     {
         if (infoText == null)
         {
@@ -17,10 +17,13 @@ public class MapBottomInfo : MonoBehaviour
 
         var sb = new StringBuilder();
 
-        // Line 1: generation time
+        // generation time
         sb.AppendLine($"Generation time: {generationMs} ms");
 
-        // Line 2+: encounter breakdown
+        // Nodes with only 1 possible next step
+        sb.AppendLine($"Nodes with only 1 choice: {oneChoiceNodes}");
+
+        // encounter breakdown
         if (encounterCounts != null && encounterCounts.Count > 0)
         {
             sb.Append("Encounters: ");
@@ -37,6 +40,8 @@ public class MapBottomInfo : MonoBehaviour
         {
             sb.Append("Encounters: (none / not assigned)");
         }
+
+        
 
         infoText.text = sb.ToString();
     }

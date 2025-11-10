@@ -566,21 +566,27 @@ public class MapManager : MonoBehaviour
         if (bottomInfo == null)
             return;
 
-        // Count encounters by type
-        var counts = new Dictionary<string, int>();
+        // Count encounter types
+        var encounterCounts = new Dictionary<string, int>();
+        int oneChoiceNodes = 0;
 
         for (int r = 0; r < Graph.rows.Count; r++)
         {
             foreach (var node in Graph.rows[r])
             {
+                // Count encounter types
                 string key = node.encounterType.ToString();
-                if (!counts.ContainsKey(key))
-                    counts[key] = 0;
-                counts[key]++;
+                if (!encounterCounts.ContainsKey(key))
+                    encounterCounts[key] = 0;
+                encounterCounts[key]++;
+
+                // Count nodes with exactly one outgoing edge
+                // (we only care about "choices", so bottom row with 0 doesn't count)
+                if (node.outgoing != null && node.outgoing.Count == 1)
+                    oneChoiceNodes++;
             }
         }
 
-        bottomInfo.ShowInfo(generationMs, counts);
+        bottomInfo.ShowInfo(generationMs, oneChoiceNodes, encounterCounts);
     }
-
 }
