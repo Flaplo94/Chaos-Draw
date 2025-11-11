@@ -53,6 +53,14 @@ public class MapManager : MonoBehaviour
     private readonly List<GameObject> spawnedNodes = new();
     private readonly List<Image> spawnedEdges = new();
 
+    // --- Run timing stats ---
+    private bool runActive;
+    private bool runCompleted;
+    private float runStartTime;          // Time.time when Regenerate was pressed
+    private float lastClickTime;         // last successful node selection time
+    private readonly List<float> clickIntervals = new(); // seconds between selections
+    private double lastGenerationMs;       // for display
+
     // ------------------------------------------------------------
     // PUBLIC API
     // ------------------------------------------------------------
@@ -62,15 +70,25 @@ public class MapManager : MonoBehaviour
     {
         var stopwatch = Stopwatch.StartNew();
 
+        // start a fresh run timing from this regenerate click
+        ResetRunTiming();
+
         ClearAllRuntime();
         GenerateGraph();
         BuildEdges();
         BuildNodes();
         SetupStartNode();
+        if (Graph.rows.Count > 0 && Graph.rows[0].Count > 0)
+        {
+            var start = Graph.rows[0][0];
+            OnNodeClicked(start.id);
+        }
 
         stopwatch.Stop();
-
-        UpdateBottomInfo(stopwatch.ElapsedMilliseconds);
+        lastGenerationMs = stopwatch.Elapsed.TotalMilliseconds;
+         // if you still want an int field
+        //UnityEngine.Debug.Log($"Map gen: {ms:0.000} ms");
+        UpdateBottomInfo();
     }
 
     // Called by Reset button (same layout, restart path)
@@ -96,6 +114,8 @@ public class MapManager : MonoBehaviour
 
         currentNode = null;
         SetupStartNode();
+        ResetRunTiming();
+        UpdateBottomInfo();
     }
 
     // ------------------------------------------------------------
@@ -122,6 +142,7 @@ public class MapManager : MonoBehaviour
 
     private void GenerateGraph()
     {
+        //var sw = Stopwatch.StartNew();
         if (useFixedSeed)
             Random.InitState(seed);
 
@@ -146,6 +167,9 @@ public class MapManager : MonoBehaviour
         // 2) Connect each adjacent row pair with non-crossing edges
         for (int r = 0; r < totalRows - 1; r++)
             ConnectRowsPlanar(Graph.rows[r], Graph.rows[r + 1]);
+
+        //sw.Stop();
+        //lastGenerationMs = (long)sw.Elapsed.TotalMilliseconds;
     }
 
     // ------------------------------------------------------------
@@ -321,16 +345,6 @@ public class MapManager : MonoBehaviour
                 nodeBtn.SetInteractable(false);
             }
         }
-
-        // Enable only the start node & highlight edges from it
-        if (Graph.rows.Count > 0 && Graph.rows[0].Count > 0)
-        {
-            var start = Graph.rows[0][0];
-            if (nodeButtons.TryGetValue(start.id, out var startBtn))
-                startBtn.SetInteractable(true);
-
-            HighlightReachableEdges(start);
-        }
     }
 
     private void BuildEdges()
@@ -409,7 +423,6 @@ public class MapManager : MonoBehaviour
         var clicked = Graph.GetNodeById(nodeId);
         if (clicked == null) return;
 
-        // First selection: must be top row
         if (currentNode == null)
         {
             if (clicked.rowIndex != 0)
@@ -418,13 +431,26 @@ public class MapManager : MonoBehaviour
                 return;
             }
 
+            if (runActive)
+            {
+                float now = Time.time;
+                float dt = now - lastClickTime;
+                if (dt < 0f) dt = 0f;
+                clickIntervals.Add(dt);      // Regenerate -> first node
+                lastClickTime = now;
+            }
+
             currentNode = clicked;
             clickedBtn.SetSelected();
             DisableAllNodes();
             EnableNextRow(clicked);
-            
+            HighlightReachableEdges(clicked);
+
+            UpdateBottomInfo(); // <-- add this
             return;
         }
+
+
 
         // Only allow nodes connected from currentNode
         bool isConnected = false;
@@ -451,6 +477,16 @@ public class MapManager : MonoBehaviour
             return;
         }
 
+        // Record time since last valid selection
+        if (runActive)
+        {
+            float now = Time.time;
+            float dt = now - lastClickTime;
+            if (dt < 0f) dt = 0f;
+            clickIntervals.Add(dt);
+            lastClickTime = now;
+        }
+
         // Fade unused outgoing edges from previous node
         foreach (var edge in Graph.edges)
         {
@@ -471,6 +507,20 @@ public class MapManager : MonoBehaviour
         DisableAllNodes();
         EnableNextRow(clicked);
         HighlightReachableEdges(clicked);
+        UpdateBottomInfo();
+
+        // If it's the last row (boss), finish run
+        if (clicked.rowIndex == Graph.totalRows - 1)
+        {
+            runActive = false;
+            runCompleted = true;
+
+            // finalize stats & push to BottomInfo
+            UpdateBottomInfo();
+            UnityEngine.Debug.Log("Reached final node.");
+            DisableAllNodes();
+        }
+
 
         // If last row: lock everything, path complete
         if (clicked.rowIndex == Graph.totalRows - 1)
@@ -614,12 +664,12 @@ public class MapManager : MonoBehaviour
         }
     }
 
-    private void UpdateBottomInfo(long generationMs)
+    private void UpdateBottomInfo()
     {
         if (bottomInfo == null)
             return;
 
-        // Count encounter types
+        // Count encounter types + one-choice nodes
         var encounterCounts = new Dictionary<string, int>();
         int oneChoiceNodes = 0;
 
@@ -627,20 +677,53 @@ public class MapManager : MonoBehaviour
         {
             foreach (var node in Graph.rows[r])
             {
-                // Count encounter types
                 string key = node.encounterType.ToString();
                 if (!encounterCounts.ContainsKey(key))
                     encounterCounts[key] = 0;
                 encounterCounts[key]++;
 
-                // Count nodes with exactly one outgoing edge
-                // (we only care about "choices", so bottom row with 0 doesn't count)
                 if (node.outgoing != null && node.outgoing.Count == 1)
                     oneChoiceNodes++;
             }
         }
 
-        bottomInfo.ShowInfo(generationMs, oneChoiceNodes, encounterCounts);
+        // Last interval (seconds)
+        float lastInterval = 0f;
+        if (clickIntervals.Count > 0)
+            lastInterval = clickIntervals[clickIntervals.Count - 1];
+
+        // Totals only if run completed with at least one step
+        float totalRunSeconds = 0f;
+        float avgInterval = 0f;
+        float medianInterval = 0f;
+        bool hasIntervals = clickIntervals.Count > 0;
+
+        if (runCompleted && hasIntervals)
+        {
+            foreach (var dt in clickIntervals)
+                totalRunSeconds += dt;
+
+            avgInterval = totalRunSeconds / clickIntervals.Count;
+
+            var sorted = new List<float>(clickIntervals);
+            sorted.Sort();
+            int n = sorted.Count;
+            if (n % 2 == 1)
+                medianInterval = sorted[n / 2];
+            else
+                medianInterval = (sorted[n / 2 - 1] + sorted[n / 2]) * 0.5f;
+        }
+
+        bottomInfo.ShowInfo(
+            lastGenerationMs,
+            oneChoiceNodes,
+            encounterCounts,
+            runCompleted && hasIntervals,
+            lastInterval,
+            totalRunSeconds,
+            avgInterval,
+            medianInterval
+        );
     }
 
     public void SetSeed(int newSeed)
@@ -674,6 +757,15 @@ public class MapManager : MonoBehaviour
             HighlightReachableEdges(currentNode);
         else if (Graph.rows.Count > 0 && Graph.rows[0].Count > 0)
             HighlightReachableEdges(Graph.rows[0][0]);
+    }
+
+    private void ResetRunTiming()
+    {
+        runActive = true;
+        runCompleted = false;
+        runStartTime = Time.time;
+        lastClickTime = runStartTime;
+        clickIntervals.Clear();
     }
 
 }

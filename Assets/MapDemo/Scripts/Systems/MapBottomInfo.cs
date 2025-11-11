@@ -7,7 +7,7 @@ public class MapBottomInfo : MonoBehaviour
 {
     [SerializeField] private TMP_Text infoText; // drag your text component here
 
-    public void ShowInfo(long generationMs, int oneChoiceNodes, Dictionary<string, int> encounterCounts)
+    public void ShowInfo(double generationMs, int oneChoiceNodes, Dictionary<string, int> encounterCounts, bool runCompleted, float lastIntervalSeconds, float totalRunSeconds, float avgIntervalSeconds, float medianIntervalSeconds)
     {
         if (infoText == null)
         {
@@ -17,32 +17,51 @@ public class MapBottomInfo : MonoBehaviour
 
         var sb = new StringBuilder();
 
-        // generation time
-        sb.AppendLine($"Generation time: {generationMs} ms");
+        // Generation time
+        sb.AppendLine($"Generation time: {generationMs:0.00} ms");
 
-        // Nodes with only 1 possible next step
+        // Nodes with only 1 choice
         sb.AppendLine($"Nodes with only 1 choice: {oneChoiceNodes}");
 
-        // encounter breakdown
+        // Encounters
         if (encounterCounts != null && encounterCounts.Count > 0)
         {
-            sb.Append("Encounters: ");
-
+            sb.AppendLine("Encounters: ");
             bool first = true;
             foreach (var kvp in encounterCounts)
             {
                 if (!first) sb.Append(" | ");
                 first = false;
-                sb.Append($"{kvp.Key}: {kvp.Value}");
+                sb.AppendLine($"{kvp.Key}: {kvp.Value}");
             }
         }
         else
         {
-            sb.Append("Encounters: (none / not assigned)");
+            sb.AppendLine("Encounters: (none / not assigned)");
         }
 
-        
+        // Last click interval (always based on last valid move if any)
+        if (lastIntervalSeconds > 0f)
+            sb.AppendLine($"Last click: {lastIntervalSeconds:0.0} s");
+        else
+            sb.AppendLine("Last click: -");
+
+        // Timing stats (only if run completed)
+        if (runCompleted)
+        {
+            sb.AppendLine($"Run total: {totalRunSeconds:0.0} s");
+            sb.AppendLine($"Avg between clicks: {avgIntervalSeconds:0.0} s");
+            sb.AppendLine($"Median between clicks: {medianIntervalSeconds:0.0} s");
+        }
+        else
+        {
+            sb.AppendLine("Run total: -");
+            sb.AppendLine("Avg between clicks: -");
+            sb.AppendLine("Median between clicks: -");
+        }
 
         infoText.text = sb.ToString();
     }
+
+
 }
