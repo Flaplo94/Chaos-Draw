@@ -2,22 +2,8 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 
-
 namespace MapDemo.Settings
 {
-    // Enum used by MapSettings. This does not need to match any existing project enum.
-    // Treat it as a "theme key" for styling only.
-    public enum MapNodeType
-    {
-        Start,
-        Normal,
-        Event,
-        Shop,
-        Elite,
-        Special,
-        Boss
-    }
-
     [CreateAssetMenu(fileName = "MapSettings", menuName = "MapDemo/Map Settings", order = 10)]
     public sealed class MapSettings : ScriptableObject
     {
@@ -30,7 +16,7 @@ namespace MapDemo.Settings
         [Serializable]
         public struct NodeStyle
         {
-            public MapNodeType type;
+            public EncounterType type;   // <-- was MapNodeType
             public string label;
             public Color color;
             public Sprite icon;
@@ -39,7 +25,7 @@ namespace MapDemo.Settings
         [Header("Per-node styles")]
         public NodeStyle[] nodeStyles = new NodeStyle[0];
 
-        private Dictionary<MapNodeType, NodeStyle> _lookup;
+        private Dictionary<EncounterType, NodeStyle> _lookup;
 
         private void OnEnable()
         {
@@ -48,9 +34,10 @@ namespace MapDemo.Settings
 
         private void BuildLookup()
         {
-            if (_lookup == null) _lookup = new Dictionary<MapNodeType, NodeStyle>();
+            if (_lookup == null) _lookup = new Dictionary<EncounterType, NodeStyle>();
             _lookup.Clear();
             if (nodeStyles == null) return;
+
             for (int i = 0; i < nodeStyles.Length; i++)
             {
                 var ns = nodeStyles[i];
@@ -59,7 +46,7 @@ namespace MapDemo.Settings
             }
         }
 
-        public bool TryGetStyle(MapNodeType type, out NodeStyle style)
+        public bool TryGetStyle(EncounterType type, out NodeStyle style)
         {
             if (_lookup == null || _lookup.Count == 0) BuildLookup();
             return _lookup.TryGetValue(type, out style);
@@ -73,7 +60,6 @@ namespace MapDemo.Settings
             {
                 if (_cached == null)
                 {
-                    // Looks for asset at: Resources/MapDemo/MapSettings_Default
                     _cached = Resources.Load<MapSettings>("MapDemo/MapSettings_Default");
                     if (_cached == null)
                     {

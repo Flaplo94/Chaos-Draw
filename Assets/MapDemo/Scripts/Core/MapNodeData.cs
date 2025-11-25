@@ -4,8 +4,9 @@ using UnityEngine;
 
 public enum EncounterType
 {
+    Start,
     Normal,
-    SpecialEvent,
+    Special,
     Elite,
     Event,
     Shop,

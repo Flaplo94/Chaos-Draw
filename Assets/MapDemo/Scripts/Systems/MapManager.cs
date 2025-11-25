@@ -37,6 +37,13 @@ public class MapManager : MonoBehaviour
     [SerializeField] private bool useFixedSeed = false;
     [SerializeField] private int seed = 123456;
 
+    private float CenterX()
+    {
+        float minX = -mapArea.rect.width * 0.5f + leftPadding;
+        float maxX = mapArea.rect.width * 0.5f - rightPadding;
+        return (minX + maxX) * 0.5f;
+    }
+
     [Header("Map Style")]
     [SerializeField] private MapSettings mapSettings;
 
@@ -61,6 +68,21 @@ public class MapManager : MonoBehaviour
     private readonly List<float> clickIntervals = new(); // seconds between selections
     private double lastGenerationMs;       // for display
 
+    // Option A generator (normal C# helper)
+    private readonly EncounterGeneratorOptionA optionAGenerator = new EncounterGeneratorOptionA();
+
+    // For the “A lamp” in BottomInfo
+    private bool optionAPassLastRun;
+
+    public enum EncounterGenerationMode
+    {
+        OptionA = 0,
+        OptionB = 1,
+        OptionC = 2,
+        OptionD = 3
+    }
+    [SerializeField] private EncounterGenerationMode encounterMode = EncounterGenerationMode.OptionA;
+
     // ------------------------------------------------------------
     // PUBLIC API
     // ------------------------------------------------------------
@@ -75,6 +97,7 @@ public class MapManager : MonoBehaviour
 
         ClearAllRuntime();
         GenerateGraph();
+        AssignEncounters();
         BuildEdges();
         BuildNodes();
         SetupStartNode();
@@ -142,35 +165,40 @@ public class MapManager : MonoBehaviour
 
     private void GenerateGraph()
     {
-        //var sw = Stopwatch.StartNew();
         if (useFixedSeed)
             Random.InitState(seed);
 
         Graph.totalRows = totalRows;
 
-        // 1) Create nodes per row (top row index 0, bottom last)
+        // --- Create nodes per row (top = 0, bottom = last) ---
         for (int r = 0; r < totalRows; r++)
         {
-            int count = (r == 0 || r == totalRows - 1)
-                ? 1
-                : Random.Range(minNodesPerRow, maxNodesPerRow + 1);
-
-            var xs = SampleDistinctX(count, nodeMinHorizontalGap);
             float y = RowY(r);
 
-            for (int i = 0; i < count; i++)
-                Graph.AddNode(r, new Vector2(xs[i], y));
+            if (r == 0 || r == totalRows - 1)
+            {
+                // START + END: always 1 node, centered horizontally
+                float xCenter = CenterX();
+                Graph.AddNode(r, new Vector2(xCenter, y));
+            }
+            else
+            {
+                // Middle rows: 2–4 nodes, random horizontal placement
+                int count = Random.Range(minNodesPerRow, maxNodesPerRow + 1);
+                var xs = SampleDistinctX(count, nodeMinHorizontalGap);
 
-            Graph.SortRowByX(r);
+                for (int i = 0; i < count; i++)
+                    Graph.AddNode(r, new Vector2(xs[i], y));
+
+                Graph.SortRowByX(r);
+            }
         }
 
-        // 2) Connect each adjacent row pair with non-crossing edges
+        // --- Connect each adjacent row pair with non-crossing edges ---
         for (int r = 0; r < totalRows - 1; r++)
             ConnectRowsPlanar(Graph.rows[r], Graph.rows[r + 1]);
-
-        //sw.Stop();
-        //lastGenerationMs = (long)sw.Elapsed.TotalMilliseconds;
     }
+
 
     // ------------------------------------------------------------
     // CONNECT ROWS (non-crossing)
@@ -225,17 +253,27 @@ public class MapManager : MonoBehaviour
     private void AddEdgeIfValid(MapNodeData from, MapNodeData to)
     {
         if (from == null || to == null) return;
-        if (to.rowIndex != from.rowIndex + 1) return; // only next row
+        if (to.rowIndex != from.rowIndex + 1) return; // only connect to next row
 
-        // prevent duplicates
+        // Prevent duplicates
         for (int k = 0; k < from.outgoing.Count; k++)
             if (from.outgoing[k] == to.id)
                 return;
 
-        // prevent crossings with existing edges in same row pair
+        // --- NEW: degree limits ---
+        // Max 2 edges going OUT of this node
+        if (GetOutgoingCount(from) >= 2)
+            return;
+
+        // Max 2 edges coming IN to this node
+        if (GetIncomingCount(to) >= 2)
+            return;
+
+        // Prevent crossings with existing edges in same row pair
         if (WouldCreateCrossing(from, to))
             return;
 
+        // If we get here, it's safe to add
         Graph.AddEdge(from, to);
     }
 
@@ -310,31 +348,32 @@ public class MapManager : MonoBehaviour
                     continue;
                 }
 
-                // Decide node type based on row
-                MapNodeType nodeType = MapNodeType.Normal;
-                if (r == 0) nodeType = MapNodeType.Start;
-                else if (r == Graph.totalRows - 1) nodeType = MapNodeType.Boss;
+                // Decide visual type from EncounterType
+                EncounterType visualType = node.encounterType;
+
+                // If you want to force start/boss by row, you can override here:
+                if (r == 0) visualType = EncounterType.Start;
+                else if (r == Graph.totalRows - 1) visualType = EncounterType.Boss;
 
                 // Style it
                 if (mapSettings != null)
-                    nodeBtn.ApplyStyle(mapSettings, nodeType);
+                    nodeBtn.ApplyStyle(mapSettings, visualType);
 
-                // Set label text from MapSettings style (if it has one)
+                // Set label from MapSettings style
                 if (mapSettings != null && nodeBtn.labelText != null)
                 {
                     string label = null;
 
-                    if (mapSettings.TryGetStyle(nodeType, out var style) && !string.IsNullOrEmpty(style.label))
+                    if (mapSettings.TryGetStyle(visualType, out var style) && !string.IsNullOrEmpty(style.label))
                         label = style.label;
                     else
-                        label = nodeType.ToString(); // fallback
+                        label = visualType.ToString();
 
                     nodeBtn.SetLabel(label);
-                    // Visibility controlled by global toggle; default OFF so start hidden
                     nodeBtn.SetLabelVisible(labelsEnabled);
                 }
 
-                // Register and hook click
+                // Register + click hook
                 nodeBtn.nodeId = node.id;
                 nodeButtons[node.id] = nodeBtn;
 
@@ -346,6 +385,7 @@ public class MapManager : MonoBehaviour
             }
         }
     }
+
 
     private void BuildEdges()
     {
@@ -722,7 +762,8 @@ public class MapManager : MonoBehaviour
             lastInterval,
             totalRunSeconds,
             avgInterval,
-            medianInterval
+            medianInterval,
+            optionAPassLastRun
         );
     }
 
@@ -768,4 +809,54 @@ public class MapManager : MonoBehaviour
         clickIntervals.Clear();
     }
 
+    private int GetOutgoingCount(MapNodeData from)
+    {
+        // We already store outgoing ids on the node
+        return from.outgoing != null ? from.outgoing.Count : 0;
+    }
+
+    private int GetIncomingCount(MapNodeData to)
+    {
+        int count = 0;
+        foreach (var edge in Graph.edges)
+        {
+            if (edge.toNodeId == to.id)
+                count++;
+        }
+        return count;
+    }
+
+    private void AssignEncounters()
+    {
+        if (Graph == null || Graph.rows == null) return;
+
+        optionAPassLastRun = false;
+
+        switch (encounterMode)
+        {
+            case EncounterGenerationMode.OptionA:
+                {
+                    // Use same seed for encounters if you want deterministic map+encounters,
+                    // or create a new random seed here.
+                    int encounterSeed = useFixedSeed
+                        ? seed
+                        : UnityEngine.Random.Range(int.MinValue, int.MaxValue);
+
+                    var rng = new System.Random(encounterSeed);
+
+                    optionAGenerator.Generate(Graph, rng, out optionAPassLastRun);
+                    break;
+                }
+
+                // Later: OptionB, OptionC, OptionD
+                // case EncounterGenerationMode.OptionB:
+                //     ...
+                //     break;
+        }
+    }
+
+    public void SetEncounterMode(int index)
+    {
+        encounterMode = (EncounterGenerationMode)index;
+    }
 }

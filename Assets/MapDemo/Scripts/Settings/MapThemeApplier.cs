@@ -5,8 +5,6 @@ using MapDemo.Settings;
 
 namespace MapDemo.Settings
 {
-    // Attach to prefabs or scene objects to apply visuals from MapSettings.
-    // Works both in Play Mode and in Editor (ExecuteAlways).
     [ExecuteAlways]
     public sealed class MapThemeApplier : MonoBehaviour
     {
@@ -19,12 +17,10 @@ namespace MapDemo.Settings
 
         [Header("General")]
         public Mode mode = Mode.Node;
-
-        [Tooltip("Leave empty to use MapSettings.Current.")]
         public MapSettings settingsOverride;
 
         [Header("Node")]
-        public MapNodeType nodeType = MapNodeType.Normal;
+        public EncounterType nodeType = EncounterType.Normal;   // <-- was MapNodeType
         public SpriteRenderer nodeBaseRenderer;
         public SpriteRenderer nodeRingRenderer;
         public Image nodeIconImage;
@@ -36,7 +32,7 @@ namespace MapDemo.Settings
 
         [Header("Label")]
         public TextMeshProUGUI labelText;
-        public MapNodeType labelType = MapNodeType.Normal;
+        public EncounterType labelType = EncounterType.Normal;  // <-- was MapNodeType
 
         private MapSettings ResolveSettings()
         {
@@ -52,7 +48,6 @@ namespace MapDemo.Settings
 #if UNITY_EDITOR
         private void OnValidate()
         {
-            // Re-apply immediately when something changes in the Inspector.
             ApplyNow();
         }
 #endif
@@ -64,15 +59,9 @@ namespace MapDemo.Settings
 
             switch (mode)
             {
-                case Mode.Node:
-                    ApplyNode(s);
-                    break;
-                case Mode.Edge:
-                    ApplyEdge(s);
-                    break;
-                case Mode.Label:
-                    ApplyLabel(s);
-                    break;
+                case Mode.Node: ApplyNode(s); break;
+                case Mode.Edge: ApplyEdge(s); break;
+                case Mode.Label: ApplyLabel(s); break;
             }
         }
 
@@ -83,7 +72,6 @@ namespace MapDemo.Settings
 
             if (s.TryGetStyle(nodeType, out var style))
             {
-                // Tint the ring (or base) with the node color.
                 if (nodeRingRenderer != null) nodeRingRenderer.color = style.color;
                 else if (nodeBaseRenderer != null) nodeBaseRenderer.color = style.color;
 

@@ -26,7 +26,7 @@ public class MapNodeButton : MonoBehaviour
             baseColor = baseImage.color;
     }
 
-    public void ApplyStyle(MapSettings settings, MapNodeType type)
+    public void ApplyStyle(MapSettings settings, EncounterType type)
     {
         if (settings == null) return;
 

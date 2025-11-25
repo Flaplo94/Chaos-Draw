@@ -10,6 +10,7 @@ public class MapManagerController : MonoBehaviour
     [SerializeField] private TMP_InputField seedInput;
     [SerializeField] private Toggle labelsToggle;
     [SerializeField] private Toggle dimmingToggle;
+    [SerializeField] private TMP_Dropdown encounterModeDropdown;
 
     private void Awake()
     {
@@ -24,6 +25,9 @@ public class MapManagerController : MonoBehaviour
 
         if (dimmingToggle != null)
             dimmingToggle.onValueChanged.AddListener(OnDimmingToggleChanged);
+
+        if (encounterModeDropdown != null)
+            encounterModeDropdown.onValueChanged.AddListener(OnEncounterModeChanged);
     }
 
     private void OnRegenerateClicked()
@@ -73,5 +77,11 @@ public class MapManagerController : MonoBehaviour
     {
         if (mapManager == null) return;
         mapManager.SetDimmingEnabled(value);
+    }
+
+    private void OnEncounterModeChanged(int index)
+    {
+        if (mapManager != null)
+            mapManager.SetEncounterMode(index);
     }
 }
