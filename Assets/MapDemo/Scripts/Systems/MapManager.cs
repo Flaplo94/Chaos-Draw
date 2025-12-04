@@ -74,6 +74,10 @@ public class MapManager : MonoBehaviour
     // For the “A lamp” in BottomInfo
     private bool optionAPassLastRun;
 
+    [SerializeField] private OptionCSettings optionCSettings;
+    private readonly EncounterGeneratorOptionC optionCGenerator = new EncounterGeneratorOptionC();
+    private bool optionCPassLastRun;
+
     public enum EncounterGenerationMode
     {
         OptionA = 0,
@@ -763,7 +767,8 @@ public class MapManager : MonoBehaviour
             totalRunSeconds,
             avgInterval,
             medianInterval,
-            optionAPassLastRun
+            optionAPassLastRun,
+            optionCPassLastRun
         );
     }
 
@@ -831,27 +836,39 @@ public class MapManager : MonoBehaviour
         if (Graph == null || Graph.rows == null) return;
 
         optionAPassLastRun = false;
+        optionCPassLastRun = false;
 
         switch (encounterMode)
         {
             case EncounterGenerationMode.OptionA:
                 {
-                    // Use same seed for encounters if you want deterministic map+encounters,
-                    // or create a new random seed here.
                     int encounterSeed = useFixedSeed
                         ? seed
                         : UnityEngine.Random.Range(int.MinValue, int.MaxValue);
 
                     var rng = new System.Random(encounterSeed);
-
                     optionAGenerator.Generate(Graph, rng, out optionAPassLastRun);
                     break;
                 }
 
-                // Later: OptionB, OptionC, OptionD
-                // case EncounterGenerationMode.OptionB:
-                //     ...
-                //     break;
+            // ... OptionB etc later
+
+            case EncounterGenerationMode.OptionC:
+                {
+                    if (optionCSettings == null)
+                    {
+                        UnityEngine.Debug.LogWarning("Option C selected but optionCSettings is null.");
+                        break;
+                    }
+
+                    int encounterSeed = useFixedSeed
+                        ? seed
+                        : UnityEngine.Random.Range(int.MinValue, int.MaxValue);
+
+                    var rng = new System.Random(encounterSeed);
+                    optionCGenerator.Generate(Graph, rng, optionCSettings, out optionCPassLastRun);
+                    break;
+                }
         }
     }
 

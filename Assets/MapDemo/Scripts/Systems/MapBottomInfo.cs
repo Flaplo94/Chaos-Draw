@@ -7,7 +7,17 @@ public class MapBottomInfo : MonoBehaviour
 {
     [SerializeField] private TMP_Text infoText; // drag your text component here
 
-    public void ShowInfo(double generationMs, int oneChoiceNodes, Dictionary<string, int> encounterCounts, bool runCompleted, float lastIntervalSeconds, float totalRunSeconds, float avgIntervalSeconds, float medianIntervalSeconds, bool optionAPass)
+    public void ShowInfo(
+        double generationMs,
+        int oneChoiceNodes,
+        Dictionary<string, int> encounterCounts,
+        bool runCompleted,
+        float lastIntervalSeconds,
+        float totalRunSeconds,
+        float avgIntervalSeconds,
+        float medianIntervalSeconds,
+        bool optionAPass,
+        bool optionCPass)
     {
         if (infoText == null)
         {
@@ -61,6 +71,8 @@ public class MapBottomInfo : MonoBehaviour
         }
 
         sb.AppendLine(optionAPass ? "Option A: PASS" : "Option A: FAIL");
+
+        sb.AppendLine(optionCPass ? "Option C: PASS" : "Option C: FAIL");
         infoText.text = sb.ToString();
     }
 
