@@ -257,27 +257,35 @@ public class MapManager : MonoBehaviour
     private void AddEdgeIfValid(MapNodeData from, MapNodeData to)
     {
         if (from == null || to == null) return;
-        if (to.rowIndex != from.rowIndex + 1) return; // only connect to next row
+        if (to.rowIndex != from.rowIndex + 1) return;
 
-        // Prevent duplicates
-        for (int k = 0; k < from.outgoing.Count; k++)
-            if (from.outgoing[k] == to.id)
-                return;
+        // Prevent duplicate edges
+        if (from.outgoing.Contains(to.id))
+            return;
 
-        // --- NEW: degree limits ---
-        // Max 2 edges going OUT of this node
+        //  SPECIAL CASE: Start node (row 0) connects to *all* nodes in row 1
+        if (from.rowIndex == 0)
+        {
+            // No degree limit here, just add the edge
+            // (edges from the same point can't cross each other)
+            Graph.AddEdge(from, to);
+            return;
+        }
+
+        //  For all other rows, keep your max 2 in / max 2 out rules
+
+        // Max 2 outgoing edges from any other node
         if (GetOutgoingCount(from) >= 2)
             return;
 
-        // Max 2 edges coming IN to this node
+        // Max 2 incoming edges to any other node
         if (GetIncomingCount(to) >= 2)
             return;
 
-        // Prevent crossings with existing edges in same row pair
+        // Crossing check stays
         if (WouldCreateCrossing(from, to))
             return;
 
-        // If we get here, it's safe to add
         Graph.AddEdge(from, to);
     }
 

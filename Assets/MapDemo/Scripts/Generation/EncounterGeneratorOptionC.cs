@@ -61,57 +61,69 @@ public class EncounterGeneratorOptionC
     private void ApplyBudgetToRow(List<MapNodeData> rowNodes, int budget, System.Random rng, OptionCSettings s, ref bool globalPass)
     {
         int count = rowNodes.Count;
-        int baseCost = s.costNormal * count;
 
-        // If even all-Normal exceeds budget, can't satisfy this row.
-        if (baseCost > budget)
+        // 1) Start with all Normal already, compute base cost
+        int baseCost = count * s.costNormal;
+
+        // 2) The allowed range is: [budget-1, budget+1]
+        int minAllowed = budget - 1;
+        int maxAllowed = budget + 1;
+
+        // If even all-Normal is above maxAllowed  automatic FAIL
+        if (baseCost > maxAllowed)
         {
             globalPass = false;
-            // Keep them all Normal, but we violated the budget.
-            return;
+            return;   // can't fix this row
         }
 
-        // Start with all Normal (already set in Generate())
-        int remainingBudget = budget - baseCost;
+        // If all-Normal is already inside allowed window  nothing to do
+        if (baseCost >= minAllowed && baseCost <= maxAllowed)
+            return;
 
-        if (remainingBudget <= 0)
-            return; // exactly at budget with all Normal
+        int remaining = maxAllowed - baseCost;  // how many points we can add safely
 
-        // We will walk nodes in random order and try upgrading Normal  {Elite, Special, Event, Shop}
-        var nodeIndices = new List<int>(count);
-        for (int i = 0; i < count; i++)
-            nodeIndices.Add(i);
+        // 3) Shuffle nodes and attempt upgrades SAFELY
+        var indices = new List<int>(count);
+        for (int i = 0; i < count; i++) indices.Add(i);
+        Shuffle(indices, rng);
 
-        Shuffle(nodeIndices, rng);
-
-        foreach (int idx in nodeIndices)
+        foreach (int idx in indices)
         {
             var node = rowNodes[idx];
-
             if (node.encounterType != EncounterType.Normal)
-                continue; // should be Normal, but just in case
+                continue;
 
-            // Try all possible upgrades whose incremental cost fits remainingBudget
-            var possibleTypes = GetPossibleUpgrades(remainingBudget, s);
+            // All upgrade options with incremental cost <= remaining window
+            var up = GetSafeUpgrades(remaining, s);
 
-            if (possibleTypes.Count == 0)
-                break; // can't upgrade anything more within budget
-
-            // Pick one at random
-            var newType = possibleTypes[rng.Next(possibleTypes.Count)];
-
-            int incCost = GetCost(newType, s) - s.costNormal;
-            if (incCost <= remainingBudget && incCost > 0)
-            {
-                node.encounterType = newType;
-                remainingBudget -= incCost;
-            }
-
-            if (remainingBudget <= 0)
+            if (up.Count == 0)
                 break;
+
+            EncounterType chosen = up[rng.Next(up.Count)];
+
+            int inc = GetCost(chosen, s) - s.costNormal;
+            if (inc <= remaining)
+            {
+                node.encounterType = chosen;
+                remaining -= inc;
+
+                // Recompute row cost (safe)
+                int rowCost = ComputeRowCost(rowNodes, s);
+
+                if (rowCost > maxAllowed)
+                {
+                    // Undo (too expensive)
+                    node.encounterType = EncounterType.Normal;
+                    remaining += inc;
+                }
+            }
         }
 
-        // By construction we never exceed the budget for this row.
+        // 4) Final score check
+        int finalCost = ComputeRowCost(rowNodes, s);
+
+        if (!(finalCost >= minAllowed && finalCost <= maxAllowed))
+            globalPass = false;
     }
 
     private List<EncounterType> GetPossibleUpgrades(int remainingBudget, OptionCSettings s)
@@ -170,5 +182,24 @@ public class EncounterGeneratorOptionC
             int j = rng.Next(i + 1);
             (list[i], list[j]) = (list[j], list[i]);
         }
+    }
+    private int ComputeRowCost(List<MapNodeData> row, OptionCSettings s)
+    {
+        int total = 0;
+        foreach (var node in row)
+            total += GetCost(node.encounterType, s);
+        return total;
+    }
+
+    private List<EncounterType> GetSafeUpgrades(int remaining, OptionCSettings s)
+    {
+        var list = new List<EncounterType>();
+
+        TryAddUpgrade(EncounterType.Elite, remaining, s, list);
+        TryAddUpgrade(EncounterType.Special, remaining, s, list);
+        TryAddUpgrade(EncounterType.Event, remaining, s, list);
+        TryAddUpgrade(EncounterType.Shop, remaining, s, list);
+
+        return list;
     }
 }
