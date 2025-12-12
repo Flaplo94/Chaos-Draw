@@ -263,6 +263,8 @@ public class MapManager : MonoBehaviour
         if (from.outgoing.Contains(to.id))
             return;
 
+        int lastRow = Graph.totalRows - 1;
+
         //  SPECIAL CASE: Start node (row 0) connects to *all* nodes in row 1
         if (from.rowIndex == 0)
         {
@@ -272,6 +274,12 @@ public class MapManager : MonoBehaviour
             return;
         }
 
+        //  SPECIAL CASE: ALL nodes in row before boss connect to Boss
+        if (to.rowIndex == lastRow)
+        {
+            Graph.AddEdge(from, to);
+            return;
+        }
         //  For all other rows, keep your max 2 in / max 2 out rules
 
         // Max 2 outgoing edges from any other node
@@ -859,8 +867,6 @@ public class MapManager : MonoBehaviour
                     break;
                 }
 
-            // ... OptionB etc later
-
             case EncounterGenerationMode.OptionC:
                 {
                     if (optionCSettings == null)
@@ -875,13 +881,111 @@ public class MapManager : MonoBehaviour
 
                     var rng = new System.Random(encounterSeed);
                     optionCGenerator.Generate(Graph, rng, optionCSettings, out optionCPassLastRun);
+                    UnityEngine.Debug.Log($"[OptionC] Using settings instance: {optionCSettings.GetHashCode()}  costElite={optionCSettings.costElite}  row1Budget={optionCSettings.rowBudgets[1]}  mode={encounterMode}");
+                    DumpAllRowsOptionCDebug();
+
+                    var problems = new List<string>();
+                    optionCPassLastRun = ValidateOptionCAndLog(problems);
+
+                    if (!optionCPassLastRun)
+                    {
+                        // Print the first few so you can see EXACTLY what's wrong
+                        for (int i = 0; i < Mathf.Min(5, problems.Count); i++)
+                            UnityEngine.Debug.LogError("[Option C FAIL] " + problems[i]);
+                    }
                     break;
                 }
         }
     }
-
     public void SetEncounterMode(int index)
     {
         encounterMode = (EncounterGenerationMode)index;
     }
+
+    private bool ValidateOptionCAndLog(List<string> problems)
+    {
+        problems.Clear();
+
+        if (Graph == null || Graph.rows == null || optionCSettings == null)
+            return false;
+
+        int lastRow = Graph.totalRows - 1;
+
+        for (int r = 1; r < lastRow; r++)
+        {
+            var row = Graph.rows[r];
+            if (row == null || row.Count == 0) continue;
+
+            int budget = optionCSettings.rowBudgets[r];
+            int minAllowed = budget - 1;
+            int maxAllowed = budget + 1;
+
+            int cost = 0;
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+            for (int i = 0; i < row.Count; i++)
+            {
+                var t = row[i].encounterType;
+                cost += GetCostOptionC(t);
+                sb.Append(t);
+                if (i < row.Count - 1) sb.Append(", ");
+            }
+
+            if (cost < minAllowed || cost > maxAllowed)
+            {
+                problems.Add($"Row {r}: budget={budget} allowed[{minAllowed},{maxAllowed}] cost={cost} types=[{sb}]");
+            }
+        }
+
+        return problems.Count == 0;
+    }
+
+    // MapManager helper: same costs as OptionCSettings
+    private void DumpAllRowsOptionCDebug()
+    {
+        if (Graph == null || Graph.rows == null || optionCSettings == null)
+        {
+            UnityEngine.Debug.LogWarning("[OptionC] Dump skipped (Graph/rows/settings missing).");
+            return;
+        }
+
+        int lastRow = Graph.totalRows - 1;
+
+        for (int r = 1; r < lastRow; r++)
+        {
+            var row = Graph.rows[r];
+            if (row == null || row.Count == 0) continue;
+
+            int budget = optionCSettings.rowBudgets[r];
+            int minAllowed = budget - 1;
+            int maxAllowed = budget + 1;
+
+            int cost = 0;
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+            for (int i = 0; i < row.Count; i++)
+            {
+                var t = row[i].encounterType;
+                cost += GetCostOptionC(t);
+
+                sb.Append(t);
+                if (i < row.Count - 1) sb.Append(", ");
+            }
+
+            UnityEngine.Debug.Log($"[OptionC] Row {r}: nodes={row.Count} budget={budget} cost={cost} types=[{sb}] allowed=[{minAllowed},{maxAllowed}]");
+        }
+    }
+
+    private int GetCostOptionC(EncounterType type)
+    {
+        switch (type)
+        {
+            case EncounterType.Elite: return optionCSettings.costElite;
+            case EncounterType.Special: return optionCSettings.costSpecial;
+            case EncounterType.Event: return optionCSettings.costEvent;
+            case EncounterType.Shop: return optionCSettings.costShop;
+            default: return optionCSettings.costNormal;
+        }
+    }
+
+
+
 }
