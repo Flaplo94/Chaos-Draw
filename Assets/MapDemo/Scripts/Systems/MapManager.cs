@@ -74,6 +74,10 @@ public class MapManager : MonoBehaviour
     // For the “A lamp” in BottomInfo
     private bool optionAPassLastRun;
 
+    private readonly EncounterGeneratorOptionB optionBGenerator = new EncounterGeneratorOptionB();
+    private bool optionBPassLastRun;
+    private string optionBFailReason;
+
     [SerializeField] private OptionCSettings optionCSettings;
     private readonly EncounterGeneratorOptionC optionCGenerator = new EncounterGeneratorOptionC();
     private bool optionCPassLastRun;
@@ -787,7 +791,9 @@ public class MapManager : MonoBehaviour
             avgInterval,
             medianInterval,
             optionAPassLastRun,
-            optionCPassLastRun
+            optionCPassLastRun,
+            optionBPassLastRun,
+            encounterMode
         );
     }
 
@@ -864,6 +870,17 @@ public class MapManager : MonoBehaviour
                     optionAGenerator.Generate(Graph, rng, out optionAPassLastRun);
                     break;
                 }
+
+            case EncounterGenerationMode.OptionB:
+                {
+                    optionBGenerator.Generate(Graph, seed, out optionBPassLastRun, out optionBFailReason);
+
+                    if (!optionBPassLastRun && !string.IsNullOrEmpty(optionBFailReason))
+                        UnityEngine.Debug.LogWarning("[OptionB FAIL] " + optionBFailReason);
+
+                    break;
+                }
+
 
             case EncounterGenerationMode.OptionC:
                 {
@@ -988,5 +1005,6 @@ public class MapManager : MonoBehaviour
     {
         useFixedSeed = false;
     }
-
+    public int GetSeed() => seed;
+    public bool IsFixedSeed() => useFixedSeed;
 }

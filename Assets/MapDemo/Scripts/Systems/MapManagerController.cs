@@ -12,6 +12,9 @@ public class MapManagerController : MonoBehaviour
     [SerializeField] private Toggle dimmingToggle;
     [SerializeField] private TMP_Dropdown encounterModeDropdown;
 
+    // Option B preset seeds
+    private static readonly int[] OptionBSeeds = { 111, 222, 333 };
+
     private void Awake()
     {
         if (regenerateButton != null)
@@ -34,14 +37,31 @@ public class MapManagerController : MonoBehaviour
     {
         if (mapManager == null) return;
 
-        // read seed every click
-        if (seedInput != null && int.TryParse(seedInput.text, out int parsed))
+        int modeIndex = (encounterModeDropdown != null) ? encounterModeDropdown.value : 0;
+        int parsed = 0;
+        bool hasValidSeed = (seedInput != null) && int.TryParse(seedInput.text, out parsed);
+
+        // Option B special behavior: if no seed entered, force one of {111,222,333}
+        // Assumption from our setup: dropdown index 1 == Option B (A=0, B=1, C=2, ...)
+        if (modeIndex == 1)
         {
-            mapManager.SetFixedSeed(parsed); // sets seed + useFixedSeed=true
+            if (hasValidSeed)
+            {
+                mapManager.SetFixedSeed(parsed);
+            }
+            else
+            {
+                int chosen = OptionBSeeds[Random.Range(0, OptionBSeeds.Length)];
+                mapManager.SetFixedSeed(chosen);
+            }
         }
         else
         {
-            mapManager.DisableFixedSeed(); // useFixedSeed=false (optional)
+            // Option A/C keep current behavior
+            if (hasValidSeed)
+                mapManager.SetFixedSeed(parsed);
+            else
+                mapManager.DisableFixedSeed();
         }
 
         mapManager.RegenerateMap();

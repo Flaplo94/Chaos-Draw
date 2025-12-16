@@ -6,14 +6,8 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/MainMenu.unity
-    guid: c8982a6635f332747972052ba770f0c8
-  - enabled: 1
-    path: Assets/Scenes/GameScene.unity
-    guid: 9e219812cb8dfc64f83f9bd6f10475ec
-  - enabled: 1
-    path: Assets/Scenes/TYscene.unity
-    guid: 4388f47666e6f974b943d95a3894f275
+    path: Assets/MapDemo/Scenes/SandBox Marc.unity
+    guid: 328972f46fe967049b212e9dd5ea546c
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: be53b0a5970cbdb4c9a227c8966e8889, type: 3}
   m_UseUCBPForAssetBundles: 0

@@ -17,7 +17,9 @@ public class MapBottomInfo : MonoBehaviour
         float avgIntervalSeconds,
         float medianIntervalSeconds,
         bool optionAPass,
-        bool optionCPass)
+        bool optionCPass,
+        bool optionBPass,
+        MapManager.EncounterGenerationMode selectedMode)
     {
         if (infoText == null)
         {
@@ -40,7 +42,7 @@ public class MapBottomInfo : MonoBehaviour
             bool first = true;
             foreach (var kvp in encounterCounts)
             {
-                if (!first) sb.Append(" | ");
+                if (!first) sb.Append("");
                 first = false;
                 sb.AppendLine($"{kvp.Key}: {kvp.Value}");
             }
@@ -70,9 +72,25 @@ public class MapBottomInfo : MonoBehaviour
             sb.AppendLine("Median between clicks: -");
         }
 
-        sb.AppendLine(optionAPass ? "Option A: PASS" : "Option A: FAIL");
+        switch (selectedMode)
+        {
+            case MapManager.EncounterGenerationMode.OptionA:
+                sb.AppendLine(optionAPass ? "Option A: PASS" : "Option A: FAIL");
+                break;
 
-        sb.AppendLine(optionCPass ? "Option C: PASS" : "Option C: FAIL");
+            case MapManager.EncounterGenerationMode.OptionB:
+                sb.AppendLine(optionBPass ? "Option B: PASS" : "Option B: FAIL");
+                break;
+
+            case MapManager.EncounterGenerationMode.OptionC:
+                sb.AppendLine(optionCPass ? "Option C: PASS" : "Option C: FAIL");
+                break;
+
+            default:
+                // If you add OptionD later and want something here, you can.
+                sb.AppendLine("Option: -");
+                break;
+        }
         infoText.text = sb.ToString();
     }
 
