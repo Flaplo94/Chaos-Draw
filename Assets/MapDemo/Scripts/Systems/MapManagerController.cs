@@ -34,16 +34,14 @@ public class MapManagerController : MonoBehaviour
     {
         if (mapManager == null) return;
 
-        int seedValue;
-        if (seedInput != null &&
-            !string.IsNullOrWhiteSpace(seedInput.text) &&
-            int.TryParse(seedInput.text, out seedValue))
+        // read seed every click
+        if (seedInput != null && int.TryParse(seedInput.text, out int parsed))
         {
-            mapManager.SetSeed(seedValue);
+            mapManager.SetFixedSeed(parsed); // sets seed + useFixedSeed=true
         }
         else
         {
-            mapManager.UseRandomSeed();
+            mapManager.DisableFixedSeed(); // useFixedSeed=false (optional)
         }
 
         mapManager.RegenerateMap();

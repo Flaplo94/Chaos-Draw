@@ -95,13 +95,16 @@ public class MapManager : MonoBehaviour
     public void RegenerateMap()
     {
         var stopwatch = Stopwatch.StartNew();
-
+        var rng = useFixedSeed ? new System.Random(seed) : new System.Random();
         // start a fresh run timing from this regenerate click
         ResetRunTiming();
 
         ClearAllRuntime();
-        GenerateGraph();
-        AssignEncounters();
+
+        
+
+        GenerateGraph(rng);
+        AssignEncounters(rng);
         BuildEdges();
         BuildNodes();
         SetupStartNode();
@@ -113,9 +116,8 @@ public class MapManager : MonoBehaviour
 
         stopwatch.Stop();
         lastGenerationMs = stopwatch.Elapsed.TotalMilliseconds;
-         // if you still want an int field
-        //UnityEngine.Debug.Log($"Map gen: {ms:0.000} ms");
         UpdateBottomInfo();
+        UnityEngine.Debug.Log($"Regenerate seed={seed} useFixedSeed={useFixedSeed}");
     }
 
     // Called by Reset button (same layout, restart path)
@@ -167,10 +169,8 @@ public class MapManager : MonoBehaviour
         currentNode = null;
     }
 
-    private void GenerateGraph()
+    private void GenerateGraph(System.Random rng)
     {
-        if (useFixedSeed)
-            Random.InitState(seed);
 
         Graph.totalRows = totalRows;
 
@@ -188,8 +188,8 @@ public class MapManager : MonoBehaviour
             else
             {
                 // Middle rows: 2–4 nodes, random horizontal placement
-                int count = Random.Range(minNodesPerRow, maxNodesPerRow + 1);
-                var xs = SampleDistinctX(count, nodeMinHorizontalGap);
+                int count = rng.Next(minNodesPerRow, maxNodesPerRow + 1);
+                var xs = SampleDistinctX(count, nodeMinHorizontalGap, rng);
 
                 for (int i = 0; i < count; i++)
                     Graph.AddNode(r, new Vector2(xs[i], y));
@@ -200,7 +200,7 @@ public class MapManager : MonoBehaviour
 
         // --- Connect each adjacent row pair with non-crossing edges ---
         for (int r = 0; r < totalRows - 1; r++)
-            ConnectRowsPlanar(Graph.rows[r], Graph.rows[r + 1]);
+            ConnectRowsPlanar(Graph.rows[r], Graph.rows[r + 1], rng);
     }
 
 
@@ -208,7 +208,7 @@ public class MapManager : MonoBehaviour
     // CONNECT ROWS (non-crossing)
     // ------------------------------------------------------------
 
-    private void ConnectRowsPlanar(List<MapNodeData> fromRow, List<MapNodeData> toRow)
+    private void ConnectRowsPlanar(List<MapNodeData> fromRow, List<MapNodeData> toRow, System.Random rng)
     {
         int nA = fromRow.Count;
         int nB = toRow.Count;
@@ -242,15 +242,18 @@ public class MapManager : MonoBehaviour
             float t = (nA == 1) ? 0f : (float)i / (nA - 1);
             int center = Mathf.RoundToInt(t * (nB - 1));
 
-            TryAddNeighbor(from, toRow, center - 1);
-            TryAddNeighbor(from, toRow, center + 1);
+            TryAddNeighbor(from, toRow, center - 1, rng);
+            TryAddNeighbor(from, toRow, center + 1, rng);
         }
     }
 
-    private void TryAddNeighbor(MapNodeData from, List<MapNodeData> toRow, int j)
+    private void TryAddNeighbor(MapNodeData from, List<MapNodeData> toRow, int j, System.Random rng)
     {
         if (j < 0 || j >= toRow.Count) return;
-        if (Random.value > 0.5f) return; // keep density reasonable
+
+        // Random.value > 0.5f
+        if (rng.NextDouble() > 0.5) return;
+
         AddEdgeIfValid(from, toRow[j]);
     }
 
@@ -623,7 +626,7 @@ public class MapManager : MonoBehaviour
         return (h * 0.5f - topPadding) - t * usable;
     }
 
-    private List<float> SampleDistinctX(int count, float minGap)
+    private List<float> SampleDistinctX(int count, float minGap, System.Random rng)
     {
         float minX = -mapArea.rect.width * 0.5f + leftPadding;
         float maxX = mapArea.rect.width * 0.5f - rightPadding;
@@ -634,7 +637,7 @@ public class MapManager : MonoBehaviour
         while (xs.Count < count && safety < 2000)
         {
             safety++;
-            float x = Random.Range(minX, maxX);
+            float x = NextFloat(rng, minX, maxX);
 
             bool ok = true;
             for (int i = 0; i < xs.Count; i++)
@@ -847,7 +850,7 @@ public class MapManager : MonoBehaviour
         return count;
     }
 
-    private void AssignEncounters()
+    private void AssignEncounters(System.Random rng)
     {
         if (Graph == null || Graph.rows == null) return;
 
@@ -858,28 +861,12 @@ public class MapManager : MonoBehaviour
         {
             case EncounterGenerationMode.OptionA:
                 {
-                    int encounterSeed = useFixedSeed
-                        ? seed
-                        : UnityEngine.Random.Range(int.MinValue, int.MaxValue);
-
-                    var rng = new System.Random(encounterSeed);
                     optionAGenerator.Generate(Graph, rng, out optionAPassLastRun);
                     break;
                 }
 
             case EncounterGenerationMode.OptionC:
                 {
-                    if (optionCSettings == null)
-                    {
-                        UnityEngine.Debug.LogWarning("Option C selected but optionCSettings is null.");
-                        break;
-                    }
-
-                    int encounterSeed = useFixedSeed
-                        ? seed
-                        : UnityEngine.Random.Range(int.MinValue, int.MaxValue);
-
-                    var rng = new System.Random(encounterSeed);
                     optionCGenerator.Generate(Graph, rng, optionCSettings, out optionCPassLastRun);
                     UnityEngine.Debug.Log($"[OptionC] Using settings instance: {optionCSettings.GetHashCode()}  costElite={optionCSettings.costElite}  row1Budget={optionCSettings.rowBudgets[1]}  mode={encounterMode}");
                     DumpAllRowsOptionCDebug();
@@ -986,6 +973,20 @@ public class MapManager : MonoBehaviour
         }
     }
 
+    private float NextFloat(System.Random rng, float min, float max)
+    {
+        return (float)(min + (max - min) * rng.NextDouble());
+    }
 
+    public void SetFixedSeed(int s)
+    {
+        seed = s;
+        useFixedSeed = true;
+    }
+
+    public void DisableFixedSeed()
+    {
+        useFixedSeed = false;
+    }
 
 }
