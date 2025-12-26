@@ -3,14 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Option A: rule-based encounter placement + small repair phase,
-/// operating on an already-built MapGraph.
-/// 
-/// This is a plain C# helper class, NOT a ScriptableObject.
+/// EncounterGeneratorOptionA
+/// Ansvar: Påfører "Option A" regler for encounter-tildeling på en allerede genereret MapGraph.
+/// - Regelbaseret fordeling af Elites, Events, Shops og Specials inden for specificerede intervaller.
+/// - Efterfulgt af en "repair-lite" fase som justerer enkelte noder for at komme inden for tolerance.
+/// - Returnerer et pass/fail flag der angiver om slutresultatet overholder målene og shop-kæderegler.
+/// Klassen er en ren hjælper (ikke ScriptableObject) og opererer direkte på MapGraph data.
 /// </summary>
 public class EncounterGeneratorOptionA
 {
-    // Target counts per map (from your spec)
+    // Målintervaller for antal pr. map
     private const int ElitesMin = 7;
     private const int ElitesMax = 9;
 
@@ -23,21 +25,20 @@ public class EncounterGeneratorOptionA
     private const int SpecialsMin = 4;
     private const int SpecialsMax = 6;
 
-    // ±1 tolerance on totals
+    // Tolerance for endelige totals (± Tolerance)
     private const int Tolerance = 1;
 
-    // Max repair iterations
+    // Maks antal iterationer i repair-fasen for at undgå uendelige loops
     private const int MaxRepairIterations = 200;
 
     /// <summary>
-    /// Main entry: applies Option A rules + repair-lite on the given graph.
-    /// Only touches encounterType on MapNodeData (side nodes, not row 0 or boss row).
+    /// Hovedmetode: anvender Option A regler og repair på grafen.
+    /// - Opdaterer encounterType på MapNodeData for side-noder (ikke start eller boss).
+    /// - 'pass' sættes kun hvis totals inden for tolerance og ingen 3+ shop-rækker i streg.
     /// </summary>
-    /// <param name="graph">Map graph with rows/nodes already generated.</param>
-    /// <param name="rng">System.Random instance for reproducible randomness.</param>
-    /// <param name="pass">
-    /// true if final totals are within targets (±1) and there are no 3+ shop rows in a row.
-    /// </param>
+    /// <param name="graph">MapGraph med allerede genererede rækker og noder.</param>
+    /// <param name="rng">System.Random instans for reproducerbarhed.</param>
+    /// <param name="pass">Out-parameter: true hvis validering bestået.</param>
     public void Generate(MapGraph graph, System.Random rng, out bool pass)
     {
         pass = false;
@@ -47,7 +48,7 @@ public class EncounterGeneratorOptionA
 
         int lastRow = graph.totalRows - 1;
 
-        // 1) Initialize encounter types: Start / Boss / None
+        // 1) Init: sæt Start/Boss/Normal for alle noder
         for (int r = 0; r < graph.rows.Count; r++)
         {
             foreach (var node in graph.rows[r])
@@ -64,17 +65,17 @@ public class EncounterGeneratorOptionA
         var sideNodes = GetSideNodes(graph);
         if (sideNodes.Count == 0)
         {
-            // No side nodes to place encounters on  fail
+            // Intet at placere på -> fail
             return;
         }
 
-        // 2) Apply Option A base rules
+        // 2) Anvend Option A basissæt af regler
         ApplyOptionARules(graph, sideNodes, rng);
 
-        // 3) Repair-lite phase: adjust only side nodes until within tolerances
+        // 3) Repair-lite: små justeringer indtil totals og shop-kæder er ok eller iterationsgrænsen nås
         ApplyRepairLite(graph, sideNodes, rng);
 
-        // 4) Evaluate PASS/FAIL for A
+        // 4) Evaluer PASS/FAIL
         CountEncounters(graph,
                         out int eliteCount,
                         out int eventCount,
@@ -93,21 +94,25 @@ public class EncounterGeneratorOptionA
     }
 
     // --------------------------------------------------------------------
-    // Option A: RULES
+    // Option A: REGELIMPLEMENTATION
     // --------------------------------------------------------------------
 
+    /// <summary>
+    /// Anvender de primære regler: vælg tilfældige mål inden for intervaller,
+    /// clamp hvis der er for få side-noder, og tildel typer i prioriteret rækkefølge.
+    /// </summary>
     private void ApplyOptionARules(MapGraph graph, List<MapNodeData> sideNodes, System.Random rng)
     {
         if (sideNodes.Count == 0)
             return;
 
-        // Random target counts within intervals
+        // Vælg tilfældige mål inden for definerede intervaller
         int targetElites = UnityEngine.Random.Range(ElitesMin, ElitesMax + 1);
         int targetEvents = UnityEngine.Random.Range(EventsMin, EventsMax + 1);
         int targetShops = UnityEngine.Random.Range(ShopsMin, ShopsMax + 1);
         int targetSpecials = UnityEngine.Random.Range(SpecialsMin, SpecialsMax + 1);
 
-        // Clamp totals if they exceed number of side nodes
+        // Hvis summen overstiger antal side-noder, reduceres efter prioritet
         int totalRequested = targetElites + targetEvents + targetShops + targetSpecials;
         if (totalRequested > sideNodes.Count)
         {
@@ -139,29 +144,31 @@ public class EncounterGeneratorOptionA
             }
         }
 
-        // Start with all side nodes as Event by default
+        // Starttilstand: alle side-noder som Normal
         foreach (var node in sideNodes)
             node.encounterType = EncounterType.Normal;
 
-        // Assign Shops first (we'll repair chains later)
+        // Tildel i prioriteret rækkefølge: Shops først (så vi kan reparere chains senere)
         AssignRandomType(sideNodes, EncounterType.Shop, targetShops, rng);
 
-        // Assign Elites
+        // Elites
         AssignRandomType(sideNodes, EncounterType.Elite, targetElites, rng);
 
-        // Assign Specials
+        // Specials
         AssignRandomType(sideNodes, EncounterType.Special, targetSpecials, rng);
 
-        // Assign Events too
+        // Events
         AssignRandomType(sideNodes, EncounterType.Event, targetEvents, rng);
-
     }
 
+    /// <summary>
+    /// Hjælper: vælg tilfældige noder blandt de der stadig er Normal og sæt dem til 'type'.
+    /// </summary>
     private void AssignRandomType(List<MapNodeData> sideNodes, EncounterType type, int targetCount, System.Random rng)
     {
         if (targetCount <= 0) return;
 
-        // choose among nodes that are still Event
+        // Kandidater er noder som endnu er Normal
         List<MapNodeData> candidates = new List<MapNodeData>();
         foreach (var node in sideNodes)
         {
@@ -179,9 +186,14 @@ public class EncounterGeneratorOptionA
     }
 
     // --------------------------------------------------------------------
-    // Option A: REPAIR-LITE
+    // Option A: REPAIR-LITE FASE
     // --------------------------------------------------------------------
 
+    /// <summary>
+    /// Små, iterative justeringer for at bringe counts og shop-kæder inden for regler.
+    /// - Forsøger først at bryde 3+ shop-rækker.
+    /// - Derefter foretages små inc/dec ændringer indtil tolerancer overholdes eller max-iteration nås.
+    /// </summary>
     private void ApplyRepairLite(MapGraph graph, List<MapNodeData> sideNodes, System.Random rng)
     {
         if (sideNodes.Count == 0)
@@ -204,9 +216,9 @@ public class EncounterGeneratorOptionA
             bool shopChainBad = HasShopRowChainOf3OrMore(graph);
 
             if (countsOk && !shopChainBad)
-                break; // we are within tolerances and shop chain is valid
+                break; // tilfredsstillende
 
-            // 1) First priority: fix shop chains of length  3
+            // 1) Prioritet: bryd shop-kæder (3+ rækker)
             if (shopChainBad && shopCount > 0)
             {
                 var offendingRows = GetShopChainRows(graph);
@@ -224,13 +236,13 @@ public class EncounterGeneratorOptionA
                 if (offendingShops.Count > 0)
                 {
                     var pick = offendingShops[rng.Next(offendingShops.Count)];
-                    // Simple fix: downgrade shop  event
+                    // Enkel reparation: nedgrader en shop til event
                     pick.encounterType = EncounterType.Event;
                     continue;
                 }
             }
 
-            // 2) Fix counts (increment/decrement types slightly)
+            // 2) Juster counts: bestem hvilke typer der mangler / er for mange
             var needMore = new List<EncounterType>();
             var needLess = new List<EncounterType>();
 
@@ -245,7 +257,7 @@ public class EncounterGeneratorOptionA
             if (specialCount > SpecialsMax + Tolerance) needLess.Add(EncounterType.Special);
 
             if (needMore.Count == 0 && needLess.Count == 0)
-                break; // nothing to fix
+                break; // intet at gøre
 
             EncounterType incType = needMore.Count > 0
                 ? needMore[rng.Next(needMore.Count)]
@@ -258,7 +270,7 @@ public class EncounterGeneratorOptionA
             if (incType == decType)
                 continue;
 
-            // Find side node to change from decType  incType
+            // Find en kandidat som kan nedgraderes fra decType til incType
             var decCandidates = new List<MapNodeData>();
             foreach (var node in sideNodes)
             {
@@ -275,9 +287,12 @@ public class EncounterGeneratorOptionA
     }
 
     // --------------------------------------------------------------------
-    // Helpers
+    // Hjælpefunktioner
     // --------------------------------------------------------------------
 
+    /// <summary>
+    /// Returnerer alle side-noder (alle rækker undtagen start og boss).
+    /// </summary>
     private List<MapNodeData> GetSideNodes(MapGraph graph)
     {
         var result = new List<MapNodeData>();
@@ -286,7 +301,7 @@ public class EncounterGeneratorOptionA
         for (int r = 0; r < graph.rows.Count; r++)
         {
             if (r == 0 || r == lastRow)
-                continue; // skip start & boss rows
+                continue; // skip start & boss rækker
 
             foreach (var node in graph.rows[r])
                 result.Add(node);
@@ -295,6 +310,9 @@ public class EncounterGeneratorOptionA
         return result;
     }
 
+    /// <summary>
+    /// Optæller antal af hver relevant encounter-type i hele grafen.
+    /// </summary>
     private void CountEncounters(MapGraph graph,
                                  out int eliteCount,
                                  out int eventCount,
@@ -318,14 +336,18 @@ public class EncounterGeneratorOptionA
         }
     }
 
+    /// <summary>
+    /// Simpelt tjek med tolerance: true hvis value ligger i [min - Tolerance, max + Tolerance].
+    /// </summary>
     private bool IsWithinWithTolerance(int value, int min, int max)
     {
         return value >= (min - Tolerance) && value <= (max + Tolerance);
     }
 
     /// <summary>
-    /// Returns true if there is at least one chain of  3 consecutive rows
-    /// that each have at least one Shop.
+    /// Returnerer true hvis der findes mindst en sekvens af 3 på hinanden følgende rækker
+    /// hvor hver række indeholder mindst en Shop.
+    /// Bruges til at undgå kedelige 'shop-stacks'.
     /// </summary>
     private bool HasShopRowChainOf3OrMore(MapGraph graph)
     {
@@ -360,8 +382,8 @@ public class EncounterGeneratorOptionA
     }
 
     /// <summary>
-    /// Returns all row indices that are part of any 3+ Shop-row chain.
-    /// Used to pick shops to downgrade in repair.
+    /// Returnerer alle rækkeindeks som indgår i mindst en shop-kæde af længde 3 eller mere.
+    /// Hjælper repair-fasen med at finde hvilke shops der skal nedgraderes.
     /// </summary>
     private HashSet<int> GetShopChainRows(MapGraph graph)
     {

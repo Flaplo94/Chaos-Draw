@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// Typer af encounters som en node kan repræsentere. Bruges til styling, encounter-logik og generatoralgoritmer.
 public enum EncounterType
 {
     Start,
@@ -13,16 +14,29 @@ public enum EncounterType
     Boss
 }
 
+/// <summary>
+/// Data-holder for en enkelt node i kortets graf (MapGraph).
+/// Indeholder identifikation, layout?position, links til næste noder og hvilken encounter?type noden repræsenterer.
+/// Denne klasse er en ren data?klasse (POD) — logik holdes ude af modellen.
+/// </summary>
 [Serializable]
 public class MapNodeData
 {
-    public int id;                 // unique per map
-    public int rowIndex;           // 0..(totalRows-1)
-    public int colIndex;           // index within its row (after x-sort)
-    public Vector2 anchoredPos;    // UI anchoredPosition in the map area
+    /// Unik id for noden (bruges i Graph til opslag og kanter).
+    public int id;
 
-    // Neighbors one row below (DAG: edges always go r -> r+1)
+    /// Rækkeindeks (row) i kortlayoutet. 0 = øverste række (start).
+    public int rowIndex;
+
+    /// Kolonneindeks (col) inden for rækken. Bruges ved sortering/placering.
+    public int colIndex;
+
+    /// Position i UI (anchored position i RectTransform?koordinater). Bruges når node UI elementer skal placeres i mapArea.
+    public Vector2 anchoredPos;
+
+    /// Liste af node?id'er som denne node har udgående kanter til. Gemmer referencer med id (ikke direkte GameObject?referencer).
     public List<int> outgoing = new List<int>();
 
+    /// Hvilken encounter?type noden er tildelt. Standard er Normal. Påvirker både visuel styling og encounter?generatorens logik.
     public EncounterType encounterType = EncounterType.Normal;
 }

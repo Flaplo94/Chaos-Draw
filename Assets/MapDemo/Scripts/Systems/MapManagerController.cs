@@ -2,19 +2,29 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
+/// <summary>
+/// Controller for MapManager UI.
+/// Håndterer knapper, toggles og inputfelter i editor-UI'et og videresender handlinger til MapManager.
+/// Kommenteret på dansk for bedre vedligeholdelse og forståelse.
+/// </summary>
 public class MapManagerController : MonoBehaviour
 {
-    [SerializeField] private MapManager mapManager;
-    [SerializeField] private Button regenerateButton;
-    [SerializeField] private Button resetButton;
-    [SerializeField] private TMP_InputField seedInput;
-    [SerializeField] private Toggle labelsToggle;
-    [SerializeField] private Toggle dimmingToggle;
-    [SerializeField] private TMP_Dropdown encounterModeDropdown;
+    [Header("Referencer")]
+    [SerializeField] private MapManager mapManager;                  // Reference til hoved MapManager (skal sættes i Inspector)
+    [SerializeField] private Button regenerateButton;               // Knappen der triggere regeneration
+    [SerializeField] private Button resetButton;                    // Knappen der nulstiller sti (Reset Path)
+    [SerializeField] private TMP_InputField seedInput;              // Inputfelt til seed (valgfrit)
+    [SerializeField] private Toggle labelsToggle;                   // Toggle til at vise/ skjule labels på noder
+    [SerializeField] private Toggle dimmingToggle;                  // Toggle til at slå dimming af/på for kanter
+    [SerializeField] private TMP_Dropdown encounterModeDropdown;   // Dropdown for valg af encounter-generation mode
 
-    // Option B preset seeds
+    // For OptionB: foruddefinerede seeds som vælges tilfældigt hvis brugeren ikke angiver et seed
     private static readonly int[] OptionBSeeds = { 111, 222, 333 };
 
+    /// <summary>
+    /// Hook UI-events til lokale handlers ved Awake.
+    /// Sikkerhedstjekper null før tilknytning.
+    /// </summary>
     private void Awake()
     {
         if (regenerateButton != null)
@@ -33,16 +43,21 @@ public class MapManagerController : MonoBehaviour
             encounterModeDropdown.onValueChanged.AddListener(OnEncounterModeChanged);
     }
 
+    /// <summary>
+    /// Håndterer klik på "Regenerate" knappen.
+    /// Læser UI-state (mode + seed) og konfigurerer MapManager før regeneration.
+    /// </summary>
     private void OnRegenerateClicked()
     {
         if (mapManager == null) return;
 
         int modeIndex = (encounterModeDropdown != null) ? encounterModeDropdown.value : 0;
+
+        // Parse seed hvis angivet
         int parsed = 0;
         bool hasValidSeed = (seedInput != null) && int.TryParse(seedInput.text, out parsed);
 
-        // Option B special behavior: if no seed entered, force one of {111,222,333}
-        // Assumption from our setup: dropdown index 1 == Option B (A=0, B=1, C=2, ...)
+        // Option B har særlige seed-regler: brug angivet seed, ellers vælg et forudbestemt
         if (modeIndex == 1)
         {
             if (hasValidSeed)
@@ -57,16 +72,17 @@ public class MapManagerController : MonoBehaviour
         }
         else
         {
-            // Option A/C keep current behavior
+            // For andre modes: brug angivet seed eller deaktiver fixed seed
             if (hasValidSeed)
                 mapManager.SetFixedSeed(parsed);
             else
                 mapManager.DisableFixedSeed();
         }
 
+        // Udfør regeneration
         mapManager.RegenerateMap();
 
-        // Re-apply toggles after regeneration
+        // Opdater visuelle indstillinger på MapManager fra toggles
         if (labelsToggle != null)
             mapManager.SetLabelsEnabled(labelsToggle.isOn);
 
@@ -74,29 +90,41 @@ public class MapManagerController : MonoBehaviour
             mapManager.SetDimmingEnabled(dimmingToggle.isOn);
     }
 
+    /// <summary>
+    /// Håndterer klik på "Reset" knappen.
+    /// Kalder ResetPath på MapManager og genanvender dimming-indstillingen.
+    /// </summary>
     private void OnResetClicked()
     {
         if (mapManager == null) return;
 
         mapManager.ResetPath();
 
-        // Re-apply dimming after reset
         if (dimmingToggle != null)
             mapManager.SetDimmingEnabled(dimmingToggle.isOn);
     }
 
+    /// <summary>
+    /// Callback når label-toggle ændres. Videregiver direkte til MapManager.
+    /// </summary>
     private void OnLabelsToggleChanged(bool value)
     {
         if (mapManager == null) return;
         mapManager.SetLabelsEnabled(value);
     }
 
+    /// <summary>
+    /// Callback når dimming-toggle ændres. Videregiver direkte til MapManager.
+    /// </summary>
     private void OnDimmingToggleChanged(bool value)
     {
         if (mapManager == null) return;
         mapManager.SetDimmingEnabled(value);
     }
 
+    /// <summary>
+    /// Callback når encounter mode dropdown ændres. Opdaterer MapManager's mode.
+    /// </summary>
     private void OnEncounterModeChanged(int index)
     {
         if (mapManager != null)

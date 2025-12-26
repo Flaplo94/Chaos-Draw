@@ -1,12 +1,35 @@
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
-using TMPro; // remove if you're using legacy Text instead
+using TMPro;
 
+/// <summary>
+/// MapBottomInfo
+/// Ansvar: Sammensætter og viser diagnostisk / statistisk information i bunden af kort-UI.
+/// - Modtager data fra MapManager og formaterer en tekststreng til en TMP_Text.
+/// - Designet som en enkel view-komponent (ingen kompleks logik).
+/// </summary>
 public class MapBottomInfo : MonoBehaviour
 {
-    [SerializeField] private TMP_Text infoText; // drag your text component here
+    [Header("UI Reference")]
+    [SerializeField] private TMP_Text infoText; // Tekstkomponent hvor informationen vises
 
+    /// <summary>
+    /// Opbygger og viser bund-information for det aktuelle kort/run.
+    /// Metoden er stateless og formaterer blot de indkommende parametre til tekst.
+    /// </summary>
+    /// <param name="generationMs">Tid brugt på at generere kortet (ms).</param>
+    /// <param name="oneChoiceNodes">Antal noder med kun et valg.</param>
+    /// <param name="encounterCounts">Dictionary med tællinger pr encounter-type (kan være null).</param>
+    /// <param name="runCompleted">Om run/sti blev fuldført.</param>
+    /// <param name="lastIntervalSeconds">Tid siden sidste klik (sekunder).</param>
+    /// <param name="totalRunSeconds">Total tid for run (sekunder), kun relevant hvis runCompleted==true.</param>
+    /// <param name="avgIntervalSeconds">Gennemsnitstid mellem klik (sekunder), kun relevant ved fuldført run.</param>
+    /// <param name="medianIntervalSeconds">Median tid mellem klik (sekunder), kun relevant ved fuldført run.</param>
+    /// <param name="optionAPass">Option A: success flag (generatorens validering).</param>
+    /// <param name="optionCPass">Option C: success flag (generatorens validering).</param>
+    /// <param name="optionBPass">Option B: success flag (generatorens validering).</param>
+    /// <param name="selectedMode">Den valgte encounter generation mode.</param>
     public void ShowInfo(
         double generationMs,
         int oneChoiceNodes,
@@ -23,27 +46,24 @@ public class MapBottomInfo : MonoBehaviour
     {
         if (infoText == null)
         {
-            Debug.LogWarning("MapBottomInfo has no infoText assigned.");
+            Debug.LogWarning("MapBottomInfo: infoText er ikke tildelt i Inspector.");
             return;
         }
 
         var sb = new StringBuilder();
 
-        // Generation time
+        // Generations-tid
         sb.AppendLine($"Generation time: {generationMs:0.00} ms");
 
-        // Nodes with only 1 choice
+        // Antal noder med kun et valg
         sb.AppendLine($"Nodes with only 1 choice: {oneChoiceNodes}");
 
-        // Encounters
+        // Encounter-tællinger (hvis tilgængelige)
         if (encounterCounts != null && encounterCounts.Count > 0)
         {
-            sb.AppendLine("Encounters: ");
-            bool first = true;
+            sb.AppendLine("Encounters:");
             foreach (var kvp in encounterCounts)
             {
-                if (!first) sb.Append("");
-                first = false;
                 sb.AppendLine($"{kvp.Key}: {kvp.Value}");
             }
         }
@@ -52,13 +72,13 @@ public class MapBottomInfo : MonoBehaviour
             sb.AppendLine("Encounters: (none / not assigned)");
         }
 
-        // Last click interval (always based on last valid move if any)
+        // Sidste klik-interval
         if (lastIntervalSeconds > 0f)
             sb.AppendLine($"Last click: {lastIntervalSeconds:0.0} s");
         else
             sb.AppendLine("Last click: -");
 
-        // Timing stats (only if run completed)
+        // Kørsel-statistikker — kun meningsfulde hvis run er fuldført
         if (runCompleted)
         {
             sb.AppendLine($"Run total: {totalRunSeconds:0.0} s");
@@ -72,6 +92,7 @@ public class MapBottomInfo : MonoBehaviour
             sb.AppendLine("Median between clicks: -");
         }
 
+        // Vis valideringsresultat afhængigt af valgte generation mode
         switch (selectedMode)
         {
             case MapManager.EncounterGenerationMode.OptionA:
@@ -87,12 +108,11 @@ public class MapBottomInfo : MonoBehaviour
                 break;
 
             default:
-                // If you add OptionD later and want something here, you can.
                 sb.AppendLine("Option: -");
                 break;
         }
+
+        // Sæt tekst i TMP-komponenten (opdater UI)
         infoText.text = sb.ToString();
     }
-
-
 }
