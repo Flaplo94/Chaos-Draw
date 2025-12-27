@@ -99,6 +99,9 @@ public class MapManager : MonoBehaviour
     private readonly EncounterGeneratorOptionC optionCGenerator = new EncounterGeneratorOptionC();
     private bool optionCPassLastRun;
 
+    private readonly EncounterGeneratorOptionD optionDGenerator = new EncounterGeneratorOptionD();
+    private bool optionDPassLastRun;
+
     public enum EncounterGenerationMode
     {
         OptionA = 0,
@@ -870,8 +873,9 @@ public class MapManager : MonoBehaviour
             avgInterval,
             medianInterval,
             optionAPassLastRun,
-            optionCPassLastRun,
             optionBPassLastRun,
+            optionCPassLastRun,
+            optionDPassLastRun,
             encounterMode
         );
     }
@@ -969,7 +973,6 @@ public class MapManager : MonoBehaviour
                     break;
                 }
 
-
             case EncounterGenerationMode.OptionC:
                 {
                     optionCGenerator.Generate(Graph, rng, optionCSettings, out optionCPassLastRun);
@@ -987,12 +990,18 @@ public class MapManager : MonoBehaviour
                     }
                     break;
                 }
+
+            case EncounterGenerationMode.OptionD:
+                {
+                    optionDGenerator.Generate(Graph, rng, optionCSettings, out optionDPassLastRun);
+                    break;
+                }
         }
     }
 
-    public void SetEncounterMode(int index)
+    public void SetEncounterMode(EncounterGenerationMode mode)
     {
-        encounterMode = (EncounterGenerationMode)index;
+        encounterMode = mode;
     }
 
     /// <summary>

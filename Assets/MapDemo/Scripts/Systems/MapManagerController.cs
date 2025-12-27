@@ -10,12 +10,12 @@ using TMPro;
 public class MapManagerController : MonoBehaviour
 {
     [Header("Referencer")]
-    [SerializeField] private MapManager mapManager;                  // Reference til hoved MapManager (skal sættes i Inspector)
-    [SerializeField] private Button regenerateButton;               // Knappen der triggere regeneration
-    [SerializeField] private Button resetButton;                    // Knappen der nulstiller sti (Reset Path)
-    [SerializeField] private TMP_InputField seedInput;              // Inputfelt til seed (valgfrit)
-    [SerializeField] private Toggle labelsToggle;                   // Toggle til at vise/ skjule labels på noder
-    [SerializeField] private Toggle dimmingToggle;                  // Toggle til at slå dimming af/på for kanter
+    [SerializeField] private MapManager mapManager;                // Reference til hoved MapManager (skal sættes i Inspector)
+    [SerializeField] private Button regenerateButton;              // Knappen der triggere regeneration
+    [SerializeField] private Button resetButton;                   // Knappen der nulstiller sti (Reset Path)
+    [SerializeField] private TMP_InputField seedInput;             // Inputfelt til seed (valgfrit)
+    [SerializeField] private Toggle labelsToggle;                  // Toggle til at vise/ skjule labels på noder
+    [SerializeField] private Toggle dimmingToggle;                 // Toggle til at slå dimming af/på for kanter
     [SerializeField] private TMP_Dropdown encounterModeDropdown;   // Dropdown for valg af encounter-generation mode
 
     // For OptionB: foruddefinerede seeds som vælges tilfældigt hvis brugeren ikke angiver et seed
@@ -51,14 +51,15 @@ public class MapManagerController : MonoBehaviour
     {
         if (mapManager == null) return;
 
-        int modeIndex = (encounterModeDropdown != null) ? encounterModeDropdown.value : 0;
+        // Læs valgt mode som label (ikke index)
+        string selectedLabel = GetSelectedModeLabel();
 
         // Parse seed hvis angivet
         int parsed = 0;
         bool hasValidSeed = (seedInput != null) && int.TryParse(seedInput.text, out parsed);
 
         // Option B har særlige seed-regler: brug angivet seed, ellers vælg et forudbestemt
-        if (modeIndex == 1)
+        if (selectedLabel == "Option B")
         {
             if (hasValidSeed)
             {
@@ -68,6 +69,7 @@ public class MapManagerController : MonoBehaviour
             {
                 int chosen = OptionBSeeds[Random.Range(0, OptionBSeeds.Length)];
                 mapManager.SetFixedSeed(chosen);
+                // Seed input feltet skal forblive tomt (som du ønskede)
             }
         }
         else
@@ -123,11 +125,52 @@ public class MapManagerController : MonoBehaviour
     }
 
     /// <summary>
-    /// Callback når encounter mode dropdown ændres. Opdaterer MapManager's mode.
+    /// Callback når encounter mode dropdown ændres.
+    /// Mapper dropdown label -> korrekt enum værdi, så index-rækkefølge ikke kan ødelægge logik.
     /// </summary>
     private void OnEncounterModeChanged(int index)
     {
-        if (mapManager != null)
-            mapManager.SetEncounterMode(index);
+        if (mapManager == null) return;
+
+        string label = GetSelectedModeLabel();
+
+        // IMPORTANT: Sørg for at dropdown-teksterne matcher disse navne:
+        // "Option A", "Option B", "Option C", "Option D"
+        switch (label)
+        {
+            case "Option A":
+                mapManager.SetEncounterMode(MapManager.EncounterGenerationMode.OptionA);
+                break;
+
+            case "Option B":
+                mapManager.SetEncounterMode(MapManager.EncounterGenerationMode.OptionB);
+                break;
+
+            case "Option C":
+                mapManager.SetEncounterMode(MapManager.EncounterGenerationMode.OptionC);
+                break;
+
+            case "Option D":
+                mapManager.SetEncounterMode(MapManager.EncounterGenerationMode.OptionD);
+                break;
+
+            default:
+                // Fallback hvis dropdown-tekst ikke matcher (sikkerhed)
+                mapManager.SetEncounterMode(MapManager.EncounterGenerationMode.OptionA);
+                break;
+        }
+    }
+
+    /// <summary>
+    /// Hjælper: returnerer teksten på den valgte dropdown-option.
+    /// </summary>
+    private string GetSelectedModeLabel()
+    {
+        if (encounterModeDropdown == null) return "Option A";
+
+        int idx = encounterModeDropdown.value;
+        if (idx < 0 || idx >= encounterModeDropdown.options.Count) return "Option A";
+
+        return encounterModeDropdown.options[idx].text;
     }
 }

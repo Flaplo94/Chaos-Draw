@@ -40,8 +40,9 @@ public class MapBottomInfo : MonoBehaviour
         float avgIntervalSeconds,
         float medianIntervalSeconds,
         bool optionAPass,
-        bool optionCPass,
         bool optionBPass,
+        bool optionCPass,
+        bool optionDPass,
         MapManager.EncounterGenerationMode selectedMode)
     {
         if (infoText == null)
@@ -105,6 +106,10 @@ public class MapBottomInfo : MonoBehaviour
 
             case MapManager.EncounterGenerationMode.OptionC:
                 sb.AppendLine(optionCPass ? "Option C: PASS" : "Option C: FAIL");
+                break;
+
+            case MapManager.EncounterGenerationMode.OptionD:
+                sb.AppendLine(optionDPass ? "Option D: PASS" : "Option D: FAIL");
                 break;
 
             default:
