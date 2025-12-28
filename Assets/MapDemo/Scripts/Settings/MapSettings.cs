@@ -2,6 +2,7 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 
+// Dette script er lavet af Marc
 namespace MapDemo.Settings
 {
     /// <summary>

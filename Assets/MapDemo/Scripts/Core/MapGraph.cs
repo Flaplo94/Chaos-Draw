@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+// Dette script er lavet af Stefan
 [Serializable]
 public class MapGraph
 {

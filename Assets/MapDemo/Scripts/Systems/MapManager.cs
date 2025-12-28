@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Diagnostics;
 
+// Det meste af denne kode er lavet af Stefan, der er nogle få metoder der er lavet af Marc
 public class MapManager : MonoBehaviour
 {
     // --------------------------
@@ -86,6 +87,9 @@ public class MapManager : MonoBehaviour
     private double lastGenerationMs;       // Måling af hvor lang tid generering tog (ms)
 
     // --------------------------
+    // --------------------------
+    // Dette er lavet af Marc
+    // --------------------------
     // Encounter-generatorer (flere algoritmer støttes)
     // --------------------------
     private readonly EncounterGeneratorOptionA optionAGenerator = new EncounterGeneratorOptionA();
@@ -101,6 +105,8 @@ public class MapManager : MonoBehaviour
 
     private readonly EncounterGeneratorOptionD optionDGenerator = new EncounterGeneratorOptionD();
     private bool optionDPassLastRun;
+    // --------------------------
+    // --------------------------
 
     public enum EncounterGenerationMode
     {
@@ -813,72 +819,6 @@ public class MapManager : MonoBehaviour
     /// Sammensæt og vis data i bunden af UI: tid, encounter counts, statistikker osv.
     /// Samler også run-statistikker (gennemsnit, median).
     /// </summary>
-    private void UpdateBottomInfo()
-    {
-        if (bottomInfo == null)
-            return;
-
-        // Tæl encounters og one-choice nodes
-        var encounterCounts = new Dictionary<string, int>();
-        int oneChoiceNodes = 0;
-
-        for (int r = 0; r < Graph.rows.Count; r++)
-        {
-            foreach (var node in Graph.rows[r])
-            {
-                string key = node.encounterType.ToString();
-                if (!encounterCounts.ContainsKey(key))
-                    encounterCounts[key] = 0;
-                encounterCounts[key]++;
-
-                if (node.outgoing != null && node.outgoing.Count == 1)
-                    oneChoiceNodes++;
-            }
-        }
-
-        // Sidste interval i sekunder
-        float lastInterval = 0f;
-        if (clickIntervals.Count > 0)
-            lastInterval = clickIntervals[clickIntervals.Count - 1];
-
-        // Totaler kun hvis run er fuldendt med mindst ét step
-        float totalRunSeconds = 0f;
-        float avgInterval = 0f;
-        float medianInterval = 0f;
-        bool hasIntervals = clickIntervals.Count > 0;
-
-        if (runCompleted && hasIntervals)
-        {
-            foreach (var dt in clickIntervals)
-                totalRunSeconds += dt;
-
-            avgInterval = totalRunSeconds / clickIntervals.Count;
-
-            var sorted = new List<float>(clickIntervals);
-            sorted.Sort();
-            int n = sorted.Count;
-            if (n % 2 == 1)
-                medianInterval = sorted[n / 2];
-            else
-                medianInterval = (sorted[n / 2 - 1] + sorted[n / 2]) * 0.5f;
-        }
-
-        bottomInfo.ShowInfo(
-            lastGenerationMs,
-            oneChoiceNodes,
-            encounterCounts,
-            runCompleted && hasIntervals,
-            lastInterval,
-            totalRunSeconds,
-            avgInterval,
-            medianInterval,
-            optionAPassLastRun,
-            optionBPassLastRun,
-            optionCPassLastRun,
-            optionDPassLastRun,
-            encounterMode
-        );
-    }
 
     // --------------------------
     // Konfigurationshjælpere (seed etc.)
@@ -946,6 +886,30 @@ public class MapManager : MonoBehaviour
     }
 
     /// <summary>
+    /// Simpel tilfældig float generator i [min,max) baseret på System.Random.
+    /// </summary>
+    private float NextFloat(System.Random rng, float min, float max)
+    {
+        return (float)(min + (max - min) * rng.NextDouble());
+    }
+
+    public void SetFixedSeed(int s)
+    {
+        seed = s;
+        useFixedSeed = true;
+    }
+
+    public void DisableFixedSeed()
+    {
+        useFixedSeed = false;
+    }
+    public int GetSeed() => seed;
+    public bool IsFixedSeed() => useFixedSeed;
+
+    // --------------------------
+    // --------------------------
+    // Dette er lavet af Marc
+    /// <summary>
     /// Tildel encounter-typer til noder i Graph vha. valgt mode (OptionA/B/C).
     /// </summary>
     private void AssignEncounters(System.Random rng)
@@ -966,28 +930,13 @@ public class MapManager : MonoBehaviour
             case EncounterGenerationMode.OptionB:
                 {
                     optionBGenerator.Generate(Graph, seed, out optionBPassLastRun, out optionBFailReason);
-
-                    if (!optionBPassLastRun && !string.IsNullOrEmpty(optionBFailReason))
-                        UnityEngine.Debug.LogWarning("[OptionB FAIL] " + optionBFailReason);
-
                     break;
                 }
 
             case EncounterGenerationMode.OptionC:
                 {
                     optionCGenerator.Generate(Graph, rng, optionCSettings, out optionCPassLastRun);
-                    UnityEngine.Debug.Log($"[OptionC] Using settings instance: {optionCSettings.GetHashCode()}  costElite={optionCSettings.costElite}  row1Budget={optionCSettings.rowBudgets[1]}  mode={encounterMode}");
                     DumpAllRowsOptionCDebug();
-
-                    var problems = new List<string>();
-                    optionCPassLastRun = ValidateOptionCAndLog(problems);
-
-                    if (!optionCPassLastRun)
-                    {
-                        // Print the first few fejl så man hurtigt kan debugge
-                        for (int i = 0; i < Mathf.Min(5, problems.Count); i++)
-                            UnityEngine.Debug.LogError("[Option C FAIL] " + problems[i]);
-                    }
                     break;
                 }
 
@@ -1090,24 +1039,73 @@ public class MapManager : MonoBehaviour
             default: return optionCSettings.costNormal;
         }
     }
-    /// <summary>
-    /// Simpel tilfældig float generator i [min,max) baseret på System.Random.
-    /// </summary>
-    private float NextFloat(System.Random rng, float min, float max)
-    {
-        return (float)(min + (max - min) * rng.NextDouble());
-    }
 
-    public void SetFixedSeed(int s)
+    private void UpdateBottomInfo()
     {
-        seed = s;
-        useFixedSeed = true;
-    }
+        if (bottomInfo == null)
+            return;
 
-    public void DisableFixedSeed()
-    {
-        useFixedSeed = false;
+        // Tæl encounters og one-choice nodes
+        var encounterCounts = new Dictionary<string, int>();
+        int oneChoiceNodes = 0;
+
+        for (int r = 0; r < Graph.rows.Count; r++)
+        {
+            foreach (var node in Graph.rows[r])
+            {
+                string key = node.encounterType.ToString();
+                if (!encounterCounts.ContainsKey(key))
+                    encounterCounts[key] = 0;
+                encounterCounts[key]++;
+
+                if (node.outgoing != null && node.outgoing.Count == 1)
+                    oneChoiceNodes++;
+            }
+        }
+
+        // Sidste interval i sekunder
+        float lastInterval = 0f;
+        if (clickIntervals.Count > 0)
+            lastInterval = clickIntervals[clickIntervals.Count - 1];
+
+        // Totaler kun hvis run er fuldendt med mindst ét step
+        float totalRunSeconds = 0f;
+        float avgInterval = 0f;
+        float medianInterval = 0f;
+        bool hasIntervals = clickIntervals.Count > 0;
+
+        if (runCompleted && hasIntervals)
+        {
+            foreach (var dt in clickIntervals)
+                totalRunSeconds += dt;
+
+            avgInterval = totalRunSeconds / clickIntervals.Count;
+
+            var sorted = new List<float>(clickIntervals);
+            sorted.Sort();
+            int n = sorted.Count;
+            if (n % 2 == 1)
+                medianInterval = sorted[n / 2];
+            else
+                medianInterval = (sorted[n / 2 - 1] + sorted[n / 2]) * 0.5f;
+        }
+
+        bottomInfo.ShowInfo(
+            lastGenerationMs,
+            oneChoiceNodes,
+            encounterCounts,
+            runCompleted && hasIntervals,
+            lastInterval,
+            totalRunSeconds,
+            avgInterval,
+            medianInterval,
+            optionAPassLastRun,
+            optionBPassLastRun,
+            optionCPassLastRun,
+            optionDPassLastRun,
+            encounterMode
+        );
     }
-    public int GetSeed() => seed;
-    public bool IsFixedSeed() => useFixedSeed;
+    // --------------------------
+    // --------------------------
 }

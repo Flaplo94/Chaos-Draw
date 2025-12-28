@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using MapDemo.Settings;
 
+// Dette script er lavet af Marc
 namespace MapDemo.Settings
 {
     /// <summary>

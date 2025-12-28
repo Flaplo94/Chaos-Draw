@@ -3,6 +3,7 @@ using System.Text;
 using UnityEngine;
 using TMPro;
 
+// Dette script er lavet af Marc
 /// <summary>
 /// MapBottomInfo
 /// Ansvar: Sammensætter og viser diagnostisk / statistisk information i bunden af kort-UI.

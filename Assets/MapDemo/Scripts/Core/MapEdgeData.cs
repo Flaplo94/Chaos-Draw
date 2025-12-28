@@ -1,5 +1,6 @@
 using System;
 
+// Dette script er lavet af Stefan
 /// <summary>
 /// Repræsenterer en kant i kortets graf (en directed edge).
 /// Indeholder kun id'er til afsender- og modtager?noder.

@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 
+// Dette script er lavet af Marc
 /// <summary>
 /// Indstillinger for "Option C" encounter-generatoren.
 /// Denne serializable klasse indeholder:

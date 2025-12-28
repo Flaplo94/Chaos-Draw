@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
+// Dette script er lavet af Stefan
 /// <summary>
 /// Controller for MapManager UI.
 /// Håndterer knapper, toggles og inputfelter i editor-UI'et og videresender handlinger til MapManager.

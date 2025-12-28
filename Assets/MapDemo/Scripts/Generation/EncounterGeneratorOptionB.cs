@@ -2,14 +2,14 @@ using System;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 
+// Dette script er lavet af Marc
 /// <summary>
-/// Option B: For specifikke seeds anvendes et hardcoded encounter-layout på en allerede-genereret graf.
-/// Layoutet er defineret per række (rækker 1..sidste-1) og per node-indeks inden for rækken (venstre->højre).
-///
-/// PASS hvis:
-/// - seed findes i presets
-/// - og hver preset-række har samme antal noder som grafens tilsvarende række (rækker 1..sidste-1)
-/// Ellers FAIL (ingen ændringer ud over start/boss).
+/// EncounterGeneratorOptionB
+/// Ansvar: Anvender foruddefinerede (hardcoded) encounter-layouts for specifikke seeds på en allerede genereret MapGraph.
+/// - Lookup-baseret tildeling: hvert seed mappes til et array af rækker; hver række indeholder encounter-typer per node (venstre->højre).
+/// - Validerer at preset-rækkenes node-antal matcher grafens tilsvarende rækker; ved mismatch returneres fail og intet tildeles for den pågældende preset.
+/// - Sætter eksplicit Start/Boss og ændrer kun midter-rækker (rækker 1..last-1); returnerer pass/fail samt en forklarende fejltekst ved behov.
+/// Klassen er en ren hjælper (ikke ScriptableObject) og opererer direkte på MapGraph data.
 /// </summary>
 public class EncounterGeneratorOptionB
 {

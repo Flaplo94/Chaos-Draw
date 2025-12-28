@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+// Dette script er lavet af Stefan
 /// Typer af encounters som en node kan repræsentere. Bruges til styling, encounter-logik og generatoralgoritmer.
 public enum EncounterType
 {

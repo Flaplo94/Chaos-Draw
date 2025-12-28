@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+// Dette script er lavet af Marc
 /// <summary>
 /// EncounterGeneratorOptionA
 /// Ansvar: Påfører "Option A" regler for encounter-tildeling på en allerede genereret MapGraph.

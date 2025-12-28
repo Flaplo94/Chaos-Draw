@@ -2,29 +2,37 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+// Dette script er lavet af Marc
 /// <summary>
-/// Option D = Option C (budget per row) + rule constraints:
-/// 1) No 3 of the same encounter type in a row along any path (consecutive rows).
-/// 2) No Elite in row 1 (row just after Start).
-/// 3) Split the map into 3 parts (start/mid/end) and ensure EACH part contains at least:
-///    - 1 Shop
-///    - 2 Events
-///    - 1 Elite
-///
-/// NOTE:
-/// - This script only assigns encounters to already-generated nodes in MapGraph.
-/// - It respects the row budgets in OptionCSettings with tolerance ±1 (same as Option C).
-/// - It uses a repair loop to satisfy rules while staying within row budgets.
+/// EncounterGeneratorOptionD
+/// Ansvar: Påfører "Option D" regler og en omfattende reparationsfase på en allerede genereret MapGraph.
+/// - Forsøger først at finde en gyldig kombination pr. række inden for det angivne row-budget.
+/// - Kører en reparationssløjfe (flere iterationer) for at rette deficits (shops, elites, events)
+///   og bryde uønskede 3+ streaks langs grafens baner.
+/// - Indeholder heuristikker til lokale justeringer (fx forbydelse af Elite i række 1 i visse trin)
+///   og tilpasning af kombinationer ud fra en score (streak-penalty, deficit-penalty, change-penalty).
+/// Klassen opererer in-place på MapGraph og returnerer et pass/fail-flag der angiver om kravene blev opfyldt.
 /// </summary>
 public class EncounterGeneratorOptionD
 {
+    // Maks antal repair-iterationer for at undgå uendelige loops
     private const int MaxRepairIterations = 400;
 
-    // Per-part minimums
+    // Minimumskrav per "part" (tre dele af kortet)
     private const int MinShopPerPart = 1;
     private const int MinEventsPerPart = 2;
     private const int MinElitePerPart = 1;
 
+    /// <summary>
+    /// Hovedmetode: kør Option D generatoren.
+    /// - Sætter Start/Boss/Normal initialt.
+    /// - Tildeler hver række et første valid combo ift. budget.
+    /// - Kører en reparationssløjfe der arbejder på deficits og 3+ streaks.
+    /// </summary>
+    /// <param name="graph">Kortets grafmodel (MapGraph) der allerede er opbygget.</param>
+    /// <param name="rng">System.Random til tilfældige valg og shuffle.</param>
+    /// <param name="settings">OptionCSettings indeholder cost-værdier og rowBudgets.</param>
+    /// <param name="pass">Out: true hvis generatoren lykkes inden for reparationsgrænsen.</param>
     public void Generate(
     MapGraph graph,
     System.Random rng,
@@ -41,12 +49,11 @@ public class EncounterGeneratorOptionD
 
         int lastRow = graph.totalRows - 1;
 
+        // Hjælpeopslag: id -> node og incoming adjacency
         var idToNode = BuildIdLookup(graph);
         var incoming = BuildIncomingAdjacency(graph, idToNode);
 
-        // ------------------------------------------------------------
-        // 1) Init Start / Boss / Normal
-        // ------------------------------------------------------------
+        // Initialiser alle noder: Start / Boss / Normal
         for (int r = 0; r < graph.rows.Count; r++)
         {
             foreach (var node in graph.rows[r])
@@ -60,11 +67,9 @@ public class EncounterGeneratorOptionD
             }
         }
 
-        // ------------------------------------------------------------
-        // 2) Initial per-row assignment by budget (Option C style)
-        // ------------------------------------------------------------
         bool allRowsHadSolution = true;
 
+        // Første pass: forsøg at tildele hver række et combo inden for budget
         for (int r = 1; r < lastRow; r++)
         {
             var rowNodes = graph.rows[r];
@@ -85,26 +90,23 @@ public class EncounterGeneratorOptionD
                 budget,
                 rng,
                 settings,
-                forbidElite: (r == 1)
+                forbidElite: (r == 1) // forbyd elite i række 1 ved første tildeling
             );
 
             if (!rowPass)
                 allRowsHadSolution = false;
         }
 
-        // DEBUG: after initial assignment
+        // Debug dump initial budgets/assignments
         DumpAllRowsBudgetDebug(graph, settings, "OptionD-Init");
 
-        // ------------------------------------------------------------
-        // 3) Repair loop (rules enforcement)
-        // ------------------------------------------------------------
+        // Reparationsfase: gentagne iterationer for at rette deficits og streaks
         for (int iter = 0; iter < MaxRepairIterations; iter++)
         {
-            // DEBUG: see evolution during repair
             if (iter == 0 || iter == 25 || iter == 50 || iter == 100)
                 DumpAllRowsBudgetDebug(graph, settings, $"OptionD-Repair{iter}");
 
-            // Rule 2: no Elite in row 1
+            // Hvis række 1 indeholder Elite, forsøg at fjerne dem først (særregel)
             if (RowHasType(graph.rows[1], EncounterType.Elite))
             {
                 bool fixedRow1 = TryFixRow(
@@ -127,11 +129,11 @@ public class EncounterGeneratorOptionD
                 continue;
             }
 
-            // Rule 3: per-part minimums
+            // Split kortet i tre dele og beregn mangler pr del
             var parts = SplitIntoThreeParts(graph.totalRows);
             var deficits = ComputePartDeficits(graph, parts);
 
-            // Rule 1: streaks (non-Normal only)
+            // Find noder der skaber 3+ streaks (offenders)
             var streakOffenders = FindStreak3Offenders(graph, incoming);
 
             bool okDeficits = deficits.totalMissing == 0;
@@ -148,9 +150,7 @@ public class EncounterGeneratorOptionD
                 return;
             }
 
-            // --------------------------------------------------------
-            // Fix deficits first
-            // --------------------------------------------------------
+            // Prioritet: reparer deficits først
             if (!okDeficits)
             {
                 bool repaired = TryRepairDeficit(
@@ -172,9 +172,7 @@ public class EncounterGeneratorOptionD
                 continue;
             }
 
-            // --------------------------------------------------------
-            // Fix streak offenders
-            // --------------------------------------------------------
+            // Hvis der er streaks: forsøg at bryde en tilfældig offender-række
             if (!okStreaks)
             {
                 var offender = streakOffenders[rng.Next(streakOffenders.Count)];
@@ -200,18 +198,14 @@ public class EncounterGeneratorOptionD
             }
         }
 
-        // ------------------------------------------------------------
-        // If we get here, repair failed
-        // ------------------------------------------------------------
         pass = false;
         Debug.LogWarning("[OptionD] FAIL: exceeded repair attempts");
     }
 
-
-    // ------------------------------------------------------------
-    // Repair helpers
-    // ------------------------------------------------------------
-
+    /// <summary>
+    /// Forsøg at reparere samlede deficits ved at tilføje manglende typer i delene.
+    /// Returnerer true hvis en enkelt ændring blev foretaget.
+    /// </summary>
     private bool TryRepairDeficit(
         MapGraph graph,
         System.Random rng,
@@ -221,8 +215,6 @@ public class EncounterGeneratorOptionD
         Dictionary<int, List<int>> incoming,
         Dictionary<int, MapNodeData> idToNode)
     {
-        // Try to repair in a deterministic priority order: Shop -> Elite -> Events
-        // (You can change priority if you want)
         for (int p = 0; p < 3; p++)
         {
             if (deficits.missingShop[p] > 0)
@@ -233,7 +225,6 @@ public class EncounterGeneratorOptionD
 
             if (deficits.missingElite[p] > 0)
             {
-                // Rule 2 forbids elite in row 1; handle naturally by row constraints
                 if (TryAddTypeToPart(graph, rng, settings, parts[p], EncounterType.Elite, incoming, idToNode))
                     return true;
             }
@@ -248,6 +239,10 @@ public class EncounterGeneratorOptionD
         return false;
     }
 
+    /// <summary>
+    /// Prøv at tilfældigt finde en række i 'part' hvor vi kan tilføje desired type ved at køre TryFixRow.
+    /// Forsøger op til 20 tilfældige rækker i delen.
+    /// </summary>
     private bool TryAddTypeToPart(
         MapGraph graph,
         System.Random rng,
@@ -257,7 +252,6 @@ public class EncounterGeneratorOptionD
         Dictionary<int, List<int>> incoming,
         Dictionary<int, MapNodeData> idToNode)
     {
-        // Choose a random row inside the part (excluding start/boss rows already excluded by part ranges)
         var candidateRows = new List<int>();
         for (int r = part.startRow; r <= part.endRow; r++)
         {
@@ -267,15 +261,12 @@ public class EncounterGeneratorOptionD
 
         if (candidateRows.Count == 0) return false;
 
-        // Try a handful of attempts (randomized)
         for (int attempt = 0; attempt < 20; attempt++)
         {
             int rowIndex = candidateRows[rng.Next(candidateRows.Count)];
 
-            // Row 1 cannot contain Elite
             bool forbidElite = (rowIndex == 1);
 
-            // Try to pick a new combo for that row that includes the desired type
             bool changed = TryFixRow(graph, rng, settings, rowIndex, incoming, idToNode,
                                      desiredType: desired, forbidElite: forbidElite);
             if (changed) return true;
@@ -284,6 +275,11 @@ public class EncounterGeneratorOptionD
         return false;
     }
 
+    /// <summary>
+    /// Forsøger at finde det bedste combo for en række ud fra score (streaks, deficits, ændringsomkostning).
+    /// - Hvis desiredType er sat, filtreres combos til kun dem der indeholder denne type.
+    /// - Hvis forbidElite er true, filtreres elite væk fra combos.
+    /// </summary>
     private bool TryFixRow(
         MapGraph graph,
         System.Random rng,
@@ -303,84 +299,72 @@ public class EncounterGeneratorOptionD
         int budget = GetRowBudget(settings, rowIndex);
         if (budget <= 0) return false;
 
-        // Generate all valid combos for this row under budget window
         var combos = GenerateRowCombos(rowNodes.Count, budget, settings, forbidElite);
 
         if (desiredType.HasValue)
         {
-            // Filter combos to those containing desiredType
             combos.RemoveAll(c => !ContainsType(c, desiredType.Value));
         }
 
         if (combos.Count == 0) return false;
 
-        // Score combos by how many violations they cause when applied
         EncounterType[] best = null;
         int bestScore = int.MaxValue;
 
-        // Light randomization to avoid always picking same
         Shuffle(combos, rng);
 
-        // Evaluate a subset if list is huge (it won't be: row size max 4)
         for (int i = 0; i < combos.Count; i++)
         {
             var combo = combos[i];
 
-            // Apply temporarily
             var old = SnapshotRow(rowNodes);
             ApplyCombo(rowNodes, combo);
 
-            // Hard check: row1 no elite
+            // Række 1 må ikke indeholde Elite under særlige regler; spring hvis opfyldt
             if (rowIndex == 1 && RowHasType(rowNodes, EncounterType.Elite))
             {
                 RestoreRow(rowNodes, old);
                 continue;
             }
 
-            // Compute score: streak offenders + unmet part deficits (after this change)
             int streakPenalty = FindStreak3Offenders(graph, incoming).Count * 10;
 
             var parts = SplitIntoThreeParts(graph.totalRows);
             var deficits = ComputePartDeficits(graph, parts);
             int deficitPenalty = deficits.totalMissing * 20;
 
-            // Also keep it stable: fewer changes is better
             int changePenalty = CountDifferences(old, combo);
 
             int score = streakPenalty + deficitPenalty + changePenalty;
 
-            // Restore
             RestoreRow(rowNodes, old);
 
             if (score < bestScore)
             {
                 bestScore = score;
                 best = combo;
-                if (bestScore == 0) break; // can't do better
+                if (bestScore == 0) break; // optimal løsning fundet
             }
         }
 
         if (best == null) return false;
 
-        // Apply best permanently
         ApplyCombo(rowNodes, best);
         return true;
     }
 
-    // ------------------------------------------------------------
-    // Rule checks
-    // ------------------------------------------------------------
-
+    /// <summary>
+    /// Gennemløb grafen og returner noder som er del af 3+ streaks (samme type kæde).
+    /// En "streak" beregnes ved at følge indgående kanter og akkumulere længde for matchende typer.
+    /// </summary>
     private List<MapNodeData> FindStreak3Offenders(
     MapGraph graph,
     Dictionary<int, List<int>> incoming)
     {
         var offenders = new List<MapNodeData>();
 
-        // nodeId -> longest non-normal streak reaching this node
         var streak = new Dictionary<int, int>();
 
-        // Start node initializes streak = 0
         if (graph.rows[0].Count > 0)
             streak[graph.rows[0][0].id] = 0;
 
@@ -392,7 +376,6 @@ public class EncounterGeneratorOptionD
             {
                 int best = 0;
 
-                // Normal / Start / Boss never participate in streaks
                 if (node.encounterType == EncounterType.Normal ||
                     node.encounterType == EncounterType.Start ||
                     node.encounterType == EncounterType.Boss)
@@ -401,7 +384,6 @@ public class EncounterGeneratorOptionD
                     continue;
                 }
 
-                // Check incoming parents
                 if (incoming.TryGetValue(node.id, out var parents))
                 {
                     foreach (var pid in parents)
@@ -425,7 +407,6 @@ public class EncounterGeneratorOptionD
 
                 streak[node.id] = best;
 
-                // Flag only non-normal streaks of length 3+
                 if (best >= 3)
                     offenders.Add(node);
             }
@@ -434,7 +415,10 @@ public class EncounterGeneratorOptionD
         return offenders;
     }
 
-
+    /// <summary>
+    /// Find encounter type for en node-id ved at lede i graph.rows.
+    /// Simpel sekventiel søgning (sufficient for små grafer).
+    /// </summary>
     private EncounterType FindNodeType(MapGraph graph, int nodeId)
     {
         for (int r = 0; r < graph.rows.Count; r++)
@@ -445,6 +429,9 @@ public class EncounterGeneratorOptionD
         return EncounterType.Normal;
     }
 
+    /// <summary>
+    /// Returnerer true hvis rækken indeholder mindst en node af den givne type.
+    /// </summary>
     private bool RowHasType(List<MapNodeData> row, EncounterType type)
     {
         if (row == null) return false;
@@ -453,13 +440,13 @@ public class EncounterGeneratorOptionD
         return false;
     }
 
-    // ------------------------------------------------------------
-    // Part splitting + deficits
-    // ------------------------------------------------------------
 
+    /// <summary>
+    /// Split kortets midter-rækker i tre sammenhængende dele.
+    /// Returnerer et array med tre tuples: (startRow, endRow).
+    /// </summary>
     private (int startRow, int endRow)[] SplitIntoThreeParts(int totalRows)
     {
-        // Middle rows are 1..last-1
         int lastRow = totalRows - 1;
         int first = 1;
         int lastMiddle = lastRow - 1;
@@ -489,6 +476,10 @@ public class EncounterGeneratorOptionD
         return new (int, int)[] { (aStart, aEnd), (bStart, bEnd), (cStart, cEnd) };
     }
 
+    /// <summary>
+    /// Beregn hvilke typer der mangler i hver af de tre dele (shops, elites, events).
+    /// Returnerer et PartDeficits objekt med mangler per del og totalMissing.
+    /// </summary>
     private PartDeficits ComputePartDeficits(MapGraph graph, (int startRow, int endRow)[] parts)
     {
         int[] shop = new int[3];
@@ -548,10 +539,9 @@ public class EncounterGeneratorOptionD
         }
     }
 
-    // ------------------------------------------------------------
-    // Budget row combo generation (Option C style)
-    // ------------------------------------------------------------
-
+    /// <summary>
+    /// Tildel et random valid combo for en række givet budget. Returnerer true hvis muligt.
+    /// </summary>
     private bool AssignRowByBudget(
         MapGraph graph,
         List<MapNodeData> rowNodes,
@@ -564,197 +554,251 @@ public class EncounterGeneratorOptionD
         var combos = GenerateRowCombos(rowNodes.Count, budget, s, forbidElite);
         if (combos.Count == 0) return false;
 
-        // Random choice for initial assignment
         var chosen = combos[rng.Next(combos.Count)];
         ApplyCombo(rowNodes, chosen);
         return true;
     }
 
-    private List<EncounterType[]> GenerateRowCombos(int nodeCount, int budget, OptionCSettings s, bool forbidElite)
-    {
-        int minAllowed = budget - 1;
-        int maxAllowed = budget + 1;
-
-        EncounterType[] options =
+    /// <summary>
+    /// Generer alle gyldige combos for en række (rekursiv DFS med pruning).
+    /// Hvis forbidElite er true udelades Elite som valg.
+    /// </summary>
+        private List<EncounterType[]> GenerateRowCombos(int nodeCount, int budget, OptionCSettings s, bool forbidElite)
         {
-            EncounterType.Normal,
-            EncounterType.Special,
-            EncounterType.Event,
-            EncounterType.Shop,
-            EncounterType.Elite
-        };
-
-        var current = new EncounterType[nodeCount];
-        var valid = new List<EncounterType[]>();
-
-        void Search(int idx, int costSoFar)
-        {
-            int remaining = nodeCount - idx;
-            int minPossible = costSoFar + remaining * s.costNormal;
-            if (minPossible > maxAllowed) return;
-
-            if (idx == nodeCount)
-            {
-                if (costSoFar >= minAllowed && costSoFar <= maxAllowed)
-                {
-                    var combo = new EncounterType[nodeCount];
-                    Array.Copy(current, combo, nodeCount);
-                    valid.Add(combo);
-                }
-                return;
-            }
-
-            for (int i = 0; i < options.Length; i++)
-            {
-                var t = options[i];
-                if (forbidElite && t == EncounterType.Elite) continue;
-
-                int c = GetCost(t, s);
-                int next = costSoFar + c;
-                if (next > maxAllowed) continue;
-
-                current[idx] = t;
-                Search(idx + 1, next);
-            }
-        }
-
-        Search(0, 0);
-        return valid;
-    }
-
-    private int GetRowBudget(OptionCSettings s, int rowIndex)
-    {
-        if (s.rowBudgets == null || s.rowBudgets.Length == 0) return 0;
-        if (rowIndex < 0) rowIndex = 0;
-        if (rowIndex >= s.rowBudgets.Length) rowIndex = s.rowBudgets.Length - 1;
-        return s.rowBudgets[rowIndex];
-    }
-
-    private int GetCost(EncounterType type, OptionCSettings s)
-    {
-        switch (type)
-        {
-            case EncounterType.Elite: return s.costElite;
-            case EncounterType.Special: return s.costSpecial;
-            case EncounterType.Event: return s.costEvent;
-            case EncounterType.Shop: return s.costShop;
-            default: return s.costNormal;
-        }
-    }
-
-    // ------------------------------------------------------------
-    // Graph adjacency helpers
-    // ------------------------------------------------------------
-
-    private Dictionary<int, MapNodeData> BuildIdLookup(MapGraph graph)
-    {
-        var dict = new Dictionary<int, MapNodeData>();
-        for (int r = 0; r < graph.rows.Count; r++)
-        {
-            foreach (var n in graph.rows[r])
-                dict[n.id] = n;
-        }
-        return dict;
-    }
-
-    private Dictionary<int, List<int>> BuildIncomingAdjacency(MapGraph graph, Dictionary<int, MapNodeData> idToNode)
-    {
-        var incoming = new Dictionary<int, List<int>>();
-        for (int r = 0; r < graph.rows.Count; r++)
-        {
-            foreach (var n in graph.rows[r])
-                incoming[n.id] = new List<int>();
-        }
-
-        // Expect MapGraph to expose edges list with fromNodeId / toNodeId
-        foreach (var e in graph.edges)
-        {
-            if (!incoming.TryGetValue(e.toNodeId, out var list))
-                incoming[e.toNodeId] = list = new List<int>();
-
-            list.Add(e.fromNodeId);
-        }
-
-        return incoming;
-    }
-
-    // ------------------------------------------------------------
-    // Small utilities
-    // ------------------------------------------------------------
-
-    private EncounterType[] SnapshotRow(List<MapNodeData> rowNodes)
-    {
-        var old = new EncounterType[rowNodes.Count];
-        for (int i = 0; i < rowNodes.Count; i++)
-            old[i] = rowNodes[i].encounterType;
-        return old;
-    }
-
-    private void RestoreRow(List<MapNodeData> rowNodes, EncounterType[] old)
-    {
-        for (int i = 0; i < rowNodes.Count && i < old.Length; i++)
-            rowNodes[i].encounterType = old[i];
-    }
-
-    private void ApplyCombo(List<MapNodeData> rowNodes, EncounterType[] combo)
-    {
-        for (int i = 0; i < rowNodes.Count && i < combo.Length; i++)
-            rowNodes[i].encounterType = combo[i];
-    }
-
-    private int CountDifferences(EncounterType[] old, EncounterType[] combo)
-    {
-        int diff = 0;
-        for (int i = 0; i < old.Length && i < combo.Length; i++)
-            if (old[i] != combo[i]) diff++;
-        return diff;
-    }
-
-    private bool ContainsType(EncounterType[] combo, EncounterType t)
-    {
-        for (int i = 0; i < combo.Length; i++)
-            if (combo[i] == t) return true;
-        return false;
-    }
-
-    private void Shuffle<T>(List<T> list, System.Random rng)
-    {
-        for (int i = list.Count - 1; i > 0; i--)
-        {
-            int j = rng.Next(i + 1);
-            (list[i], list[j]) = (list[j], list[i]);
-        }
-    }
-
-    private void DumpAllRowsBudgetDebug(MapGraph graph, OptionCSettings settings, string tag)
-    {
-        if (graph == null || graph.rows == null || settings == null) return;
-
-        int lastRow = graph.totalRows - 1;
-
-        for (int r = 1; r < lastRow; r++)
-        {
-            var row = graph.rows[r];
-            if (row == null || row.Count == 0) continue;
-
-            int budget = GetRowBudget(settings, r);
             int minAllowed = budget - 1;
             int maxAllowed = budget + 1;
 
-            int cost = 0;
-            System.Text.StringBuilder sb = new System.Text.StringBuilder();
-
-            for (int i = 0; i < row.Count; i++)
+            EncounterType[] options =
             {
-                var t = row[i].encounterType;
-                cost += GetCost(t, settings);
+                EncounterType.Normal,
+                EncounterType.Special,
+                EncounterType.Event,
+                EncounterType.Shop,
+                EncounterType.Elite
+            };
 
-                sb.Append(t);
-                if (i < row.Count - 1) sb.Append(", ");
+            var current = new EncounterType[nodeCount];
+            var valid = new List<EncounterType[]>();
+
+            void Search(int idx, int costSoFar)
+            {
+                // Hurtig pruning: beregn mindst mulige cost hvis alle resterende er 'Normal'.
+                int remaining = nodeCount - idx;
+                int minPossible = costSoFar + remaining * s.costNormal;
+                if (minPossible > maxAllowed) return;
+
+                if (idx == nodeCount)
+                {
+                    // Valider total cost inden accept
+                    if (costSoFar >= minAllowed && costSoFar <= maxAllowed)
+                    {
+                        var combo = new EncounterType[nodeCount];
+                        Array.Copy(current, combo, nodeCount);
+                        valid.Add(combo);
+                    }
+                    return;
+                }
+
+                for (int i = 0; i < options.Length; i++)
+                {
+                    var t = options[i];
+                    if (forbidElite && t == EncounterType.Elite) continue;
+
+                    int c = GetCost(t, s);
+                    int next = costSoFar + c;
+                    if (next > maxAllowed) continue; // overskrider max -> skip
+
+                    current[idx] = t;
+                    Search(idx + 1, next);
+                }
             }
 
-            Debug.Log($"[{tag}] Row {r}: nodes={row.Count} budget={budget} cost={cost} types=[{sb}] allowed=[{minAllowed},{maxAllowed}]");
+            Search(0, 0);
+            return valid;
         }
-    }
+
+        /// <summary>
+        /// Hent budget for en given række ud fra settings.
+        /// - Validerer input-array længde.
+        /// - Klemmer rowIndex til gyldigt interval.
+        /// Returnerer 0 hvis settings eller rowBudgets er ubrugeligt.
+        /// </summary>
+        private int GetRowBudget(OptionCSettings s, int rowIndex)
+        {
+            if (s.rowBudgets == null || s.rowBudgets.Length == 0) return 0;
+            if (rowIndex < 0) rowIndex = 0;
+            if (rowIndex >= s.rowBudgets.Length) rowIndex = s.rowBudgets.Length - 1;
+            return s.rowBudgets[rowIndex];
+        }
+
+        /// <summary>
+        /// Returner point-cost for en encounter-type baseret på OptionCSettings.
+        /// Mindre wrapper for centraliseret omkostningslogik.
+        /// </summary>
+        private int GetCost(EncounterType type, OptionCSettings s)
+        {
+            switch (type)
+            {
+                case EncounterType.Elite: return s.costElite;
+                case EncounterType.Special: return s.costSpecial;
+                case EncounterType.Event: return s.costEvent;
+                case EncounterType.Shop: return s.costShop;
+                default: return s.costNormal;
+            }
+        }
+
+
+        /// <summary>
+        /// Byg opslagstabel (id -> MapNodeData) for hurtige opslag.
+        /// - Går gennem alle rows og tilføjer hver node id som nøgle.
+        /// - Overskriver eventuelt eksisterende indgang hvis id gentages (bør ikke ske i korrekt graf).
+        /// Kompleksitet: O(N) i antal noder.
+        /// </summary>
+        private Dictionary<int, MapNodeData> BuildIdLookup(MapGraph graph)
+        {
+            var dict = new Dictionary<int, MapNodeData>();
+            for (int r = 0; r < graph.rows.Count; r++)
+            {
+                foreach (var n in graph.rows[r])
+                    dict[n.id] = n;
+            }
+            return dict;
+        }
+
+        /// <summary>
+        /// Byg incoming-adjacency: for hver node id en liste af parent node-ids.
+        /// - Initierer en tom liste for alle kendte node-ids (sikrer entries også for isolate nodes).
+        /// - Itererer edges og fylder parent-lister.
+        /// Returnerer dictionary: key = nodeId, value = liste af incoming nodeIds.
+        /// Kompleksitet: O(E + N).
+        /// </summary>
+        private Dictionary<int, List<int>> BuildIncomingAdjacency(MapGraph graph, Dictionary<int, MapNodeData> idToNode)
+        {
+            var incoming = new Dictionary<int, List<int>>();
+            for (int r = 0; r < graph.rows.Count; r++)
+            {
+                foreach (var n in graph.rows[r])
+                    incoming[n.id] = new List<int>();
+            }
+
+            foreach (var e in graph.edges)
+            {
+                if (!incoming.TryGetValue(e.toNodeId, out var list))
+                    incoming[e.toNodeId] = list = new List<int>();
+
+                list.Add(e.fromNodeId);
+            }
+
+            return incoming;
+        }
+
+        /// <summary>
+        /// Opret snapshot af en rækkes encounter-typer.
+        /// - Bruges før midlertidige ændringer for senere at kunne genskabe original tilstand.
+        /// Returnerer et array med typer i samme rækkefølge som rowNodes.
+        /// </summary>
+        private EncounterType[] SnapshotRow(List<MapNodeData> rowNodes)
+        {
+            var old = new EncounterType[rowNodes.Count];
+            for (int i = 0; i < rowNodes.Count; i++)
+                old[i] = rowNodes[i].encounterType;
+            return old;
+        }
+
+        /// <summary>
+        /// Genskab en rækkes encounter-typer fra et tidligere snapshot.
+        /// - Sikker: limitterer til min længde af rowNodes og snapshot-array.
+        /// Sideeffekt: ændrer node.encounterType in-place.
+        /// </summary>
+        private void RestoreRow(List<MapNodeData> rowNodes, EncounterType[] old)
+        {
+            for (int i = 0; i < rowNodes.Count && i < old.Length; i++)
+                rowNodes[i].encounterType = old[i];
+        }
+
+        /// <summary>
+        /// Anvend en combo (array af EncounterType) på en række noder.
+        /// - Oversætter hver combo-element til tilsvarende node i rækken.
+        /// - Begrænser opdatering til mindste fælles længde (sikker operation).
+        /// </summary>
+        private void ApplyCombo(List<MapNodeData> rowNodes, EncounterType[] combo)
+        {
+            for (int i = 0; i < rowNodes.Count && i < combo.Length; i++)
+                rowNodes[i].encounterType = combo[i];
+        }
+
+        /// <summary>
+        /// Tæl antal positioner hvor to arrays af EncounterType adskiller sig.
+        /// - Brugt som "change penalty" ved scoring i reparationsalgoritmen.
+        /// </summary>
+        private int CountDifferences(EncounterType[] old, EncounterType[] combo)
+        {
+            int diff = 0;
+            for (int i = 0; i < old.Length && i < combo.Length; i++)
+                if (old[i] != combo[i]) diff++;
+            return diff;
+        }
+
+        /// <summary>
+        /// Returner true hvis combo indeholder mindst en node af typen t.
+        /// Simpelt lineært scan; brugt som filter i TryFixRow når desiredType er sat.
+        /// </summary>
+        private bool ContainsType(EncounterType[] combo, EncounterType t)
+        {
+            for (int i = 0; i < combo.Length; i++)
+                if (combo[i] == t) return true;
+            return false;
+        }
+
+        /// <summary>
+        /// Til shuffle af en liste ved brug af givet RNG.
+        /// - Generisk helper der understøtter alle liste-typer.
+        /// Kompleksitet: O(n).
+        /// </summary>
+        private void Shuffle<T>(List<T> list, System.Random rng)
+        {
+            for (int i = list.Count - 1; i > 0; i--)
+            {
+                int j = rng.Next(i + 1);
+                (list[i], list[j]) = (list[j], list[i]);
+            }
+        }
+
+        /// <summary>
+        /// Debug-udskrift der viser per-række: antal noder, budget, aktuel cost, og liste af typer.
+        /// - Ignorerer række 0 og sidste række (start/boss).
+        /// - Anvender GetCost til at beregne total cost.
+        /// - Egnet til konsol-logging i Unity for at forstå nuværende state under generation.
+        /// </summary>
+        private void DumpAllRowsBudgetDebug(MapGraph graph, OptionCSettings settings, string tag)
+        {
+            if (graph == null || graph.rows == null || settings == null) return;
+
+            int lastRow = graph.totalRows - 1;
+
+            for (int r = 1; r < lastRow; r++)
+            {
+                var row = graph.rows[r];
+                if (row == null || row.Count == 0) continue;
+
+                int budget = GetRowBudget(settings, r);
+                int minAllowed = budget - 1;
+                int maxAllowed = budget + 1;
+
+                int cost = 0;
+                System.Text.StringBuilder sb = new System.Text.StringBuilder();
+
+                for (int i = 0; i < row.Count; i++)
+                {
+                    var t = row[i].encounterType;
+                    cost += GetCost(t, settings);
+
+                    sb.Append(t);
+                    if (i < row.Count - 1) sb.Append(", ");
+                }
+
+                Debug.Log($"[{tag}] Row {r}: nodes={row.Count} budget={budget} cost={cost} types=[{sb}] allowed=[{minAllowed},{maxAllowed}]");
+            }
+        }
 
 }

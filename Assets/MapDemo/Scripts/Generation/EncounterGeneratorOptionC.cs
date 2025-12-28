@@ -2,6 +2,16 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+// Dette script er lavet af Marc
+/// <summary>
+/// EncounterGeneratorOptionC
+/// Ansvar: Genererer encounter-typer pr. række ud fra et per-række budget (Option C).
+/// - For hver midter-række (1..last-1) søger den kombinationer af encounter-typer
+///   hvis samlede point ligger i intervallet [budget-1, budget+1].
+/// - Udfører en pruned rekursiv søgning over kombinationer og vælger tilfældigt en gyldig løsning.
+/// - Returnerer et pass/fail-flag der angiver om alle rækker kunne tildeles inden for deres budget.
+/// Klassen er en ren hjælper (ikke ScriptableObject) og opererer direkte på MapGraph data.
+/// </summary>
 public class EncounterGeneratorOptionC
 {
     /// <summary>

@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using MapDemo.Settings;
 using TMPro;
 
+// Dette script er lavet af Marc
 /// <summary>
 /// MapNodeButton
 /// Ansvar: Wrapper / helper for node UI prefab.
